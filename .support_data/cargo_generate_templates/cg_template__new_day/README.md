@@ -1,25 +1,14 @@
 # {{project-name | title_case}} Notes (README) for Advent of Code 2023
 
-## Notable Takeaways
+## Solutions
+- Part1:
+- Part2:
 
-- lorem ipsum
+### Errors Made
+-
 
-## Questions
+### Logistics
+-
 
-- lorem ipsum
-
-## Rust Syntax Heroes
-
-- lorem ipsum
-
-## Rust Crate Heroes
-
-- lorem ipsum
-
-## PERFs
-
-- lorem ipsum
-
-## GENERALIZATIONs
-
-- lorem ipsum
+### Had to Lookup
+-
