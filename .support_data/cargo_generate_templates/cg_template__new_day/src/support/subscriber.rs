@@ -17,7 +17,7 @@ pub fn generate_tracing_subscriber() -> SpecificLayered {
                 .with_span_modes(true)
                 .with_indent_lines(true);
         let envfilter_layer = EnvFilter::builder()
-                .with_default_directive(LevelFilter::ERROR.into())
+                .with_default_directive(LevelFilter::WARN.into())
                 .from_env_lossy();
         Registry::default().with(tree_layer).with(envfilter_layer)
 }

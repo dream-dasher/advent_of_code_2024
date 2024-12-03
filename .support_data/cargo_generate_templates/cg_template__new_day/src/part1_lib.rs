@@ -3,7 +3,8 @@
 
 use tracing::instrument;
 
-use crate::support::Result;
+#[expect(unused)]
+use crate::{EXAMPLE_INPUT_1, FINAL_INPUT_1, support::Result};
 
 #[instrument]
 pub fn process_part1(input: &str) -> Result<u64> {
@@ -18,11 +19,7 @@ pub fn process_part1(input: &str) -> Result<u64> {
 
 //         #[test]
 //         fn test_process_example() -> Result<()> {
-//                 let input = indoc! {"
-//                         ...
-//                         ...
-//                         ...
-//                 "};
+//                 let input = EXAMPLE_INPUT_1
 //                 let expected = todo!();
 //                 assert_eq!(process_part1(input)?, expected);
 //                 Ok(())
