@@ -28,14 +28,14 @@ _default:
 [confirm]
 init: && list_external_deps _gen-env _gen_git_hooks
     cargo clean
-    cargo build    
+    cargo build
     cargo doc
 
 # Add a package to workspace // update-comment: the heck am I doing adding, removing, then using cargo-generate?
 newday day_digits:
-    cargo generate --path ./.support_data/cargo_generate_templates/cg_template__new_day --name day-{{day_digits}}
+    cargo generate --path ./.support_data/cargo_generate_templates/cg_template__new_day --name day{{day_digits}}
 
-    
+
 # Linting, formatting, typo checking, etc.
 check:
     cargo clippy
@@ -52,12 +52,12 @@ docs:
 # Update Rust-crates, non-breaking updates only.
 update_soft:
     cargo update --verbose
-    
+
 # Update Rust-crates, first minor, then breaking changes.
 [confirm]
 update_hard: update_soft
     cargo update --verbose --breaking -Z unstable-options
-    
+
 
 # Tests, docs and general.
 test:
@@ -67,18 +67,18 @@ test:
 # Run a specific test with output visible. (Use '' for test_name to see all tests and set log_level)
 test-view test_name="" log_level="error":
     @echo "'Fun' Fact; the '--test' flag only allows integration test selection and will just fail on unit tests."
-    RUST_LOG={{log_level}} cargo test {{test_name}} -- --nocapture 
-    
+    RUST_LOG={{log_level}} cargo test {{test_name}} -- --nocapture
+
 # Run a specific test with NEXTEST with output visible. (Use '' for test_name to see all tests and set log_level)
 testnx-view test_name="" log_level="error":
     @echo "'Fun' Fact; the '--test' flag only allows integration test selection and will just fail on unit tests."
-    RUST_LOG={{log_level}} cargo nextest run {{test_name}} --no-capture 
-    
+    RUST_LOG={{log_level}} cargo nextest run {{test_name}} --no-capture
+
 # List dependencies. (This command has dependencies.)
 list_external_deps:
     @echo "{{CYN}}List of external dependencies for this command runner and repo:"
     xsv table ext_deps.csv
-    
+
 # Info about Rust-Compiler, Rust-Analyzer, Cargo-Clippy, and Rust-Updater.
 rust-meta-info:
     rustc --version
@@ -90,20 +90,20 @@ rust-meta-info:
 # Print reminder: how to set env vars that propagate to child shells.
 _remind_setenv:
     @ echo '{{GRN}}set -a{{NC}}; {{GRN}}source {{BLU}}.env{{NC}}; {{GRN}}set +a{{NC}}'
-    
+
 # ######################################################################## #
-    
+
 # Generate .env file from template, if .env file not present.
 _gen-env:
     @ if [ -f '.env' ]; then echo '`{{BRN}}.env{{NC}}` exists, {{PRP}}skipping creation{{NC}}...' && exit 0; else cp -n .support_data/template.env .env; echo "{{BLU}}.env{{NC}} created from template. {{GRN}}Please fill in the necessary values.{{NC}}"; echo "e.g. via 'nvim .env'"; fi
-    
+
 # Attempt to add all git-hooks. (no overwrite)
 _gen_git_hooks: _gen-precommit-hook _gen-commitmsg-hook
 
 # Attempt to add `pre-commit` git-hook. (no overwrite)
 _gen-precommit-hook:
     @ if [ -f '.git/hooks/pre-commit' ]; then echo '`.git/hooks/{{BRN}}pre-commit{{NC}}` exists, {{PRP}}skipping creation{{NC}}...' && exit 0; else cp -n .support_data/git_hooks/pre-commit .git/hooks/pre-commit; chmod u+x .git/hooks/pre-commit; echo live "{{BLU}}pre-commit{{NC}} hook added to {{GRN}}.git/hooks{{NC}} and set as executable"; fi
-    
+
 # Attempt to add `commit-msg` git-hook. (no overwrite)
 _gen-commitmsg-hook:
     @ if [ -f '.git/hooks/commit-msg' ]; then echo '`.git/hooks/{{BRN}}commit-msg{{NC}}` exists, {{PRP}}skipping creation{{NC}}...' && exit 0; else cp -n .support_data/git_hooks/commit-msg .git/hooks/commit-msg; chmod u+x .git/hooks/commit-msg; echo live "{{BLU}}commit-msg{{NC}} hook added to {{GRN}}.git/hooks{{NC}} and set as executable"; fi

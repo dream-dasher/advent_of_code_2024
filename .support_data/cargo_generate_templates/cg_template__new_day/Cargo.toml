@@ -16,33 +16,30 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
-## --...--
-indoc.workspace = true
-strum.workspace = true
-rand.workspace = true
-logos.workspace = true
-winnow.workspace = true
 ## --CLI--
 clap.workspace = true
 dialoguer.workspace = true
 owo-colors.workspace = true
 indicatif.workspace = true
-## --Diagnostics--
+## --Diagnostics-- ### tracing-appender = "0.2.3" # tracing-flame = "" # tracing-error = "0.2.1" # tracing-timing = "0.6.0" ## --Env & Files--
 tracing.workspace = true
-tracing-subscriber.workspace = true
-tracing-timing.workspace = true
-tracing-error.workspace = true
 tracing-tree.workspace = true
+tracing-subscriber.workspace = true
 ## --General--
 bon.workspace = true
-chrono.workspace = true
 derive_more.workspace = true
+indoc.workspace = true
 itertools.workspace = true
+## --Math--
+chrono.workspace = true
+rand.workspace = true
+## --Parsing--
+logos.workspace = true
 regex.workspace = true
 serde.workspace = true
 serde_json.workspace = true
-
-[dev-dependencies]
+winnow.workspace = true
+# Dev-Dependencies
 ## --Property Sample Testing--
 quickcheck.workspace = true
 quickcheck_macros.workspace = true
