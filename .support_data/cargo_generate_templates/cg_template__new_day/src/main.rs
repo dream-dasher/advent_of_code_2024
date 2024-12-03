@@ -6,7 +6,7 @@ use clap::{Parser, Subcommand, ValueEnum};
 use {{ project-name | snake_case }}::{EXAMPLE_INPUT_1, EXAMPLE_INPUT_2, FINAL_INPUT_1, FINAL_INPUT_2, Result, generate_tracing_subscriber,
                     process_part1, process_part2};
 
-use tracing::{info, instrument, trace, warn};
+use tracing::{debug_span, info, instrument, trace, warn};
 
 /// Choose to run Part 1 or 2 of {{ project-name | title_case }} of Advent of Code 2024.
 #[derive(Parser, Debug)]
@@ -43,9 +43,9 @@ pub enum Input {
         Other { path: PathBuf },
 }
 
-#[instrument]
 fn main() -> Result<()> {
         tracing::subscriber::set_global_default(generate_tracing_subscriber())?;
+        let _enter = debug_span!("main()").entered();
         trace!("tracing subscriber set");
         let cli_user_args = Args::parse();
         trace!(?cli_user_args);

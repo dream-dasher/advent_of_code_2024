@@ -1,13 +1,18 @@
 //! Library code for Part 2 of {{ project-name | title_case }} of Advent of Code 2024.
 //! `bin > part2_bin.rs` will run this code along with conent of `input2.txt`
 
-use tracing::instrument;
+mod parse2;
+use parse2::example_parse;
+use tracing::{instrument, trace};
 
 #[expect(unused)]
 use crate::{EXAMPLE_INPUT_2, FINAL_INPUT_2, support::Result};
 
-#[instrument]
+#[instrument(skip(input))]
 pub fn process_part2(input: &str) -> Result<u64> {
+        trace!(%input);
+        example_parse()?;
+        // let input = parse1(input)?;
         todo!();
 }
 

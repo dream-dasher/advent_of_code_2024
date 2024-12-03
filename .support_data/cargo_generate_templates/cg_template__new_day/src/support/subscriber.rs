@@ -12,9 +12,9 @@ type SpecificLayered =
 
 /// Generates a tracing_subcsriber.  (Convenience function.)
 pub fn generate_tracing_subscriber() -> SpecificLayered {
-        let tree_layer = tracing_tree::HierarchicalLayer::new(2)
+        let tree_layer = tracing_tree::HierarchicalLayer::new(3)
                 .with_timer(tracing_tree::time::Uptime::default())
-                .with_span_modes(true)
+                // .with_span_modes(true)
                 .with_indent_lines(true);
         let envfilter_layer = EnvFilter::builder()
                 .with_default_directive(LevelFilter::WARN.into())
