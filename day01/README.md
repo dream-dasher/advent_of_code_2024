@@ -2,7 +2,12 @@
 
 ## Solutions
 - Part1: 1722302 (`1_722_302`)
-- Part2:
+- Part2: 20373490 (`20_373_490`)
+
+### Methods, General
+- Regex parsing
+- iter summing
+- hasmap with entry api
 
 ### Errors Made
 - Regex pattern took a single digit. (Wasn't immediately noticed when moving from example input.)
