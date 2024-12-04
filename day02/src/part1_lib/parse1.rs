@@ -1,4 +1,4 @@
-use tracing::{info, instrument, warn};
+use tracing::{instrument, warn};
 
 #[expect(unused)]
 use crate::{EXAMPLE_INPUT_1, FINAL_INPUT_1, support::Result};

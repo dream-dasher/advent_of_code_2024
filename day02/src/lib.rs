@@ -12,3 +12,10 @@ pub const FINAL_INPUT_1: &str = include_str!("../data/final_input1.txt");
 pub const FINAL_INPUT_2: &str = include_str!("../data/final_input2.txt");
 pub const EXAMPLE_INPUT_1: &str = include_str!("../data/example_input1.txt");
 pub const EXAMPLE_INPUT_2: &str = include_str!("../data/example_input2.txt");
+
+/// Safe: all levels same sign and (1..=3).contains()
+#[derive(Debug, PartialEq, Eq)]
+pub enum Status {
+        Safe,
+        Unsafe,
+}
