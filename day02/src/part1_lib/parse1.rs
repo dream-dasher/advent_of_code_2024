@@ -1,20 +1,26 @@
+use derive_more::derive::{Deref, DerefMut, From, Into};
 use tracing::{instrument, warn};
 
 #[expect(unused)]
 use crate::{EXAMPLE_INPUT_1, FINAL_INPUT_1, support::Result};
 
+/// Report (one line) of Rudolf Reactor readings.
+#[derive(Debug, Clone, Deref, DerefMut, From, Into)]
+pub struct LineReport(Vec<i64>);
+
+/// Parse txt input of spaced postive integers into line-wise reports (vecs)
 #[instrument(skip(hay))]
-pub fn parse_input1(hay: &str) -> Result<Vec<Vec<i64>>> {
-        let mut out = Vec::new();
-        for line in hay.lines() {
-                let x: Result<Vec<_>> = line
-                        .split_whitespace()
-                        .map(|x| x.parse::<i64>().map_err(|e| e.into()))
-                        .collect();
-                out.push(x?);
-        }
-        tracing::info!(?out);
-        Ok(out)
+pub fn parse_input1(hay: &str) -> Result<Vec<LineReport>> {
+    let mut out = Vec::new();
+    for line in hay.lines() {
+        let x: Result<Vec<_>> = line
+            .split_whitespace()
+            .map(|x| x.parse::<i64>().map_err(|e| e.into()))
+            .collect();
+        out.push(x?.into());
+    }
+    tracing::info!(?out);
+    Ok(out)
 }
 
 // /// Example use of regex crate capture for parsing.

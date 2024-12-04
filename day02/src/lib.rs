@@ -15,7 +15,7 @@ pub const EXAMPLE_INPUT_2: &str = include_str!("../data/example_input2.txt");
 
 /// Safe: all levels same sign and (1..=3).contains()
 #[derive(Debug, PartialEq, Eq)]
-pub enum Status {
-        Safe,
-        Unsafe,
+pub enum ReportStatus {
+    Safe,
+    Unsafe,
 }
