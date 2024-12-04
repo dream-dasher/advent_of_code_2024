@@ -2,18 +2,52 @@
 //! `bin > part2_bin.rs` will run this code along with content of `input2.txt`
 
 mod parse2;
-use parse2::example_parse;
+use parse2::parse_input2;
 use tracing::{instrument, trace};
 
 #[expect(unused)]
-use crate::{EXAMPLE_INPUT_2, FINAL_INPUT_2, support::Result};
+use crate::{EXAMPLE_INPUT_2, FINAL_INPUT_2, Status, support::Result};
 
 #[instrument(skip(input))]
 pub fn process_part2(input: &str) -> Result<u64> {
         trace!(%input);
-        example_parse()?;
-        // let input = parse1(input)?;
-        todo!();
+        let mut statuses = Vec::new();
+        let lines = parse_input2(input)?;
+        for line in lines {
+                let wins = line.windows(2);
+                let diffs: Vec<i64> = wins.map(|x| x[0] - x[1]).collect();
+                tracing::info!(?diffs);
+                statuses.push(is_safe_2(diffs));
+        }
+        tracing::info!(?statuses);
+        let sum_safes = statuses.iter().filter(|x| **x == Status::Safe).count().try_into()?;
+        Ok(sum_safes)
+}
+
+fn is_safe_2(diffs: Vec<i64>, has_skipped: Option<bool>) -> Status {
+        // WARN: assuming no empty diffs
+        let mut has_skipped = has_skipped.unwrap_or(false);
+
+        let first_elem = diffs[0];
+        'level: for diff in diffs {
+                tracing::debug!(?first_elem, ?diff);
+                let is_out_of_magnitude = !(1..=3).contains(&diff.abs());
+                let is_sign_change = (first_elem.is_positive() && diff.is_negative())
+                        || (first_elem.is_negative() && diff.is_positive());
+                tracing::debug!(is_out_of_magnitude, is_sign_change);
+                if is_out_of_magnitude || is_sign_change {
+                        if !has_skipped {
+                                tracing::warn!(has_skipped, "forking to create skip");
+                                has_skipped = true;
+                                let diffs_variant1 = diffs.clone();
+                                let diffs_variant2 = diffs.clone();
+                                continue 'level;
+                        }
+                        return Status::Unsafe;
+                }
+        }
+        tracing::trace!("safe");
+        Status::Safe
 }
 
 // #[cfg(test)]

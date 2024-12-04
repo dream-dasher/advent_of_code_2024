@@ -5,6 +5,20 @@ use tracing::{info, instrument, warn};
 #[expect(unused)]
 use crate::{EXAMPLE_INPUT_2, FINAL_INPUT_2, support::Result};
 
+#[instrument(skip(hay))]
+pub fn parse_input2(hay: &str) -> Result<Vec<Vec<i64>>> {
+        let mut out = Vec::new();
+        for line in hay.lines() {
+                let x: Result<Vec<_>> = line
+                        .split_whitespace()
+                        .map(|x| x.parse::<i64>().map_err(|e| e.into()))
+                        .collect();
+                out.push(x?);
+        }
+        tracing::info!(?out);
+        Ok(out)
+}
+
 // #[instrument(skip(hay))]
 // fn parse_input2(hay: &str) -> Result<Vec<_>> {
 //         const _REGEX: &str = r"^$";
