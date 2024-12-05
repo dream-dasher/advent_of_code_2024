@@ -21,10 +21,11 @@ clap.workspace = true
 dialoguer.workspace = true
 owo-colors.workspace = true
 indicatif.workspace = true
-## --Diagnostics-- ### tracing-appender = "0.2.3" # tracing-flame = "" # tracing-error = "0.2.1" # tracing-timing = "0.6.0" ## --Env & Files--
+## --Diagnostics--
 tracing.workspace = true
 tracing-tree.workspace = true
 tracing-subscriber.workspace = true
+tracing-error.workspace = true
 ## --General--
 bon.workspace = true
 derive_more.workspace = true
@@ -34,11 +35,9 @@ itertools.workspace = true
 chrono.workspace = true
 rand.workspace = true
 ## --Parsing--
-logos.workspace = true
 regex.workspace = true
 serde.workspace = true
 serde_json.workspace = true
-winnow.workspace = true
 # Dev-Dependencies
 ## --Property Sample Testing--
 quickcheck.workspace = true

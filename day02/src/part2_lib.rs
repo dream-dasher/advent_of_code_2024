@@ -1,35 +1,38 @@
 //! Library code for Part 2 of Day02 of Advent of Code 2024.
 //! `bin > part2_bin.rs` will run this code along with content of `input2.txt`
 
-mod parse2;
-use parse2::parse_input2;
-use tracing::{instrument, trace};
+use tracing as tea;
+use tracing::{Level, instrument};
 
-#[expect(unused)]
-use crate::{EXAMPLE_INPUT_2, FINAL_INPUT_2, Status, support::Result};
+use crate::{Result,
+            parse::{ReportStatus, parse_input}};
 
-#[instrument(skip(input))]
+#[instrument(skip_all, ret(level = Level::DEBUG))]
 pub fn process_part2(input: &str) -> Result<u64> {
-        trace!(%input);
+        tea::trace!(%input);
         let mut statuses = Vec::new();
-        let lines = parse_input2(input)?;
+        let lines = parse_input(input)?;
         for line in lines {
                 let wins = line.windows(2);
                 let diffs: Vec<i64> = wins.map(|x| x[0] - x[1]).collect();
                 tracing::info!(?diffs);
-                statuses.push(is_safe_2(diffs));
+                statuses.push(is_safe_2(diffs, None));
         }
         tracing::info!(?statuses);
-        let sum_safes = statuses.iter().filter(|x| **x == Status::Safe).count().try_into()?;
+        let sum_safes = statuses
+                .iter()
+                .filter(|x| **x == ReportStatus::Safe)
+                .count()
+                .try_into()?;
         Ok(sum_safes)
 }
 
-fn is_safe_2(diffs: Vec<i64>, has_skipped: Option<bool>) -> Status {
+fn is_safe_2(diffs: Vec<i64>, has_skipped: Option<bool>) -> ReportStatus {
         // WARN: assuming no empty diffs
         let mut has_skipped = has_skipped.unwrap_or(false);
 
         let first_elem = diffs[0];
-        'level: for diff in diffs {
+        'level: for diff in diffs.clone() {
                 tracing::debug!(?first_elem, ?diff);
                 let is_out_of_magnitude = !(1..=3).contains(&diff.abs());
                 let is_sign_change = (first_elem.is_positive() && diff.is_negative())
@@ -43,11 +46,11 @@ fn is_safe_2(diffs: Vec<i64>, has_skipped: Option<bool>) -> Status {
                                 let diffs_variant2 = diffs.clone();
                                 continue 'level;
                         }
-                        return Status::Unsafe;
+                        return ReportStatus::Unsafe;
                 }
         }
-        tracing::trace!("safe");
-        Status::Safe
+        tea::trace!("safe");
+        ReportStatus::Safe
 }
 
 // #[cfg(test)]
