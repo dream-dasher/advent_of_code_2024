@@ -39,7 +39,7 @@ clap = { version = "4", features = [
 dialoguer = "0.11"
 owo-colors = "4"
 indicatif = "0.17"
-## --Diagnostics-- ### tracing-appender = "0.2.3" # tracing-flame = "" # tracing-error = "0.2.1" # tracing-timing = "0.6.0" ## --Env & Files--
+## --Diagnostics--
 tracing = "0.1.41"
 tracing-tree = { version = "0.4.0", features = ["time"] }
 tracing-subscriber = { version = "0.3.19", features = [
@@ -47,26 +47,19 @@ tracing-subscriber = { version = "0.3.19", features = [
     "env-filter",
     "tracing-log",
 ] }
+tracing-error = "0.2.1"
 ## --General--
 bon = "3.2.0"
-derive_more = { version = "1.0.0", features = [
-    "full",
-    "constructor",
-    "error",
-    "deref",
-    "from",
-] }
+derive_more = { version = "1.0.0", features = ["full"] }
 indoc = "2.0.5"
 itertools = "0.13.0"
 ## --Math--
 chrono = { version = "0.4.38", features = ["serde"] }
 rand = "0.8.5"
 ## --Parsing--
-logos = "0.14.3"
 regex = { version = "1.11.1", features = ["logging"] }
 serde = { version = "1.0.215", features = ["derive"] }
 serde_json = "1.0.133"
-winnow = "0.6.20"
 # Dev-Dependencies
 ## --Property Sample Testing--
 quickcheck = "1.0.3"
