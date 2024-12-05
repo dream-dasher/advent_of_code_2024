@@ -3,7 +3,8 @@
 use std::path::PathBuf;
 
 use clap::{Parser, Subcommand, ValueEnum};
-use day02::{EXAMPLE_INPUT, FINAL_INPUT, Result, generate_tracing_subscriber, process_part1, process_part2};
+use day02::{CUSTOM_INPUT, EXAMPLE_INPUT, FINAL_INPUT, Result, generate_tracing_subscriber, process_part1,
+            process_part2};
 use tracing::{self as tea, Level, instrument};
 
 /// Choose to run Part 1 or 2 of Day02 of Advent of Code 2024.
@@ -37,6 +38,8 @@ pub enum Input {
         Example,
         /// Use the full problem input.
         Full,
+        /// Use a custom input.
+        Custom,
         /// Use custom input; please give a path.
         Other { path: PathBuf },
 }
@@ -67,6 +70,7 @@ pub fn main_part1(input: Input) -> Result<u64> {
         let input = match input {
                 Input::Example => EXAMPLE_INPUT,
                 Input::Full => FINAL_INPUT,
+                Input::Custom => CUSTOM_INPUT,
                 Input::Other { path } => &std::fs::read_to_string(path)?,
         };
         let val = process_part1(input)?;
@@ -80,6 +84,7 @@ pub fn main_part2(input: Input) -> Result<u64> {
         let input = match input {
                 Input::Example => EXAMPLE_INPUT,
                 Input::Full => FINAL_INPUT,
+                Input::Custom => CUSTOM_INPUT,
                 Input::Other { path } => &std::fs::read_to_string(path)?,
         };
         let val = process_part2(input)?;

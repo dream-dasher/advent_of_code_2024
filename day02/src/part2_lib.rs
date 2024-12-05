@@ -29,7 +29,7 @@ pub fn process_part2(input: &str) -> Result<u64> {
 }
 
 /// Takes Vectors of Differences and returns a ReactorStatus
-#[instrument(ret(level = Level::DEBUG))]
+#[instrument(skip_all, ret(level = Level::DEBUG))]
 fn safety_status_2(diffs: Vec<Difference>, has_skipped: Option<bool>) -> ReportStatus {
         let mut has_skipped = has_skipped.unwrap_or(false);
         let needed_sign = match (diffs.len(), has_skipped) {
@@ -57,17 +57,18 @@ fn safety_status_2(diffs: Vec<Difference>, has_skipped: Option<bool>) -> ReportS
                 }
         };
         let Some(needed_sign) = needed_sign else {
+                tea::info!("no needed sign");
                 return ReportStatus::Unsafe;
         };
+        tea::warn!(?needed_sign);
 
-        let first_elem = diffs[0];
-        for diff in diffs {
-                tea::debug!(?first_elem, ?diff);
+        for (i, diff) in diffs.iter().enumerate() {
                 let is_out_of_magnitude = !(1..=3).contains(&diff.abs());
-                let is_sign_change = (first_elem.is_positive() && diff.is_negative())
-                        || (first_elem.is_negative() && diff.is_positive());
+                let is_sign_change = diff.signum() != needed_sign.signum();
                 tea::debug!(is_out_of_magnitude, is_sign_change);
                 if is_out_of_magnitude || is_sign_change {
+                        tea::warn!(?i, ?diff, "unsafe");
+                        tea::warn!(iless = i-1, i, imore = i+1, before = ?diffs[i - 1], before = ?diffs[i + 1]);
                         return ReportStatus::Unsafe;
                 }
         }
@@ -75,25 +76,37 @@ fn safety_status_2(diffs: Vec<Difference>, has_skipped: Option<bool>) -> ReportS
 }
 
 /// Sign required if sequence maye be valid
+#[derive(Debug, Clone, Copy)]
 enum NeededSign {
         Pos,
         Neg,
+}
+impl NeededSign {
+        fn signum(&self) -> i64 {
+                match self {
+                        NeededSign::Pos => 1,
+                        NeededSign::Neg => -1,
+                }
+        }
 }
 /// Looks at 3 values and returns the majority sign if any.
 /// If there is not a majority sign then there is a set of numbers that can be fixed.
 /// due to different signs and one zero or multiple zeroes.
 ///
 /// If there are fewer than 3 values
+#[instrument(ret(level = Level::DEBUG))]
 fn common_sign(three_vals: [Difference; 3]) -> Option<NeededSign> {
         let pos_count = three_vals.iter().filter(|v| v.is_positive()).count();
         let neg_count = three_vals.iter().filter(|v| v.is_negative()).count();
         match (pos_count, neg_count) {
                 ((2..=3), _) => Some(NeededSign::Pos),
-                (_, (2..3)) => Some(NeededSign::Neg),
+                (_, (2..=3)) => Some(NeededSign::Neg),
                 _ => None,
         }
 }
 
+/// Part 2: determine if report is safe by way of its derivative
+#[instrument(skip_all, ret(level = Level::DEBUG))]
 fn is_safe_2(diffs: Vec<i64>, has_skipped: Option<bool>) -> ReportStatus {
         // WARN: assuming no empty diffs
         let mut has_skipped = has_skipped.unwrap_or(false);

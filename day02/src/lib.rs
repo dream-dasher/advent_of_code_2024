@@ -10,6 +10,7 @@ pub use support::{Error, Result, generate_tracing_subscriber};
 
 pub const FINAL_INPUT: &str = include_str!("../data/final_input.txt");
 pub const EXAMPLE_INPUT: &str = include_str!("../data/example_input.txt");
+pub const CUSTOM_INPUT: &str = include_str!("../data/custom_input.txt");
 
 mod parse {
         use derive_more::derive::{Constructor, Deref, DerefMut, From, Into};
