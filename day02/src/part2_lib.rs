@@ -1,30 +1,95 @@
 //! Library code for Part 2 of Day02 of Advent of Code 2024.
 //! `bin > part2_bin.rs` will run this code along with content of `input2.txt`
 
-use tracing as tea;
-use tracing::{Level, instrument};
+use tracing::{self as tea, Level, instrument};
 
 use crate::{Result,
-            parse::{ReportStatus, parse_input}};
+            parse::{Difference, ReportStatus, parse_input}};
 
 #[instrument(skip_all, ret(level = Level::DEBUG))]
 pub fn process_part2(input: &str) -> Result<u64> {
         tea::trace!(%input);
-        let mut statuses = Vec::new();
-        let lines = parse_input(input)?;
-        for line in lines {
-                let wins = line.windows(2);
-                let diffs: Vec<i64> = wins.map(|x| x[0] - x[1]).collect();
-                tracing::info!(?diffs);
-                statuses.push(is_safe_2(diffs, None));
-        }
-        tracing::info!(?statuses);
-        let sum_safes = statuses
+        let line_reports = parse_input(input)?;
+        let safe_lines_count = line_reports
                 .iter()
-                .filter(|x| **x == ReportStatus::Safe)
-                .count()
-                .try_into()?;
-        Ok(sum_safes)
+                .map(|line| {
+                        let first_derivative: Vec<Difference> = line
+                                .windows(2)
+                                .map(|w| match w {
+                                        &[a, b] => Difference::new(b - a),
+                                        _ => unreachable!("windows(2)"),
+                                })
+                                .collect();
+                        first_derivative
+                })
+                .map(|diff| safety_status_2(diff, None))
+                .filter(|x| *x == ReportStatus::Safe)
+                .count();
+        Ok(safe_lines_count.try_into()?)
+}
+
+/// Takes Vectors of Differences and returns a ReactorStatus
+#[instrument(ret(level = Level::DEBUG))]
+fn safety_status_2(diffs: Vec<Difference>, has_skipped: Option<bool>) -> ReportStatus {
+        let mut has_skipped = has_skipped.unwrap_or(false);
+        let needed_sign = match (diffs.len(), has_skipped) {
+                (1, false) | (0, _) => return ReportStatus::Safe,
+                (2, false) | (1, true) => {
+                        if diffs.iter().any(|&v| (1..=3).contains(&v.abs())) {
+                                return ReportStatus::Safe;
+                        }
+                        return ReportStatus::Unsafe;
+                }
+                (2, true) => {
+                        if (diffs[0].signum() == diffs[1].signum()) && *diffs[0] != 0 {
+                                return ReportStatus::Safe;
+                        }
+                        return ReportStatus::Unsafe;
+                }
+                _ => {
+                        if let [a, b, c] = diffs.as_slice() {
+                                common_sign([*a, *b, *c])
+                        } else {
+                                unreachable!("triple destructuring should always be valid");
+                        }
+                }
+        };
+        let Some(needed_sign) = needed_sign else {
+                return ReportStatus::Unsafe;
+        };
+
+        let first_elem = diffs[0];
+        for diff in diffs {
+                tea::debug!(?first_elem, ?diff);
+                let is_out_of_magnitude = !(1..=3).contains(&diff.abs());
+                let is_sign_change = (first_elem.is_positive() && diff.is_negative())
+                        || (first_elem.is_negative() && diff.is_positive());
+                tea::debug!(is_out_of_magnitude, is_sign_change);
+                if is_out_of_magnitude || is_sign_change {
+                        return ReportStatus::Unsafe;
+                }
+        }
+        ReportStatus::Safe
+}
+
+/// Sign required if sequence maye be valid
+enum NeededSign {
+        Pos,
+        Neg,
+}
+/// Looks at 3 values and returns the majority sign if any.
+/// If there is not a majority sign then there is a set of numbers that can be fixed.
+/// due to different signs and one zero or multiple zeroes.
+///
+/// If there are fewer than 3 values
+fn common_sign(three_vals: [Difference; 3]) -> Option<NeededSign> {
+        let pos_count = three_vals.iter().filter(|v| v.is_positive()).count();
+        let neg_count = three_vals.iter().filter(|v| v.is_negative()).count();
+        match (pos_count, neg_count) {
+                ((2..=3), _) => Some(NeededSign::Pos),
+                (_, (2..3)) => Some(NeededSign::Neg),
+                _ => None,
+        }
 }
 
 fn is_safe_2(diffs: Vec<i64>, has_skipped: Option<bool>) -> ReportStatus {

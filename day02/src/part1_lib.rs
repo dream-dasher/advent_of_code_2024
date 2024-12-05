@@ -1,8 +1,7 @@
 //! Library code for Part 1 of Day02 of Advent of Code 2024.
 //! `bin > part1_bin.rs` will run this code along with content of `input1.txt`
 
-use tracing as tea;
-use tracing::{Level, instrument};
+use tracing::{self as tea, Level, instrument};
 
 use crate::{Result,
             parse::{Difference, ReportStatus, parse_input}};
@@ -23,15 +22,15 @@ pub fn process_part1(input: &str) -> Result<u64> {
                                 .collect();
                         first_derivative
                 })
-                .map(safety_status)
+                .map(safety_status_1)
                 .filter(|x| *x == ReportStatus::Safe)
                 .count();
         Ok(safe_lines_count.try_into()?)
 }
 
 /// Takes Vectors of Differences and returns a ReactorStatus
-#[instrument(ret(level = Level::INFO))]
-fn safety_status(diffs: Vec<Difference>) -> ReportStatus {
+#[instrument(ret(level = Level::DEBUG))]
+fn safety_status_1(diffs: Vec<Difference>) -> ReportStatus {
         // WARN: assuming no empty diffs
         let first_elem = diffs[0];
         for diff in diffs {
@@ -44,7 +43,6 @@ fn safety_status(diffs: Vec<Difference>) -> ReportStatus {
                         return ReportStatus::Unsafe;
                 }
         }
-        // tea::trace!("safe");
         ReportStatus::Safe
 }
 
