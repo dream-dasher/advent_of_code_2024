@@ -9,7 +9,7 @@ use crate::{Result,
 
 #[instrument(skip_all, ret(level = Level::INFO))]
 pub fn process_part1(input: &str) -> Result<u64> {
-        tracing::trace!(%input);
+        tea::trace!(%input);
         let line_reports = parse_input(input)?;
         let safe_lines_count = line_reports
                 .iter()

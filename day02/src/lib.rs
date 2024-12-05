@@ -60,7 +60,7 @@ mod parse {
         //         path/to/baz:3:It's a Trap!
         //         path/topos/babos:36:ZZzzaZZZaaaZalooong!
         //         ");
-        //         info!(?hay);
+        //         tea::info!(?hay);
 
         //         let mut out = Vec::new();
         //         {
