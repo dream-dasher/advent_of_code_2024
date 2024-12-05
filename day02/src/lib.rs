@@ -13,8 +13,7 @@ pub const EXAMPLE_INPUT: &str = include_str!("../data/example_input.txt");
 
 mod parse {
         use derive_more::derive::{Constructor, Deref, DerefMut, From, Into};
-        use tracing as tea;
-        use tracing::instrument;
+        use tracing::{self as tea, Level, instrument};
 
         use crate::Result;
 
@@ -34,7 +33,7 @@ mod parse {
         }
 
         /// Parse txt input of spaced positive integers into line-wise reports (vecs)
-        #[instrument(skip_all)]
+        #[instrument(skip_all, ret(level = Level::DEBUG))]
         pub fn parse_input(raw_input: &str) -> Result<Vec<LineReport>> {
                 let mut out = Vec::new();
                 for line in raw_input.lines() {

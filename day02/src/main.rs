@@ -4,8 +4,7 @@ use std::path::PathBuf;
 
 use clap::{Parser, Subcommand, ValueEnum};
 use day02::{EXAMPLE_INPUT, FINAL_INPUT, Result, generate_tracing_subscriber, process_part1, process_part2};
-use tracing as tea;
-use tracing::{Level, instrument};
+use tracing::{self as tea, Level, instrument};
 
 /// Choose to run Part 1 or 2 of Day02 of Advent of Code 2024.
 #[derive(Parser, Debug)]
@@ -45,7 +44,7 @@ pub enum Input {
 fn main() -> Result<()> {
         tea::subscriber::set_global_default(generate_tracing_subscriber())?;
         let _enter = tea::debug_span!("main()").entered();
-        tea::trace!("tea subscriber set");
+        tea::trace!("tracing subscriber set");
         let cli_user_args = Args::parse();
         tea::trace!(?cli_user_args);
         let part = cli_user_args.part;
@@ -55,8 +54,8 @@ fn main() -> Result<()> {
         });
         tea::trace!(?part, ?inp);
         match (part, inp) {
-                (Part::Part1, inp) => part1(inp),
-                (Part::Part2, inp) => part2(inp),
+                (Part::Part1, inp) => main_part1(inp),
+                (Part::Part2, inp) => main_part2(inp),
         }?;
         tea::trace!("finishing main()");
         Ok(())
@@ -64,7 +63,7 @@ fn main() -> Result<()> {
 
 /// Run Part1_Lib code on binary-bound input1.txt
 #[instrument(ret(level = Level::DEBUG))]
-pub fn part1(input: Input) -> Result<u64> {
+pub fn main_part1(input: Input) -> Result<u64> {
         let input = match input {
                 Input::Example => EXAMPLE_INPUT,
                 Input::Full => FINAL_INPUT,
@@ -77,7 +76,7 @@ pub fn part1(input: Input) -> Result<u64> {
 
 /// Run Part2_Lib code on binary-bound input2.txt
 #[instrument(ret(level = Level::DEBUG))]
-pub fn part2(input: Input) -> Result<u64> {
+pub fn main_part2(input: Input) -> Result<u64> {
         let input = match input {
                 Input::Example => EXAMPLE_INPUT,
                 Input::Full => FINAL_INPUT,
