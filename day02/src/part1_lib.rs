@@ -29,7 +29,7 @@ pub fn process_part1(input: &str) -> Result<u64> {
 }
 
 /// Takes Vectors of Differences and returns a ReactorStatus
-#[instrument(ret(level = Level::DEBUG))]
+#[instrument(skip_all, ret(level = Level::DEBUG))]
 fn safety_status_1(diffs: Vec<Difference>) -> ReportStatus {
         // WARN: assuming no empty diffs
         let first_elem = diffs[0];
