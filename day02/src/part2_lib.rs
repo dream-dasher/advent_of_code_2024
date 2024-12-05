@@ -67,8 +67,9 @@ fn safety_status_2(diffs: Vec<Difference>, has_skipped: Option<bool>) -> ReportS
                 let is_sign_change = diff.signum() != needed_sign.signum();
                 tea::debug!(is_out_of_magnitude, is_sign_change);
                 if is_out_of_magnitude || is_sign_change {
-                        tea::warn!(?i, ?diff, "unsafe");
-                        tea::warn!(iless = i-1, i, imore = i+1, before = ?diffs[i - 1], before = ?diffs[i + 1]);
+                        let pre_val = i.checked_sub(1).and_then(|pre_index| diffs.get(pre_index));
+                        let post_val = i.checked_add(1).and_then(|post_index| diffs.get(post_index));
+                        tea::debug!(?i, ?pre_val, ?diff, ?post_val, "unsafe");
                         return ReportStatus::Unsafe;
                 }
         }
