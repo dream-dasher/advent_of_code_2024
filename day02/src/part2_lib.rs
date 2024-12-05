@@ -6,7 +6,7 @@ use tracing::{Level, instrument};
 
 use crate::{Result, parse::parse_input};
 
-#[instrument(skip_all, ret(level = Level::INFO))]
+#[instrument(skip_all, ret(level = Level::DEBUG))]
 pub fn process_part2(input: &str) -> Result<u64> {
         tea::trace!(%input);
         let _parsed_input = parse_input(input)?;
