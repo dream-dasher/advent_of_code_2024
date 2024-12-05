@@ -19,7 +19,7 @@ mod parse {
         use crate::Result;
 
         /// Parse txt input of spaced postive integers into line-wise reports (vecs)
-        #[instrument(skip_all, ret(level = Level::DEBUG))]
+        #[instrument(skip_all, ret(level = Level::TRACE))]
         pub fn parse_input(raw_input: &str) -> Result<Vec<LineReport>> {
                 todo!()
         }
