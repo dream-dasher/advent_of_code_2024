@@ -47,9 +47,11 @@ fn safety_status_2(diffs: Vec<Difference>, has_skipped: Option<bool>) -> ReportS
                         return ReportStatus::Unsafe;
                 }
                 _ => {
-                        if let [a, b, c] = diffs.as_slice() {
+                        if let [a, b, c, ..] = diffs.as_slice() {
+                                tea::trace!(?a, ?b, ?c, ?diffs, "destructured values");
                                 common_sign([*a, *b, *c])
                         } else {
+                                tea::error!(?diffs, "Guaranteed destructuring failed. Logic error.");
                                 unreachable!("triple destructuring should always be valid");
                         }
                 }
