@@ -34,7 +34,7 @@ mod parse {
         }
 
         /// Parse txt input of spaced positive integers into line-wise reports (vecs)
-        #[instrument(skip_all, ret(level = Level::DEBUG))]
+        #[instrument(skip_all, ret(level = Level::TRACE))]
         pub fn parse_input(raw_input: &str) -> Result<Vec<LineReport>> {
                 let mut out = Vec::new();
                 for line in raw_input.lines() {
@@ -44,7 +44,6 @@ mod parse {
                                 .collect();
                         out.push(x?.into());
                 }
-                tea::info!(?out);
                 Ok(out)
         }
 
