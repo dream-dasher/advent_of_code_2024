@@ -77,7 +77,7 @@ testnx-view test_name="" log_level="error":
 # List dependencies. (This command has dependencies.)
 list_external_deps:
     @echo "{{CYN}}List of external dependencies for this command runner and repo:"
-    xsv table ext_deps.csv
+    xsv table ad_deps.csv
 
 # Info about Rust-Compiler, Rust-Analyzer, Cargo-Clippy, and Rust-Updater.
 rust-meta-info:
