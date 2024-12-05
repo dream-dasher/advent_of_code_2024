@@ -3,7 +3,7 @@ use regex::Regex;
 use tracing::{info, instrument, warn};
 
 #[expect(unused)]
-use crate::{EXAMPLE_INPUT_2, FINAL_INPUT_2, support::Result};
+use crate::{EXAMPLE_INPUT, FINAL_INPUT, support::Result};
 
 // #[instrument(skip(hay))]
 // fn parse_input2(hay: &str) -> Result<Vec<_>> {
