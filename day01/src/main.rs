@@ -5,7 +5,7 @@ use std::path::PathBuf;
 use clap::{Parser, Subcommand, ValueEnum};
 use day01::{EXAMPLE_INPUT_1, EXAMPLE_INPUT_2, FINAL_INPUT_1, FINAL_INPUT_2, Result, generate_tracing_subscriber,
             process_part1, process_part2};
-use tracing::instrument;
+use tracing::{self as tea, instrument};
 
 /// Choose to run Part 1 or 2 of Day01 of Advent of Code 2024.
 #[derive(Parser, Debug)]
@@ -44,26 +44,26 @@ pub enum Input {
 
 fn main() -> Result<()> {
         tracing::subscriber::set_global_default(generate_tracing_subscriber())?;
-        let _enter = tracing::debug_span!("main()").entered();
-        tracing::trace!("tracing subscriber set");
+        let _enter = tea::debug_span!("main()").entered();
+        tea::trace!("tracing subscriber set");
         let cli_user_args = Args::parse();
-        tracing::trace!(?cli_user_args);
+        tea::trace!(?cli_user_args);
         let part = cli_user_args.part;
         let inp = cli_user_args.input.unwrap_or_else(|| {
-                tracing::warn!("-- No input given.  Using Example input. -- ");
+                tea::warn!("-- No input given.  Using Example input. -- ");
                 Input::Example
         });
-        tracing::trace!(?part, ?inp);
+        tea::trace!(?part, ?inp);
 
         let val = match (part, inp) {
                 (Part::Part1, inp) => part1(inp),
                 (Part::Part2, inp) => part2(inp),
         }?;
 
-        tracing::info!(val);
+        tea::info!(val);
         println!("Value calculated: {}", val);
 
-        tracing::trace!("finishing main()");
+        tea::trace!("finishing main()");
         Ok(())
 }
 
@@ -76,7 +76,7 @@ pub fn part1(input: Input) -> Result<u64> {
                 Input::Other { path } => &std::fs::read_to_string(path)?,
         };
         let val = process_part1(input)?;
-        tracing::info!(val, "Part 1 Process result.");
+        tea::info!(val, "Part 1 Process result.");
         Ok(val)
 }
 
@@ -89,6 +89,6 @@ pub fn part2(input: Input) -> Result<u64> {
                 Input::Other { path } => &std::fs::read_to_string(path)?,
         };
         let val = process_part2(input)?;
-        tracing::info!(?val, "Part 2 Process result.");
+        tea::info!(?val, "Part 2 Process result.");
         Ok(val)
 }

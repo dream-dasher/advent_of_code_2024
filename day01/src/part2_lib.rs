@@ -5,26 +5,26 @@ mod parse2;
 use std::collections::HashMap;
 
 use parse2::parse_input2;
-use tracing::instrument;
+use tracing::{self as tea, instrument};
 
 #[expect(unused)]
 use crate::{EXAMPLE_INPUT_2, FINAL_INPUT_2, support::Result};
 
 #[instrument(skip(input))]
 pub fn process_part2(input: &str) -> Result<u64> {
-        tracing::trace!(%input);
+        tea::trace!(%input);
         let (left, right) = parse_input2(input)?;
-        tracing::trace!(?left, ?right);
+        tea::trace!(?left, ?right);
         let left_fcount: HashMap<u64, u64> = freq_count(left);
         let right_fcount: HashMap<u64, u64> = freq_count(right);
-        tracing::trace!(?left_fcount, ?right_fcount);
+        tea::trace!(?left_fcount, ?right_fcount);
         let mut total = 0;
         for (left_k, left_v) in left_fcount.iter() {
                 if let Some(right_v) = right_fcount.get(left_k) {
                         total += left_k * left_v * right_v;
                 }
         }
-        tracing::info!(?total);
+        tea::info!(?total);
 
         Ok(total)
 }
