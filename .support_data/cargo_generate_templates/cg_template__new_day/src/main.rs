@@ -3,8 +3,8 @@
 use std::path::PathBuf;
 
 use clap::{Parser, Subcommand, ValueEnum};
-use {{ project-name | title_case }}::{CUSTOM_INPUT, EXAMPLE_INPUT, FINAL_INPUT, Result, generate_tracing_subscriber, process_part1, process_part2};
-use tea::{self as tea, Level, instrument};
+use {{ project-name  }}::{CUSTOM_INPUT, EXAMPLE_INPUT, FINAL_INPUT, Result, generate_tracing_subscriber, process_part1, process_part2};
+use tracing::{self as tea, Level, instrument};
 
 /// Choose to run Part 1 or 2 of {{ project-name | title_case }} of Advent of Code 2024.
 #[derive(Parser, Debug)]
@@ -68,8 +68,8 @@ fn main() -> Result<()> {
 #[instrument(ret(level = Level::DEBUG))]
 pub fn main_part1(input: Input) -> Result<u64> {
         let input = match input {
-                Input::Example => EXAMPLE_INPUT_1,
-                Input::Full => FINAL_INPUT_1,
+                Input::Example => EXAMPLE_INPUT,
+                Input::Full => FINAL_INPUT,
                 Input::Custom => CUSTOM_INPUT,
                 Input::Other { path } => &std::fs::read_to_string(path)?,
         };
@@ -82,8 +82,8 @@ pub fn main_part1(input: Input) -> Result<u64> {
 #[instrument(ret(level = Level::DEBUG))]
 pub fn main_part2(input: Input) -> Result<u64> {
         let input = match input {
-                Input::Example => EXAMPLE_INPUT_2,
-                Input::Full => FINAL_INPUT_2,
+                Input::Example => EXAMPLE_INPUT,
+                Input::Full => FINAL_INPUT,
                 Input::Custom => CUSTOM_INPUT,
                 Input::Other { path } => &std::fs::read_to_string(path)?,
         };

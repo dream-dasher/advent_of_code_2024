@@ -3,24 +3,32 @@
 
 use tracing::{self as tea, Level, instrument};
 
+#[expect(unused)]
 use crate::{Result, parse::parse_input};
 
 #[instrument(skip_all, ret(level = Level::DEBUG))]
 pub fn process_part2(input: &str) -> Result<u64> {
         tea::trace!(%input);
-        let _parsed_input = parse_input(input)?;
+        // let _parsed_input = parse_input(input)?;
         todo!();
 }
 
 // #[cfg(test)]
 // mod tests {
 //         use indoc::indoc;
+//         use quickcheck::TestResult;
+//         use quickcheck_macros::quickcheck;
+//         use rand::Rng;
+//         use test_log::test;
+//         use tracing::{self as tea, instrument};
 
 //         use super::*;
+//         use crate::{EXAMPLE_INPUT, FINAL_INPUT};
 
 //         #[test]
+//         #[instrument]
 //         fn test_process_example() -> Result<()> {
-//                 let input = EXAMPLE_INPUT
+//                 let input = EXAMPLE_INPUT;
 //                 let expected = todo!();
 //                 assert_eq!(process_part2(input)?, expected);
 //                 Ok(())
@@ -32,9 +40,9 @@ pub fn process_part2(input: &str) -> Result<u64> {
 //         // #[test]
 //         // fn test_process_problem_input() -> Result<()> {
 //         //         tracing_subscriber::fmt::init();
-//         //         let input = FINAL_INPUT
+//         //         let input = FINAL_INPUT;
 //         //         let expected = todo!();
-//         //         assert_eq!(process_part2(file_input)?, expected);
+//         //         assert_eq!(process_part2(input)?, expected);
 //         //         Ok(())
 //         // }
 // }
