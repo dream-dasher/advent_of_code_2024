@@ -31,8 +31,11 @@ pub fn process_part1(input: &str) -> Result<u64> {
 /// Takes Vectors of Differences and returns a ReactorStatus
 #[instrument(skip_all, ret(level = Level::DEBUG))]
 fn safety_status_1(diffs: Vec<Difference>) -> ReportStatus {
-        // WARN: assuming no empty diffs
-        let first_elem = diffs[0];
+        let first_elem = if !diffs.is_empty() {
+                diffs[0]
+        } else {
+                return ReportStatus::Safe;
+        };
         for diff in diffs {
                 tea::debug!(?first_elem, ?diff);
                 let is_out_of_magnitude = !(1..=3).contains(&diff.abs());
