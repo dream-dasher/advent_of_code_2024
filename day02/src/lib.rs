@@ -13,7 +13,7 @@ pub const EXAMPLE_INPUT: &str = include_str!("../data/example_input.txt");
 pub const CUSTOM_INPUT: &str = include_str!("../data/custom_input.txt");
 
 mod parse {
-        use derive_more::derive::{Add, AddAssign, AsRef, Constructor, Deref, DerefMut, From, Into, Sub, Sum};
+        use derive_more::derive::{Add, Constructor, Deref, DerefMut, From, Into, Sum};
         use tracing::{self as tea, Level, instrument};
 
         use crate::Result;
