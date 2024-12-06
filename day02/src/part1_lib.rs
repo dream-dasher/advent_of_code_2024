@@ -36,8 +36,7 @@ fn safety_status_1(diffs: Vec<Difference>) -> ReportStatus {
         for diff in diffs {
                 tea::debug!(?first_elem, ?diff);
                 let is_out_of_magnitude = !(1..=3).contains(&diff.abs());
-                let is_sign_change = (first_elem.is_positive() && diff.is_negative())
-                        || (first_elem.is_negative() && diff.is_positive());
+                let is_sign_change = first_elem.signum() != diff.signum();
                 tea::debug!(is_out_of_magnitude, is_sign_change);
                 if is_out_of_magnitude || is_sign_change {
                         return ReportStatus::Unsafe;
