@@ -270,7 +270,7 @@ mod tests {
                                 true
                         }
                         Ok(_) => {
-                                tea::info!(?val, ?good_seq);
+                                tea::error!(?val, ?good_seq);
                                 false
                         }
                         Err(_) => {
