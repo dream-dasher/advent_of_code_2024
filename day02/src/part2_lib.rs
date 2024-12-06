@@ -7,9 +7,9 @@ use crate::{Result,
             parse::{Difference, ReportStatus, parse_input}};
 
 #[instrument(skip_all, ret(level = Level::INFO))]
-pub fn process_part2(input: &str) -> Result<u64> {
-        tea::trace!(%input);
-        let line_reports = parse_input(input)?;
+pub fn process_part2(raw_input: &str) -> Result<u64> {
+        tea::trace!(%raw_input);
+        let line_reports = parse_input(raw_input)?;
         let safe_lines_count = line_reports
                 .iter()
                 .map(|line| {
@@ -22,7 +22,7 @@ pub fn process_part2(input: &str) -> Result<u64> {
                                 .collect();
                         first_derivative
                 })
-                .map(|diff| safety_status_2(diff))
+                .map(safety_status_2)
                 .filter(|x| *x == ReportStatus::Safe)
                 .count();
         Ok(safe_lines_count.try_into()?)
@@ -31,6 +31,7 @@ pub fn process_part2(input: &str) -> Result<u64> {
 /// Takes Vectors of Differences and returns a ReactorStatus
 #[instrument(skip_all, ret(level = Level::DEBUG))]
 fn safety_status_2(diffs: Vec<Difference>) -> ReportStatus {
+        tea::trace!(?diffs);
         let mut has_skipped = false;
         let needed_sign = match (diffs.len(), has_skipped) {
                 (1, false) | (0, _) => return ReportStatus::Safe,
@@ -63,28 +64,40 @@ fn safety_status_2(diffs: Vec<Difference>) -> ReportStatus {
         tea::info!(?needed_sign);
 
         for (i, diff) in diffs.iter().enumerate() {
-                if !is_safe_value(diff, needed_sign) {
-                        tea::debug!(?i, ?diff, ?has_skipped, "unacceptable value");
-                        // if !has_skipped {
-                        //         let pre_val = i.checked_sub(1).and_then(|pre_index| diffs.get(pre_index));
-                        //         let post_val = i.checked_add(1).and_then(|post_index| diffs.get(post_index));
-                        //         tea::debug!(?i, ?pre_val, ?diff, ?post_val, ?has_skipped, "unacceptable value");
+                let _entered = tea::trace_span!("For difference", ?diff, i).entered();
+                match (is_safe_value(diff, needed_sign), has_skipped) {
+                        (true, _) => continue,
+                        (false, true) => return ReportStatus::Unsafe,
+                        (false, false) => {
+                                let pre_val = i.checked_sub(1).and_then(|pre_index| diffs.get(pre_index));
+                                let post_val = i.checked_add(1).and_then(|post_index| diffs.get(post_index));
+                                let is_pre_sum_safe = pre_val.is_none_or(|p| is_safe_value(&(*p + *diff), needed_sign));
+                                let is_post_sum_safe =
+                                        post_val.is_none_or(|p| is_safe_value(&(*p + *diff), needed_sign));
+                                tea::debug!(
+                                        ?i,
+                                        ?pre_val,
+                                        ?diff,
+                                        ?post_val,
+                                        is_pre_sum_safe,
+                                        is_post_sum_safe,
+                                        ?has_skipped,
+                                        "unacceptable value"
+                                );
 
-                        //         tea::warn!(has_skipped, "forking to create skip");
-                        //         has_skipped = true;
-                        //         let diffs_variant1 = diffs.clone();
-                        //         let diffs_variant2 = diffs.clone();
-                        //         continue;
-                        // }
-                        tea::debug!("no skips; unsafe");
-                        return ReportStatus::Unsafe;
+                                if is_pre_sum_safe || is_post_sum_safe {
+                                        has_skipped = true;
+                                        continue;
+                                }
+                                return ReportStatus::Unsafe;
+                        }
                 }
         }
         ReportStatus::Safe
 }
 
 /// Safety for an individual value
-#[instrument(ret(level = Level::WARN))]
+#[instrument(ret(level = Level::DEBUG))]
 fn is_safe_value(diff: &Difference, needed_sign: NeededSign) -> bool {
         let is_out_of_magnitude = !(1..=3).contains(&diff.abs());
         let is_sign_change = diff.signum() != needed_sign.signum();

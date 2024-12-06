@@ -65,9 +65,9 @@ fn main() -> Result<()> {
 }
 
 /// Run Part1_Lib code on binary-bound input1.txt
-#[instrument(ret(level = Level::DEBUG))]
-pub fn main_part1(input: Input) -> Result<u64> {
-        let input = match input {
+#[instrument(ret(level = Level::INFO))]
+pub fn main_part1(input_type: Input) -> Result<u64> {
+        let input = match input_type {
                 Input::Example => EXAMPLE_INPUT,
                 Input::Full => FINAL_INPUT,
                 Input::Custom => CUSTOM_INPUT,
@@ -79,9 +79,9 @@ pub fn main_part1(input: Input) -> Result<u64> {
 }
 
 /// Run Part2_Lib code on binary-bound input2.txt
-#[instrument(ret(level = Level::DEBUG))]
-pub fn main_part2(input: Input) -> Result<u64> {
-        let input = match input {
+#[instrument(ret(level = Level::INFO))]
+pub fn main_part2(input_type: Input) -> Result<u64> {
+        let input = match input_type {
                 Input::Example => EXAMPLE_INPUT,
                 Input::Full => FINAL_INPUT,
                 Input::Custom => CUSTOM_INPUT,

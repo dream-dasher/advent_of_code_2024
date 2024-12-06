@@ -10,7 +10,7 @@ use tracing::{self as tea, instrument};
 #[expect(unused)]
 use crate::{EXAMPLE_INPUT_2, FINAL_INPUT_2, support::Result};
 
-#[instrument(skip(input))]
+#[instrument(skip_all)]
 pub fn process_part2(input: &str) -> Result<u64> {
         tea::trace!(%input);
         let (left, right) = parse_input2(input)?;

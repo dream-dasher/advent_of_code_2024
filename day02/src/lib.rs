@@ -13,7 +13,7 @@ pub const EXAMPLE_INPUT: &str = include_str!("../data/example_input.txt");
 pub const CUSTOM_INPUT: &str = include_str!("../data/custom_input.txt");
 
 mod parse {
-        use derive_more::derive::{Constructor, Deref, DerefMut, From, Into};
+        use derive_more::derive::{Add, AsRef, Constructor, Deref, DerefMut, From, Into, Sub};
         use tracing::{self as tea, Level, instrument};
 
         use crate::Result;
@@ -23,7 +23,7 @@ mod parse {
         pub struct LineReport(Vec<i64>);
 
         /// Difference between two values.  (Discrete First Derivative)
-        #[derive(Debug, Clone, Copy, PartialEq, Eq, Deref, DerefMut, Constructor)]
+        #[derive(Debug, Clone, Copy, PartialEq, Eq, Deref, DerefMut, Constructor, Add)]
         pub struct Difference(i64);
 
         /// Safe: all levels same sign and (1..=3).contains()
