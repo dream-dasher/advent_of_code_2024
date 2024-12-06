@@ -68,18 +68,22 @@ fn safety_status_2(diffs: Vec<Difference>) -> ReportStatus {
         let mut i = 0;
         'diff_loop: while i < diffs.len() {
                 let diff = &diffs[i];
-                i += 1;
-                let _entered = tea::trace_span!("For difference", ?diff, i).entered();
+                let _entered = tea::trace_span!(" Vec<diff> loop", ?diff, i).entered();
                 match (is_safe_value(diff, needed_sign), has_skipped) {
-                        (true, _) => continue,
+                        (true, _) => {
+                                i += 1;
+                                continue;
+                        }
                         (false, true) => return ReportStatus::Unsafe,
                         (false, false) => {
                                 let _enter = tea::warn_span!("Unacceptable Value", ?diff, i).entered();
                                 let pre_val = i.checked_sub(1).and_then(|pre_index| diffs.get(pre_index));
                                 let post_val = i.checked_add(1).and_then(|post_index| diffs.get(post_index));
+                                let is_post_val_safe = post_val.is_none_or(|p| is_safe_value(p, needed_sign));
                                 let is_pre_sum_safe = pre_val.is_none_or(|p| is_safe_value(&(*p + *diff), needed_sign));
                                 let is_post_sum_safe =
                                         post_val.is_none_or(|p| is_safe_value(&(*p + *diff), needed_sign));
+
                                 tea::debug!(
                                         ?i,
                                         ?pre_val,
@@ -90,24 +94,22 @@ fn safety_status_2(diffs: Vec<Difference>) -> ReportStatus {
                                         ?has_skipped,
                                         "unacceptable value"
                                 );
-                                tea::warn!(
-                                        ?pre_val,
-                                        ?diff,
-                                        ?post_val,
-                                        ?is_pre_sum_safe,
-                                        ?is_post_sum_safe,
-                                        "unacceptable value"
-                                );
+                                if !is_post_val_safe || !is_pre_sum_safe {
+                                        tea::debug!("post-val must be combined for validity");
+                                        if is_post_sum_safe {
+                                                tea::trace!("skipping twice; post-sum safe");
+                                                has_skipped = true;
+                                                i += 2; // we're skipping an extra element if post-sum element present
+                                                continue 'diff_loop;
+                                        }
+                                        tea::warn!(?diffs, "UNSAFE!!!");
+                                        return ReportStatus::Unsafe;
+                                }
 
                                 if is_pre_sum_safe {
                                         tea::trace!("skipping; pre-sum safe");
                                         has_skipped = true;
-                                        continue 'diff_loop;
-                                }
-                                if is_post_sum_safe {
-                                        tea::trace!("skipping twice; post-sum safe");
-                                        has_skipped = true;
-                                        i += 1; // we're skipping an extra element if post-sum element present
+                                        i += 1;
                                         continue 'diff_loop;
                                 }
                                 tea::warn!(?diffs, "UNSAFE!!!");
