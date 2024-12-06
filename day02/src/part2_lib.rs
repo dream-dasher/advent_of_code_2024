@@ -39,12 +39,16 @@ fn safety_status_2(diffs: Vec<Difference>) -> ReportStatus {
         let needed_sign = match diffs.len() {
                 1 | 0 => return ReportStatus::Safe,
                 2 => {
-                        // TODO: type problems with iterator summing
                         tea::warn!("just two");
-                        let x = diffs.iter().map(|&x| *x).collect::<Vec<i64>>();
-                        let x: i64 = x.iter().sum();
-
-                        if (1..=3).contains(&x.abs()) {
+                        let [a, b] = diffs.as_slice() else {
+                                unreachable!("slice size known")
+                        };
+                        // sequence safe without change
+                        if (1..=3).contains(&a.abs()) && (1..=3).contains(&b.abs()) && a.signum() == b.signum() {
+                                return ReportStatus::Safe;
+                        }
+                        // sequence safe with deletion
+                        if (1..=3).contains(&(*a + *b).abs()) {
                                 return ReportStatus::Safe;
                         }
                         return ReportStatus::Unsafe;
