@@ -46,32 +46,4 @@ mod parse {
                 }
                 Ok(out)
         }
-
-        // /// Example use of regex crate capture for parsing.
-        // #[instrument]
-        // pub fn example_parse() -> Result<Vec<[String; 3]>> {
-        //         const EXAMPLE_PATH_SPLIT_REGEX: &str = r"^(?m)^([^:]+):([0-9]+):(.+)$";
-        //         let re = Regex::new(EXAMPLE_PATH_SPLIT_REGEX).unwrap();
-        //         tea::info!(?re);
-
-        //         let hay = indoc!("\
-        //         path/to/foo:54:Blue Harvest
-        //         path/to/bar:90:Something, Something, Something, Dark Side
-        //         path/to/baz:3:It's a Trap!
-        //         path/topos/babos:36:ZZzzaZZZaaaZalooong!
-        //         ");
-        //         tea::info!(?hay);
-
-        //         let mut out = Vec::new();
-        //         {
-        //                 let _enter = tea::info_span!("Parsing").entered();
-        //                 for (i, line) in hay.lines().enumerate() {
-        //                         let (raw, [path, lineno, line]) = re.captures(line).unwrap().extract();
-        //                         tea::info!(path, lineno, line, raw, i);
-        //                         out.push([path.to_string(), lineno.to_string(), line.to_string()]);
-        //                 }
-        //         }
-        //         tea::info!(?out);
-        //         Ok(out)
-        // }
 }
