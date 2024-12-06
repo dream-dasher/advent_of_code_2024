@@ -4,6 +4,9 @@
 - Part1:
 - Part2:
 
+### Methods, General
+-
+
 ### Errors Made
 -
 
@@ -11,4 +14,7 @@
 -
 
 ### Had to Lookup
+-
+
+### Needs
 -
