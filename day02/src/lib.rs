@@ -13,17 +13,17 @@ pub const EXAMPLE_INPUT: &str = include_str!("../data/example_input.txt");
 pub const CUSTOM_INPUT: &str = include_str!("../data/custom_input.txt");
 
 mod parse {
-        use derive_more::derive::{Add, AsRef, Constructor, Deref, DerefMut, From, Into, Sub};
+        use derive_more::derive::{Add, AddAssign, AsRef, Constructor, Deref, DerefMut, From, Into, Sub, Sum};
         use tracing::{self as tea, Level, instrument};
 
         use crate::Result;
 
         /// Report (one line) of Rudolf Reactor readings.
         #[derive(Debug, Clone, Deref, DerefMut, From, Into)]
-        pub struct LineReport(Vec<i64>);
+        pub struct LineReport(pub Vec<i64>);
 
         /// Difference between two values.  (Discrete First Derivative)
-        #[derive(Debug, Clone, Copy, PartialEq, Eq, Deref, DerefMut, Constructor, Add)]
+        #[derive(Debug, Clone, Copy, PartialEq, Eq, Deref, DerefMut, Constructor, Add, Sum)]
         pub struct Difference(i64);
 
         /// Safe: all levels same sign and (1..=3).contains()
