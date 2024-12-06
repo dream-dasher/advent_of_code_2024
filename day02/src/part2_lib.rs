@@ -57,7 +57,7 @@ fn safety_status_2(diffs: Vec<Difference>, has_skipped: Option<bool>) -> ReportS
                 }
         };
         let Some(needed_sign) = needed_sign else {
-                tea::info!("no needed sign");
+                tea::info!("no needed sign; not resolvable as safe");
                 return ReportStatus::Unsafe;
         };
         tea::warn!(?needed_sign);
