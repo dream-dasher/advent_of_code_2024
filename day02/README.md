@@ -24,6 +24,7 @@
 - quickcheck
 - rand crate
 - `.get()` vs `[_]` (actually off of separate traits, former being sealed; and latter deref's result)
+- `QUICKCHECK_TESTS=1_000_000` (quick check env var)
 
 ### Needs
 - Finer trace-log targeting. (cont'd)

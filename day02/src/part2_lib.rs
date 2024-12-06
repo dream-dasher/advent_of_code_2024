@@ -44,7 +44,10 @@ fn safety_status_2(diffs: Vec<Difference>) -> ReportStatus {
                                 unreachable!("slice size known")
                         };
                         // sequence safe without change
-                        if (1..=3).contains(&a.abs()) || (1..=3).contains(&b.abs()) {
+                        if (1..=3).contains(&a.abs())
+                                || (1..=3).contains(&b.abs())
+                                || (1..=3).contains(&(*a + *b).abs())
+                        {
                                 return ReportStatus::Safe;
                         }
                         return ReportStatus::Unsafe;
