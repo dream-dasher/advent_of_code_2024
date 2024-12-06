@@ -233,21 +233,31 @@ mod tests {
         use quickcheck_macros::quickcheck;
         use rand::Rng;
 
-        fn generate_good_sequence(len: usize) -> Vec<LineReport> {
+        fn generate_good_sequence(len: usize, sign: bool) -> Vec<LineReport> {
                 let mut rng = rand::thread_rng();
+                let alt_idx = rng.gen_range(0..=(2 * len)); // hit it 1/2 the time
                 let mut out = Vec::with_capacity(len);
                 let mut x = rng.gen_range(1..=55);
-                for _ in 0..len {
+                for i in 0..len {
+                        if i == alt_idx {
+                                let rand_val = rng.gen_range(-1000..=1000);
+                                out.push(x + rand_val);
+                                continue;
+                        }
                         out.push(x);
-                        x += rng.gen_range(1..=3);
+                        if sign {
+                                x += rng.gen_range(1..=3);
+                        } else {
+                                x -= rng.gen_range(1..=3);
+                        }
                 }
                 vec![out.into()]
         }
 
         #[quickcheck]
-        fn test_good_increasing_sequence(len: u8) -> bool {
+        fn test_good_sequence(len: u8, sign: bool) -> bool {
                 let len = len as usize;
-                let good_seq = generate_good_sequence(len);
+                let good_seq = generate_good_sequence(len, sign);
                 tea::warn!(?good_seq);
                 let val = process_parsed_2(good_seq.clone());
                 match val {
