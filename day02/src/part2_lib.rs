@@ -22,7 +22,7 @@ pub fn process_part2(input: &str) -> Result<u64> {
                                 .collect();
                         first_derivative
                 })
-                .map(|diff| safety_status_2(diff, None))
+                .map(|diff| safety_status_2(diff))
                 .filter(|x| *x == ReportStatus::Safe)
                 .count();
         Ok(safe_lines_count.try_into()?)
@@ -30,8 +30,8 @@ pub fn process_part2(input: &str) -> Result<u64> {
 
 /// Takes Vectors of Differences and returns a ReactorStatus
 #[instrument(skip_all, ret(level = Level::DEBUG))]
-fn safety_status_2(diffs: Vec<Difference>, has_skipped: Option<bool>) -> ReportStatus {
-        let mut has_skipped = has_skipped.unwrap_or(false);
+fn safety_status_2(diffs: Vec<Difference>) -> ReportStatus {
+        let mut has_skipped = false;
         let needed_sign = match (diffs.len(), has_skipped) {
                 (1, false) | (0, _) => return ReportStatus::Safe,
                 (2, false) | (1, true) => {
@@ -60,20 +60,35 @@ fn safety_status_2(diffs: Vec<Difference>, has_skipped: Option<bool>) -> ReportS
                 tea::info!("no needed sign; not resolvable as safe");
                 return ReportStatus::Unsafe;
         };
-        tea::warn!(?needed_sign);
+        tea::info!(?needed_sign);
 
         for (i, diff) in diffs.iter().enumerate() {
-                let is_out_of_magnitude = !(1..=3).contains(&diff.abs());
-                let is_sign_change = diff.signum() != needed_sign.signum();
-                tea::debug!(is_out_of_magnitude, is_sign_change);
-                if is_out_of_magnitude || is_sign_change {
-                        let pre_val = i.checked_sub(1).and_then(|pre_index| diffs.get(pre_index));
-                        let post_val = i.checked_add(1).and_then(|post_index| diffs.get(post_index));
-                        tea::debug!(?i, ?pre_val, ?diff, ?post_val, "unsafe");
+                if !is_safe_value(diff, needed_sign) {
+                        tea::debug!(?i, ?diff, ?has_skipped, "unacceptable value");
+                        // if !has_skipped {
+                        //         let pre_val = i.checked_sub(1).and_then(|pre_index| diffs.get(pre_index));
+                        //         let post_val = i.checked_add(1).and_then(|post_index| diffs.get(post_index));
+                        //         tea::debug!(?i, ?pre_val, ?diff, ?post_val, ?has_skipped, "unacceptable value");
+
+                        //         tea::warn!(has_skipped, "forking to create skip");
+                        //         has_skipped = true;
+                        //         let diffs_variant1 = diffs.clone();
+                        //         let diffs_variant2 = diffs.clone();
+                        //         continue;
+                        // }
+                        tea::debug!("no skips; unsafe");
                         return ReportStatus::Unsafe;
                 }
         }
         ReportStatus::Safe
+}
+
+/// Safety for an individual value
+#[instrument(ret(level = Level::WARN))]
+fn is_safe_value(diff: &Difference, needed_sign: NeededSign) -> bool {
+        let is_out_of_magnitude = !(1..=3).contains(&diff.abs());
+        let is_sign_change = diff.signum() != needed_sign.signum();
+        !(is_out_of_magnitude || is_sign_change)
 }
 
 /// Sign required if sequence maye be valid
@@ -106,33 +121,33 @@ fn common_sign(three_vals: [Difference; 3]) -> Option<NeededSign> {
         }
 }
 
-/// Part 2: determine if report is safe by way of its derivative
-#[instrument(skip_all, ret(level = Level::DEBUG))]
-fn is_safe_2(diffs: Vec<i64>, has_skipped: Option<bool>) -> ReportStatus {
-        // WARN: assuming no empty diffs
-        let mut has_skipped = has_skipped.unwrap_or(false);
+// /// Part 2: determine if report is safe by way of its derivative
+// #[instrument(skip_all, ret(level = Level::DEBUG))]
+// fn is_safe_2(diffs: Vec<i64>, has_skipped: Option<bool>) -> ReportStatus {
+//         // WARN: assuming no empty diffs
+//         let mut has_skipped = has_skipped.unwrap_or(false);
 
-        let first_elem = diffs[0];
-        'level: for diff in diffs.clone() {
-                tracing::debug!(?first_elem, ?diff);
-                let is_out_of_magnitude = !(1..=3).contains(&diff.abs());
-                let is_sign_change = (first_elem.is_positive() && diff.is_negative())
-                        || (first_elem.is_negative() && diff.is_positive());
-                tracing::debug!(is_out_of_magnitude, is_sign_change);
-                if is_out_of_magnitude || is_sign_change {
-                        if !has_skipped {
-                                tracing::warn!(has_skipped, "forking to create skip");
-                                has_skipped = true;
-                                let diffs_variant1 = diffs.clone();
-                                let diffs_variant2 = diffs.clone();
-                                continue 'level;
-                        }
-                        return ReportStatus::Unsafe;
-                }
-        }
-        tea::trace!("safe");
-        ReportStatus::Safe
-}
+//         let first_elem = diffs[0];
+//         'level: for diff in diffs.clone() {
+//                 tracing::debug!(?first_elem, ?diff);
+//                 let is_out_of_magnitude = !(1..=3).contains(&diff.abs());
+//                 let is_sign_change = (first_elem.is_positive() && diff.is_negative())
+//                         || (first_elem.is_negative() && diff.is_positive());
+//                 tracing::debug!(is_out_of_magnitude, is_sign_change);
+//                 if is_out_of_magnitude || is_sign_change {
+//                         if !has_skipped {
+//                                 // tracing::warn!(has_skipped, "forking to create skip");
+//                                 has_skipped = true;
+//                                 let diffs_variant1 = diffs.clone();
+//                                 let diffs_variant2 = diffs.clone();
+//                                 continue 'level;
+//                         }
+//                         return ReportStatus::Unsafe;
+//                 }
+//         }
+//         tea::trace!("safe");
+//         ReportStatus::Safe
+// }
 
 // #[cfg(test)]
 // mod tests {
