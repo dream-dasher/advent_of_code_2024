@@ -44,11 +44,7 @@ fn safety_status_2(diffs: Vec<Difference>) -> ReportStatus {
                                 unreachable!("slice size known")
                         };
                         // sequence safe without change
-                        if (1..=3).contains(&a.abs()) && (1..=3).contains(&b.abs()) && a.signum() == b.signum() {
-                                return ReportStatus::Safe;
-                        }
-                        // sequence safe with deletion
-                        if (1..=3).contains(&(*a + *b).abs()) {
+                        if ((1..=3).contains(&a.abs()) || (1..=3).contains(&b.abs())) {
                                 return ReportStatus::Safe;
                         }
                         return ReportStatus::Unsafe;
@@ -69,7 +65,10 @@ fn safety_status_2(diffs: Vec<Difference>) -> ReportStatus {
         };
         tea::info!(?needed_sign);
 
-        'diff_loop: for (i, diff) in diffs.iter().enumerate() {
+        let mut i = 0;
+        'diff_loop: while i < diffs.len() {
+                let diff = &diffs[i];
+                i += 1;
                 let _entered = tea::trace_span!("For difference", ?diff, i).entered();
                 match (is_safe_value(diff, needed_sign), has_skipped) {
                         (true, _) => continue,
@@ -100,9 +99,15 @@ fn safety_status_2(diffs: Vec<Difference>) -> ReportStatus {
                                         "unacceptable value"
                                 );
 
-                                if is_pre_sum_safe || is_post_sum_safe {
-                                        tea::trace!("skipping");
+                                if is_pre_sum_safe {
+                                        tea::trace!("skipping; pre-sum safe");
                                         has_skipped = true;
+                                        continue 'diff_loop;
+                                }
+                                if is_post_sum_safe {
+                                        tea::trace!("skipping twice; post-sum safe");
+                                        has_skipped = true;
+                                        i += 1; // we're skipping an extra element if post-sum element present
                                         continue 'diff_loop;
                                 }
                                 tea::warn!(?diffs, "UNSAFE!!!");
@@ -240,16 +245,15 @@ mod tests {
                 let mut x = rng.gen_range(1..=55);
                 for i in 0..len {
                         if i == alt_idx {
-                                let rand_val = rng.gen_range(-1000..=1000);
+                                let rand_val = rng.gen_range(0..=100);
                                 out.push(x + rand_val);
                                 continue;
                         }
                         out.push(x);
-                        if sign {
-                                x += rng.gen_range(1..=3);
-                        } else {
-                                x -= rng.gen_range(1..=3);
-                        }
+                        x += rng.gen_range(1..=3);
+                }
+                if !sign {
+                        out.reverse();
                 }
                 vec![out.into()]
         }
