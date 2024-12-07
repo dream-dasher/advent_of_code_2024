@@ -1,12 +1,25 @@
 # [Advent of Code 2024](https://adventofcode.com/2024)
 
-## Day 1: [Historian Hysteria](https://adventofcode.com/2024/day/1) : [code](day01/README.md)
+<!--toc:start-->
+- [[Advent of Code 2024](https://adventofcode.com/2024)](#advent-of-code-2024httpsadventofcodecom2024)
+  - [Day 1: [Historian Hysteria](https://adventofcode.com/2024/day/1) : [code](day01/README.md)](#day-1-historian-hysteriahttpsadventofcodecom2024day1-codeday01readmemd)
+  - [Day 2: [Red-Nosed Reports](https://adventofcode.com/2024/day/2) : [code](day02/README.md)](#day-2-red-nosed-reportshttpsadventofcodecom2024day2-codeday02readmemd)
+  - [Day 3: [Mull It Over](https://adventofcode.com/2024/day/3) : [----]()](#day-3-mull-it-overhttpsadventofcodecom2024day3)
+  - [Day 4: [Ceres Search](https://adventofcode.com/2024/day/4) : [----]()](#day-4-ceres-searchhttpsadventofcodecom2024day4)
+  - [Day 5: [Print Queue](https://adventofcode.com/2024/day/5) : [----]()](#day-5-print-queuehttpsadventofcodecom2024day5)
+  - [Day 6: [Guard Gallivant](https://adventofcode.com/2024/day/6) : [----]()](#day-6-guard-gallivanthttpsadventofcodecom2024day6)
+  - [Day 7: [Bridge Repair](https://adventofcode.com/2024/day/7) : [----]()](#day-7-bridge-repairhttpsadventofcodecom2024day7)
+  - [Day 8: [?????]() : [----]()](#day-8)
+<!--toc:end-->
+
+## Day 1: [Historian Hysteria](https://adventofcode.com/2024/day/1) : [code takeaways](day01/README.md)
 - sort lists -> pairwise distance
 - freq maps -> val * freq * freq
 
-## Day 2: [Red-Nosed Reports](https://adventofcode.com/2024/day/2) : [code](day02/README.md)
+## Day 2: [Red-Nosed Reports](https://adventofcode.com/2024/day/2) : [code takeaways](day02/README.md)
 - P1: Kernel Convolution,
 - P2: + Solution via Differences
+
 ```
 Raw  :  1  2   1 3
 Diffs: *  1  -1 2 *
@@ -240,4 +253,4 @@ Caution:
 - if u64 holds desired value, then any pair will be within u128 ... but it would require pair-wise bounds checking... I suppose that's fine
   - could also do saturating mul or 'erring -- I imagine using u128 would be faster, but have never compared
 
-## Day 8: [?????]() : [----]()
+## Day 8: [?????](https://adventofcode.com/2024/day/8) : [----]()

@@ -4,6 +4,9 @@
 - Part1: 326 (`326`)
 - Part2: 381 (`381`)
 
+## Solution Notes
+See: [root README](../README.md)
+
 ### Methods, General
 - newtype pattern (e.g. to differentiate between origin values and diff-values)
 - map_windows for sliding window (kernel convolution)

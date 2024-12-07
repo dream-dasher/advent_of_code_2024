@@ -4,6 +4,9 @@
 - Part1: 1722302 (`1_722_302`)
 - Part2: 20373490 (`20_373_490`)
 
+## Solution Notes
+See: [root README](../README.md)
+
 ### Methods, General
 - Regex parsing
 - iter summing
