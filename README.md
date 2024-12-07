@@ -36,6 +36,8 @@ Raw  :  9   1  2
 Diffs: *  -8  1  *
 Sum  :   x -7
 ```
+**NOTE**: recursive solution over raw input with forking on ‘bad transition’: simpler code
+          (just wanted to do it via the diffs)
 
 ## Day 3: [Mull It Over](https://adventofcode.com/2024/day/3) : [----]()
 - P1: pattern match & extract
@@ -44,7 +46,7 @@ regex: mul\((\d+),(\d+)\)
 ```
 
 ## Day 4: [Ceres Search](https://adventofcode.com/2024/day/4) : [----]()
-P1: pattern match, mult directions
+- P1: pattern match, mult directions
 ```
 rc
 
@@ -65,7 +67,7 @@ up-rt, diag: [+1, -1]   new start: 00 [0, +1] 0_MAX [+1, 0] MAX_MAX
 ```
 
 ## Day 5: [Print Queue](https://adventofcode.com/2024/day/5) : [----]()
-P1: checks against partial order
+- P1: checks against partial order
 ```
 a < b
 a < d
@@ -216,7 +218,7 @@ wasteful:
 1...
 ```
 
-Solution: only descend to one side -
+**Solution**: only descend to one side -
 (yes: this is esentialy factorial multiplication :)
 Now, if we want non-cooperative parallelism. we don't introduce redundancy
 ```
@@ -241,13 +243,13 @@ It's not optimal in terms of bounds detection, but it should be correct.
 I'm not sure whether we'd get much advantage from doing relative product comparison -- which would allow more early branch kills.
 If the number of operations were large enough it would benefit.  (But they seem relatively short from a quick peak at input.)
 
-Other optimizations:
+**Other optimizations**:
 - we're doing a lot of semi-small problems
   - of course we can parallelize each one (really eating up an parallelization utility of the above solution approach actually 🤷)
   - chances of precise repetition of subsequences seems low (but we could store all possible values)
   - we could ... round and bound ... allowing reuse of pruning information broadly ... not sure if worth, but doable
 
-Caution:
+**Caution**:
 - need to check max requested value and what it fits in -- (I think they all fit in u64)
 - if u64 holds desired value, then any pair will be within u128 ... but it would require pair-wise bounds checking... I suppose that's fine
   - could also do saturating mul or 'erring -- I imagine using u128 would be faster, but have never compared
