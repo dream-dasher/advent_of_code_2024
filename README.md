@@ -174,9 +174,9 @@ If we save the matrix at each step (a vector of 4D points) then as soon as we se
 
 ```
 operators: * +
-190 = 10 _ 19
+190 == 10 _ 19
 21037 !=  9 _ 7 _ 18 _ 13
-292 !=  11 _ 6 _ 16 _ 20
+292 ==  11 _ 6 _ 16 _ 20
 ```
 ```
 n elements -> n-1 operators -> (n-1)^2 options
