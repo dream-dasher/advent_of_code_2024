@@ -257,7 +257,7 @@ If the number of operations were large enough it would benefit.  (But they seem 
 - if u64 holds desired value, then any pair will be within u128 ... but it would require pair-wise bounds checking... I suppose that's fine
   - could also do saturating mul or 'erring -- I imagine using u128 would be faster, but have never compared
 
-## Day 8: [Resonant Collinearity]https://adventofcode.com/2024/day/8) : [----]()
+## Day 8: [Resonant Collinearity](https://adventofcode.com/2024/day/8) : [----]()
 - P1: tuples of distances at each point, marking section that have the 2x:x ratio for certain indices ("insideness" my also need to be checked)
   - (**perf**: just calculate "anti-node distances" and check for inclusion & overlap)
 **Questions**:
@@ -310,4 +310,4 @@ Outer "anti-nodes":
      *
 ```
 
-## Day 9: [____]https://adventofcode.com/2024/day/8) : [----]()
+## Day 9: [____](https://adventofcode.com/2024/day/8) : [----]()
