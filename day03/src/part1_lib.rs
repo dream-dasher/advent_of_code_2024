@@ -22,36 +22,44 @@ fn calculate_solution(pairs_vec: Vec<MulPair>) -> u64 {
                 .sum()
 }
 
-// #[cfg(test)]
-// mod tests {
-//         use indoc::indoc;
-//         use quickcheck::TestResult;
-//         use quickcheck_macros::quickcheck;
-//         use rand::Rng;
-//         use test_log::test;
-//         use tracing::{self as tea, instrument};
+#[cfg(test)]
+mod tests {
+        use indoc::indoc;
+        use quickcheck::TestResult;
+        use quickcheck_macros::quickcheck;
+        use rand::Rng;
+        use test_log::test;
+        use tracing::{self as tea, instrument};
 
-//         use super::*;
-//         use crate::{EXAMPLE_INPUT, FINAL_INPUT};
+        use super::*;
+        use crate::{EXAMPLE_INPUT, FINAL_INPUT};
 
-//         #[test]
-//         #[instrument]
-//         fn test_process_example() -> Result<()> {
-//                 let input = EXAMPLE_INPUT;
-//                 let expected = todo!();
-//                 assert_eq!(process_part1(input)?, expected);
-//                 Ok(())
-//         }
+        #[test]
+        #[instrument]
+        fn part1_example_input_test() -> Result<()> {
+                let input = EXAMPLE_INPUT;
+                let expected = 161;
+                assert_eq!(process_part1(input)?, expected);
+                Ok(())
+        }
 
-//         // /// Test's expected value to be populated after solution verification.
-//         // /// NOTE: `#[ignore]` is set for this test by default.
-//         // #[ignore]
-//         // #[test]
-//         // fn test_process_problem_input() -> Result<()> {
-//         //         tracing_subscriber::fmt::init();
-//         //         let input = FINAL_INPUT;
-//         //         let expected = todo!();
-//         //         assert_eq!(process_part1(input)?, expected);
-//         //         Ok(())
-//         // }
-// }
+        #[test]
+        #[instrument]
+        fn part1_final_input_test() -> Result<()> {
+                let input = FINAL_INPUT;
+                let expected = 184_511_516;
+                assert_eq!(process_part1(input)?, expected);
+                Ok(())
+        }
+        // /// Test's expected value to be populated after solution verification.
+        // /// NOTE: `#[ignore]` is set for this test by default.
+        // #[ignore]
+        // #[test]
+        // fn test_process_problem_input() -> Result<()> {
+        //         tracing_subscriber::fmt::init();
+        //         let input = FINAL_INPUT;
+        //         let expected = todo!();
+        //         assert_eq!(process_part1(input)?, expected);
+        //         Ok(())
+        // }
+}

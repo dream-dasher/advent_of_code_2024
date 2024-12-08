@@ -1,7 +1,7 @@
 # Day03 Notes (README) for Advent of Code 2023
 
 ## Solutions
-- Part1:
+- Part1: 184511516 (`184_511_516`)
 - Part2:
 
 ### Methods, General

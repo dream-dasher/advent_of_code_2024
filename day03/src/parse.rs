@@ -67,7 +67,7 @@ mod tests {
 
         #[test]
         #[instrument]
-        fn parse_example() -> Result<()> {
+        fn parse_example_test() -> Result<()> {
                 tea::warn!("--------------Running test_example---------------");
                 let input = indoc!("
                         xmul(1,2)%&mul[3,7]!@^do_not_mul(3,4)+mul(32,64]then(mul(5,6)mul(7,8))
@@ -105,7 +105,7 @@ mod tests {
 
         #[quickcheck]
         #[instrument]
-        fn qc_example_quickcheck(inp_pairs: Vec<(u64, u64)>) -> TestResult {
+        fn qc_example_quickcheck_test(inp_pairs: Vec<(u64, u64)>) -> TestResult {
                 tea::debug!("--------------Running qc_example_quickcheck---------------");
                 tea::debug!(?inp_pairs);
                 let inp_string = clean_input_generator(inp_pairs.clone()).unwrap_or_else(|e| {
