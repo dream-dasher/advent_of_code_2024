@@ -248,7 +248,7 @@ If the number of operations were large enough it would benefit.  (But they seem 
 
 **Other optimizations**:
 - we're doing a lot of semi-small problems
-  - of course we can parallelize each one (really eating up an parallelization utility of the above solution approach actually 🤷)
+  - of course we can parallelize each one (really eating up any parallelization utility of the above solution approach actually 🤷)
   - chances of precise repetition of subsequences seems low (but we could store all possible values)
   - we could ... round and bound ... allowing reuse of pruning information broadly ... not sure if worth, but doable
 
