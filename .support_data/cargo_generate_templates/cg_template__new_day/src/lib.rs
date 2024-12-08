@@ -21,6 +21,9 @@ mod parse {
         use crate::Result;
 
         /// Parse txt input ...
+        ///
+        /// ## External:
+        /// [regex101](https://regex101.com)
         #[instrument(skip_all, ret(level = Level::TRACE))]
         #[expect(unused)]
         pub fn parse_input(raw_input: &str) -> Result<()> {
