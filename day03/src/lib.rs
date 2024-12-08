@@ -1,4 +1,4 @@
-//! Library code for {{ project-name | title_case }} of Advent of Code 2024.
+//! Library code for Day03 of Advent of Code 2024.
 
 mod part1_lib;
 mod part2_lib;
@@ -20,11 +20,11 @@ mod parse {
 
         use crate::Result;
 
-        /// Parse txt input ...
+        /// Parse txt input: extracting number pairs from text.
         #[instrument(skip_all, ret(level = Level::TRACE))]
         #[expect(unused)]
         pub fn parse_input(raw_input: &str) -> Result<()> {
-                const REGEX: &str = r"";
+                const REGEX: &str = r"mul((?<left_num>\d+),(?<right_num>\d+))";
                 todo!()
         }
 
