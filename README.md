@@ -258,7 +258,8 @@ If the number of operations were large enough it would benefit.  (But they seem 
   - could also do saturating mul or 'erring -- I imagine using u128 would be faster, but have never compared
 
 ## Day 8: [Resonant Collinearity]https://adventofcode.com/2024/day/8) : [----]()
-- P1: tuples of distances at each point, marking section that have the 2x:x ratio for certain indices ("insideness" my also need to be checked)  (**perf**: just calculate "anti-node distances" and check for inclusion & overlap)
+- P1: tuples of distances at each point, marking section that have the 2x:x ratio for certain indices ("insideness" my also need to be checked)
+  - (**perf**: just calculate "anti-node distances" and check for inclusion & overlap)
 **Questions**:
   - distance is Manhattan, I think
   - the problems explicitly says there are "for any pair ... there are **two** [special locations], one on either side of them" ... but this is untrue generally. Ignoring discretizatoin there would be **four**: two inside and two outside. (where special is "in - line" an with "2:1" distance)
@@ -272,41 +273,40 @@ No inner "anti-nodes":
  # 1  2  3  4  5  6  7  8  9
  9  8  7  6  5  4  3  2  1  #
 ```
-Inner "anti-nodes":  
+Inner "anti-nodes":
 `d = x + 2x`  
 i.e. `d ∈ {3n}` (1/3 of distances)  
 ```
-(3)  #  1  2  3
-     3  2  1  #
-        *  *
-(6)  #  1  2  3  4  5  6
-     6  5  4  3  2  1  #
-           *     *
-(9) #  1  2  3  4  5  6  7  8  9
-    9  8  7  6  5  4  3  2  1  #
-             *        *
-(12) #  1  2  3  4  5  6  7  8  9  0  1  2
-     2  1  0  9  8  7  6  5  4  3  2  1  #
-                 *           *
+(3)  |#  1  2  3|
+     |3  2  1  #|
+         *  *
+(6)  |#  1  2  3  4  5  6|
+     |6  5  4  3  2  1  #|
+            *     *
+(9)  |#  1  2  3  4  5  6  7  8  9|
+     |9  8  7  6  5  4  3  2  1  #|
+               *        *
+(12) |#  1  2  3  4  5  6  7  8  9  0  1  2|
+     |2  1  0  9  8  7  6  5  4  3  2  1  #|
+                  *           *
 ```
 
-Outer "anti-nodes":  
+Outer "anti-nodes":
  `d = x + x`  
- i.e. `d ∈ {n}` (all distances)  
+ i.e. `d ∈ {n}` (all distances)
 **NOTE**: there will be no further "anti-nodes" due to the share distance offset of all further locations
-
 ```
-(1)  1 |#  1 
-     2 |1  # 
-     *       
-(2)  2  1 |#  1  2
-     4  3 |2  1  #
-     *          
-(3)  3  2  1 |#  1  2  3
-     6  5  4 |3  2  1  #
-     *          
-(4)  4  3  2  1 |#  1  2  3  4
-     8  7  6  5 |4  3  2  1  #
+(1)           1 |#  1|
+              2 |1  #|
+              *
+(2)        2  1 |#  1  2|
+           4  3 |2  1  #|
+           *
+(3)     3  2  1 |#  1  2  3|
+        6  5  4 |3  2  1  #|
+        *
+(4)  4  3  2  1 |#  1  2  3  4|
+     8  7  6  5 |4  3  2  1  #|
      *
 ```
 
