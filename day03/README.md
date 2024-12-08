@@ -2,7 +2,7 @@
 
 ## Solutions
 - Part1: 184511516 (`184_511_516`)
-- Part2:
+- Part2: 90044227 (`90_044_227`)
 
 ### Methods, General
 -

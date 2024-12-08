@@ -3,45 +3,48 @@
 
 use tracing::{self as tea, Level, instrument};
 
-use crate::{Result, parse::parse_input_2};
+use crate::{MulPair, Result, parse::parse_input_2};
 
 #[instrument(skip_all, ret(level = Level::DEBUG))]
 pub fn process_part2(input: &str) -> Result<u64> {
         tea::trace!(%input);
-        let _parsed_input = parse_input_2(input)?;
-        todo!();
+        let parsed_input = parse_input_2(input)?;
+        Ok(calculate_solution(parsed_input))
 }
 
-// #[cfg(test)]
-// mod tests {
-//         use indoc::indoc;
-//         use quickcheck::TestResult;
-//         use quickcheck_macros::quickcheck;
-//         use rand::Rng;
-//         use test_log::test;
-//         use tracing::{self as tea, instrument};
+/// Process solution on prased input.
+#[instrument(skip_all, ret(level = Level::DEBUG))]
+fn calculate_solution(pairs_vec: Vec<MulPair>) -> u64 {
+        pairs_vec
+                .iter()
+                .map(|pair| pair.self_multiply())
+                .inspect(|mul_pair| tea::debug!(mul_pair))
+                .sum()
+}
 
-//         use super::*;
-//         use crate::{EXAMPLE_INPUT, FINAL_INPUT};
+#[cfg(test)]
+mod tests {
+        use test_log::test;
+        use tracing::instrument;
 
-//         #[test]
-//         #[instrument]
-//         fn test_process_example() -> Result<()> {
-//                 let input = EXAMPLE_INPUT;
-//                 let expected = todo!();
-//                 assert_eq!(process_part2(input)?, expected);
-//                 Ok(())
-//         }
+        use super::*;
+        use crate::{EXAMPLE_INPUT_2, FINAL_INPUT};
 
-//         // /// Test's expected value to be populated after solution verification.
-//         // /// NOTE: `#[ignore]` is set for this test by default.
-//         // #[ignore]
-//         // #[test]
-//         // fn test_process_problem_input() -> Result<()> {
-//         //         tracing_subscriber::fmt::init();
-//         //         let input = FINAL_INPUT;
-//         //         let expected = todo!();
-//         //         assert_eq!(process_part2(input)?, expected);
-//         //         Ok(())
-//         // }
-// }
+        #[test]
+        #[instrument]
+        fn part2_example_input_test() -> Result<()> {
+                let input = EXAMPLE_INPUT_2;
+                let expected = 48;
+                assert_eq!(process_part2(input)?, expected);
+                Ok(())
+        }
+
+        #[test]
+        #[instrument]
+        fn part2_final_input_test() -> Result<()> {
+                let input = FINAL_INPUT;
+                let expected = 90_044_227;
+                assert_eq!(process_part2(input)?, expected);
+                Ok(())
+        }
+}
