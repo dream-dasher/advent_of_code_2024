@@ -3,5 +3,5 @@
 mod error;
 mod subscriber;
 
-pub use error::{Error, Result};
+pub use error::{ErrKindDay04, Error, Result};
 pub use subscriber::generate_tracing_subscriber;
