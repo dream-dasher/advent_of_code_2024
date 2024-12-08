@@ -21,10 +21,26 @@ mod parse {
         use crate::Result;
 
         /// Parse txt input: extracting number pairs from text.
+        /// No attention is paid to individual lines.
+        ///
+        /// ## External:
+        /// [regex101](https://regex101.com)
         #[instrument(skip_all, ret(level = Level::TRACE))]
-        #[expect(unused)]
         pub fn parse_input(raw_input: &str) -> Result<()> {
-                const REGEX: &str = r"mul((?<left_num>\d+),(?<right_num>\d+))";
+                const REGEX_MUL_PAIR: &str = r"mul\((?<left_num>\d+),(?<right_num>\d+)\)";
+                let re = Regex::new(REGEX_MUL_PAIR).expect("string should be valid regex");
+                let mult_pairs: Vec<_> = {
+                        let _enter = tea::debug_span!("Parsing").entered();
+                        re.captures_iter(raw_input)
+                                .enumerate()
+                                .map(|(i2, cap)| {
+                                        let (raw, [left_num, right_num]) = cap.extract();
+                                        tea::info!(?raw, ?left_num, ?right_num, i2);
+                                        (left_num, right_num)
+                                })
+                                .collect()
+                };
+                tea::info!(?mult_pairs);
                 todo!()
         }
 
