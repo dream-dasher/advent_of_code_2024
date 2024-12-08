@@ -28,12 +28,12 @@ mod tests {
         use tracing::instrument;
 
         use super::*;
-        use crate::{EXAMPLE_INPUT, FINAL_INPUT};
+        use crate::{EXAMPLE_INPUT_1, FINAL_INPUT};
 
         #[test]
         #[instrument]
         fn part1_example_input_test() -> Result<()> {
-                let input = EXAMPLE_INPUT;
+                let input = EXAMPLE_INPUT_1;
                 let expected = 161;
                 assert_eq!(process_part1(input)?, expected);
                 Ok(())

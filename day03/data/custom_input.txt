@@ -1,12 +1,5 @@
-
-xmul(1,2)%&mul[3,7]!@^do_not_mul(3,4)+mul(32,64]then(mul(5,6)mul(7,8))
-mul(11,22)%&mul[3,7]!@^do_not_mul(33,44)+mul(53,65]then(mul(55,66)mul(77,88))
-mul(111,222)
-mul(1111,2222)
-mul(8,
-8)
-mu
-l(9,
-9)
-mul(11111111111,222222222)
-mul(001,002)
+mul(1,1)don't()_mul(9,9)do()+mul(2,2)(mul(3,3)undo()?mul(4,4))don't()mul(9,9)on't()_mul(9,9)do()+mul(5,5)
+mul(11,11)
+don't()_mul(99,99)
+do()+mul(22,22)(mul(33,33)undo()?mul(44,44))don't()mul(99,99)
+on't()_mul(99,99)do()+mul(55,55)

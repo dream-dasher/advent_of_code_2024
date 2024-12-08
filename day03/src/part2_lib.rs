@@ -3,13 +3,12 @@
 
 use tracing::{self as tea, Level, instrument};
 
-#[expect(unused)]
-use crate::{Result, parse::parse_input_1};
+use crate::{Result, parse::parse_input_2};
 
 #[instrument(skip_all, ret(level = Level::DEBUG))]
 pub fn process_part2(input: &str) -> Result<u64> {
         tea::trace!(%input);
-        // let _parsed_input = parse_input(input)?;
+        let _parsed_input = parse_input_2(input)?;
         todo!();
 }
 
