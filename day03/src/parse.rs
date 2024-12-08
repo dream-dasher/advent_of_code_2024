@@ -29,7 +29,41 @@ impl MulPair {
 /// ## External:
 /// [regex101](https://regex101.com)
 #[instrument(skip_all, ret(level = Level::TRACE))]
-pub fn parse_input(raw_input: &str) -> Result<Vec<MulPair>> {
+pub fn parse_input_2(raw_input: &str) -> Result<Vec<MulPair>> {
+        tea::trace!(?raw_input);
+        const REGEX_DO: &str = r"do\(\)";
+        const REGEX_DONT: &str = r"don't\(\)";
+        const REGEX_MUL_PAIR: &str = r"mul\((?<left_num>\d+),(?<right_num>\d+)\)";
+        let re = Regex::new(REGEX_MUL_PAIR).expect("string should be valid regex");
+        let mult_pairs: Result<Vec<_>> = {
+                let _enter = tea::debug_span!("Parsing").entered();
+                re.captures_iter(raw_input)
+                        .enumerate()
+                        .map(|(i2, cap)| {
+                                let (raw, [left_num_str, right_num_str]) = cap.extract();
+                                tea::trace!(?raw, ?left_num_str, ?right_num_str, i2);
+                                (left_num_str, right_num_str)
+                        })
+                        .map(|(left_str, right_str)| {
+                                let left_num = left_str.parse::<u64>()?;
+                                let right_num = right_str.parse::<u64>()?;
+                                let mul_pair = MulPair::new(left_num, right_num);
+                                tea::debug!(%mul_pair);
+                                Ok(mul_pair)
+                        })
+                        .collect()
+        };
+        tea::info!(?mult_pairs);
+        mult_pairs
+}
+
+/// Parse txt input: extracting number pairs from text.
+/// No attention is paid to individual lines.
+///
+/// ## External:
+/// [regex101](https://regex101.com)
+#[instrument(skip_all, ret(level = Level::TRACE))]
+pub fn parse_input_1(raw_input: &str) -> Result<Vec<MulPair>> {
         tea::trace!(?raw_input);
         const REGEX_MUL_PAIR: &str = r"mul\((?<left_num>\d+),(?<right_num>\d+)\)";
         let re = Regex::new(REGEX_MUL_PAIR).expect("string should be valid regex");
@@ -99,7 +133,7 @@ mod tests {
                 .into_iter()
                 .map(|(left, right)| MulPair::new(left, right))
                 .collect();
-                assert_eq!(parse_input(input)?, expected);
+                assert_eq!(parse_input_1(input)?, expected);
                 Ok(())
         }
 
@@ -114,7 +148,7 @@ mod tests {
                 });
                 tea::debug!(?inp_string);
 
-                let parsed_and_deconstructed: Vec<(u64, u64)> = parse_input(&inp_string)
+                let parsed_and_deconstructed: Vec<(u64, u64)> = parse_input_1(&inp_string)
                         .unwrap()
                         .into_iter()
                         .map(|mul_pair| mul_pair.into())

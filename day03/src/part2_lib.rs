@@ -4,7 +4,7 @@
 use tracing::{self as tea, Level, instrument};
 
 #[expect(unused)]
-use crate::{Result, parse::parse_input};
+use crate::{Result, parse::parse_input_1};
 
 #[instrument(skip_all, ret(level = Level::DEBUG))]
 pub fn process_part2(input: &str) -> Result<u64> {
