@@ -13,12 +13,26 @@ pub const EXAMPLE_INPUT: &str = include_str!("../data/example_input.txt");
 pub const CUSTOM_INPUT: &str = include_str!("../data/custom_input.txt");
 
 mod parse {
-        // use derive_more::derive::{Constructor, Deref, DerefMut, From, Into};
+        use derive_more::derive::{Add, Constructor, Display, Div, From, Into, Mul, Sub};
         use indoc::indoc;
         use regex::Regex;
         use tracing::{self as tea, Level, instrument};
 
         use crate::Result;
+
+        #[derive(
+                Debug, Add, Sub, Mul, Div, Display, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Constructor, From, Into,
+        )]
+        #[display("({}, {})", left_num, right_num)]
+        pub struct MulPair {
+                left_num:  u64,
+                right_num: u64,
+        }
+        impl MulPair {
+                pub fn self_multiply(&self) -> Result<u64> {
+                        self.left_num.checked_mul(self.right_num).into()
+                }
+        }
 
         /// Parse txt input: extracting number pairs from text.
         /// No attention is paid to individual lines.
