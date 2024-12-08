@@ -3,14 +3,23 @@
 
 use tracing::{self as tea, Level, instrument};
 
-#[expect(unused)]
-use crate::{Result, parse::parse_input};
+use crate::{MulPair, Result, parse::parse_input};
 
 #[instrument(skip_all, ret(level = Level::DEBUG))]
 pub fn process_part1(input: &str) -> Result<u64> {
         tea::trace!(%input);
-        let _parsed_input = parse_input(input)?;
-        todo!();
+        let parsed_input = parse_input(input)?;
+        Ok(calculate_solution(parsed_input))
+}
+
+/// Process solution on prased input.
+#[instrument(skip_all, ret(level = Level::DEBUG))]
+fn calculate_solution(pairs_vec: Vec<MulPair>) -> u64 {
+        pairs_vec
+                .iter()
+                .map(|pair| pair.self_multiply())
+                .inspect(|mul_pair| tea::debug!(mul_pair))
+                .sum()
 }
 
 // #[cfg(test)]
