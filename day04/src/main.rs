@@ -45,7 +45,7 @@ pub enum Input {
 }
 
 fn main() -> Result<()> {
-        tea::subscriber::set_global_default(generate_tracing_subscriber())?;
+        tracing::subscriber::set_global_default(generate_tracing_subscriber())?;
         let _enter = tea::debug_span!("main()").entered();
         tea::trace!("tracing subscriber set");
         let cli_user_args = Args::parse();
