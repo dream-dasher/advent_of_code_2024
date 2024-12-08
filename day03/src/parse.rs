@@ -26,6 +26,37 @@ impl MulPair {
 }
 
 /// Parse txt input: extracting number pairs from text.
+/// No attention is paid to individual lines.
+///
+/// ## External:
+/// [regex101](https://regex101.com)
+#[instrument(skip_all, ret(level = Level::TRACE))]
+pub fn parse_input_1(raw_input: &str) -> Result<Vec<MulPair>> {
+        tea::trace!(?raw_input);
+        let re = Regex::new(REGEX_MUL_PAIR).expect("regex compilation");
+        let mult_pairs: Result<Vec<_>> = {
+                let _enter = tea::debug_span!("Parsing").entered();
+                re.captures_iter(raw_input)
+                        .enumerate()
+                        .map(|(i2, cap)| {
+                                let (raw, [left_num_str, right_num_str]) = cap.extract();
+                                tea::trace!(?raw, ?left_num_str, ?right_num_str, i2);
+                                (left_num_str, right_num_str)
+                        })
+                        .map(|(left_str, right_str)| {
+                                let left_num = left_str.parse::<u64>()?;
+                                let right_num = right_str.parse::<u64>()?;
+                                let mul_pair = MulPair::new(left_num, right_num);
+                                tea::debug!(%mul_pair);
+                                Ok(mul_pair)
+                        })
+                        .collect()
+        };
+        tea::info!(?mult_pairs);
+        mult_pairs
+}
+
+/// Parse txt input: extracting number pairs from text.
 ///
 /// ## Implementation:
 /// Splitting at "do()", so all substrings are start of string or `do()` prefixed.
@@ -64,37 +95,6 @@ pub fn parse_input_2(raw_input: &str) -> Result<Vec<MulPair>> {
                         .collect()
         };
         mult_pairs_do
-}
-
-/// Parse txt input: extracting number pairs from text.
-/// No attention is paid to individual lines.
-///
-/// ## External:
-/// [regex101](https://regex101.com)
-#[instrument(skip_all, ret(level = Level::TRACE))]
-pub fn parse_input_1(raw_input: &str) -> Result<Vec<MulPair>> {
-        tea::trace!(?raw_input);
-        let re = Regex::new(REGEX_MUL_PAIR).expect("regex compilation");
-        let mult_pairs: Result<Vec<_>> = {
-                let _enter = tea::debug_span!("Parsing").entered();
-                re.captures_iter(raw_input)
-                        .enumerate()
-                        .map(|(i2, cap)| {
-                                let (raw, [left_num_str, right_num_str]) = cap.extract();
-                                tea::trace!(?raw, ?left_num_str, ?right_num_str, i2);
-                                (left_num_str, right_num_str)
-                        })
-                        .map(|(left_str, right_str)| {
-                                let left_num = left_str.parse::<u64>()?;
-                                let right_num = right_str.parse::<u64>()?;
-                                let mul_pair = MulPair::new(left_num, right_num);
-                                tea::debug!(%mul_pair);
-                                Ok(mul_pair)
-                        })
-                        .collect()
-        };
-        tea::info!(?mult_pairs);
-        mult_pairs
 }
 
 #[cfg(test)]
