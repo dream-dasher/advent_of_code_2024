@@ -21,7 +21,9 @@ pub fn process_part2(input: &str) -> Result<u64> {
                         source_input: (input.to_string()),
                 })?
                 .len();
-        recursive_regex_search(input, row_length)
+        let mut total = 0;
+        recursive_regex_search(input, &mut total, &row_length)?;
+        Ok(total)
 }
 
 /// Count patterns using a simple regex, recursively re-calling it with start position shifted to allow pattern overlap.
@@ -38,7 +40,7 @@ pub fn process_part2(input: &str) -> Result<u64> {
 /// - Adaptation of the custom state machine used in Part_1
 /// - Is error handling code (which bubbles up the recursing callers) part of the issue?
 #[instrument(ret(level = Level::TRACE))]
-pub fn recursive_regex_search(raw_input: &str, row_length: usize) -> Result<u64> {
+pub fn recursive_regex_search(raw_input: &str, mut total: &mut u64, row_length: &usize) -> Result<()> {
         let regex_mas_sized = format!(
                 r"(M.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.S|M.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.S|S.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.M|S.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.M)",
                 r_minus_one = row_length - 1
@@ -49,47 +51,59 @@ pub fn recursive_regex_search(raw_input: &str, row_length: usize) -> Result<u64>
 
         let Some(found_match) = re.find(raw_input) else {
                 tea::debug!("No more matches found. Starting return sequence.");
-                return Ok(0);
+                // return Ok(0);
+                return Ok(());
         };
-
-        let mut count = 1;
         let match_start_position = found_match.start();
-        tea::info!(match_start_position);
-        count += recursive_regex_search(&raw_input[match_start_position + 1..], row_length)?;
-        tea::info!(?found_match);
-        Ok(count)
+        tea::info!(match_start_position, ?found_match);
+        // Ok(1 + recursive_regex_search(&raw_input[match_start_position + 1..], row_length)?)
+        *total += 1;
+        // spawn in new thread
+        recursive_regex_search(&raw_input[match_start_position + 1..], &mut total, row_length)?;
+        Ok(())
 }
 
-// #[cfg(test)]
-// mod tests {
-//         use indoc::indoc;
-//         use quickcheck::TestResult;
-//         use quickcheck_macros::quickcheck;
-//         use rand::Rng;
-//         use test_log::test;
-//         use tracing::{self as tea, instrument};
+#[cfg(test)]
+mod tests {
+        use indoc::indoc;
+        use test_log::test;
+        #[expect(unused)]
+        use tracing::{self as tea, instrument};
 
-//         use super::*;
-//         use crate::{EXAMPLE_INPUT, FINAL_INPUT};
+        use super::*;
+        use crate::{EXAMPLE_INPUT_2, FINAL_INPUT};
 
-//         #[test]
-//         #[instrument]
-//         fn test_process_example() -> Result<()> {
-//                 let input = EXAMPLE_INPUT;
-//                 let expected = todo!();
-//                 assert_eq!(process_part2(input)?, expected);
-//                 Ok(())
-//         }
+        // #[test]
+        // #[instrument]
+        // fn count_example_test() -> Result<()> {
+        //         let input = indoc!("
+        //                 XXXXXX
+        //                 XSAMXX
+        //                 XAXXAX
+        //                 XMASXS
+        //                 XXXXXX
+        //                 ");
+        //         let expected = 4;
+        //         assert_eq!(process_part2(input)?, expected);
+        //         Ok(())
+        // }
 
-//         // /// Test's expected value to be populated after solution verification.
-//         // /// NOTE: `#[ignore]` is set for this test by default.
-//         // #[ignore]
-//         // #[test]
-//         // fn test_process_problem_input() -> Result<()> {
-//         //         tracing_subscriber::fmt::init();
-//         //         let input = FINAL_INPUT;
-//         //         let expected = todo!();
-//         //         assert_eq!(process_part2(input)?, expected);
-//         //         Ok(())
-//         // }
-// }
+        #[test]
+        #[instrument]
+        fn part2_example_input_test() -> Result<()> {
+                let input = EXAMPLE_INPUT_2;
+                let expected = 9;
+                assert_eq!(process_part2(input)?, expected);
+                Ok(())
+        }
+
+        #[test]
+        #[instrument]
+        // stack overflow -- related to running debug code presumably
+        fn part2_final_input_test() -> Result<()> {
+                let input = FINAL_INPUT;
+                let expected = 1_910;
+                assert_eq!(process_part2(input)?, expected);
+                Ok(())
+        }
+}
