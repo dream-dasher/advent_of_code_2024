@@ -159,8 +159,7 @@ mod tests {
         use tracing::{self as tea, instrument};
 
         use super::*;
-        #[expect(unused)]
-        use crate::{EXAMPLE_INPUT, FINAL_INPUT};
+        use crate::{EXAMPLE_INPUT_1, FINAL_INPUT};
 
         #[test]
         #[instrument]
@@ -199,7 +198,7 @@ mod tests {
         #[test]
         #[instrument]
         fn part1_example_input_test() -> Result<()> {
-                let input = EXAMPLE_INPUT;
+                let input = EXAMPLE_INPUT_1;
                 let hor_expected = 5;
                 let vert_expected = 3;
                 let diag_bltr_expected = 5;
