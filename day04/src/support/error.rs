@@ -65,6 +65,7 @@ where
         }
 }
 
+#[expect(dead_code)]
 trait ToOther {
         fn to_other(self) -> ErrWrapper;
 }

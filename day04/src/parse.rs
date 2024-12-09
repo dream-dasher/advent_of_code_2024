@@ -1,10 +1,6 @@
 //! Raw-input parsing code for Day04 of Advent of Code 2024.
 
-use std::ascii;
-
-use derive_more::derive::{Constructor, Display, FromStr, Index, IntoIterator};
-use indoc::indoc;
-use regex::Regex;
+use derive_more::derive::{Constructor, FromStr, Index, IntoIterator};
 use tracing::{self as tea, Level, instrument};
 
 use crate::{ErrKindDay04, Result};
@@ -19,10 +15,12 @@ pub fn parse_input(raw_input: &str) -> Result<CWordPuzzle> {
 pub struct CWordPuzzle {
         pub horizontal_view: Vec<CWordLine>,
         vertical_view:       Vec<CWordLine>,
-        diagonal_view:       Vec<CWordLine>,
+        bltr_diagonal_view:  Vec<CWordLine>,
+        brtl_diagonal_view:  Vec<CWordLine>,
 }
 impl CWordPuzzle {
         /// Parse a string into a CWordPuzzle.
+        #[instrument(skip_all, ret(level = Level::DEBUG))]
         pub fn from_str<S>(strable_inp: S) -> Result<Self>
         where
                 S: AsRef<str>,
@@ -40,13 +38,15 @@ impl CWordPuzzle {
 
                 // transpose of horizontal
                 let mut vertical_view: Vec<CWordLine> = Vec::new();
-                for col in 0..num_cols {
-                        let mut vview_line = CWordLine::new_empty(Some(num_rows));
-                        #[expect(clippy::needless_range_loop)]
-                        for row in 0..num_rows {
-                                vview_line.push(horizontal_view[row][col]);
+                {
+                        for col in 0..num_cols {
+                                let mut vview_line = CWordLine::new_empty(Some(num_rows));
+                                #[expect(clippy::needless_range_loop)]
+                                for row in 0..num_rows {
+                                        vview_line.push(horizontal_view[row][col]);
+                                }
+                                vertical_view.push(vview_line);
                         }
-                        vertical_view.push(vview_line);
                 }
 
                 // walk bottom-left perimeter
@@ -55,44 +55,109 @@ impl CWordPuzzle {
                 // 20
                 // 30
                 // 40 41 42 43
-                let mut diagonal_view: Vec<CWordLine> = Vec::new();
-
-                // walk left rows
-                for row_head in 0..num_rows {
-                        let (base_row, base_col) = (row_head, 0);
-                        let diag_len = (row_head + 1).min(num_cols);
-                        let mut dview_line = CWordLine::new_empty(Some(diag_len));
-                        // 00
-                        // 10 01
-                        // 20 11 02
-                        // 30 21 12 03
-                        // 40 31 22 13
-                        for offset in 0..diag_len {
-                                dview_line.push(horizontal_view[base_row - offset][base_col + offset]);
+                let mut bltr_diagonal_view: Vec<CWordLine> = Vec::new();
+                {
+                        // walk left rows
+                        for row_head in 0..num_rows {
+                                let (base_row, base_col) = (row_head, 0);
+                                let diag_len = (row_head + 1).min(num_cols);
+                                let mut dview_line = CWordLine::new_empty(Some(diag_len));
+                                // 00
+                                // 10 01
+                                // 20 11 02
+                                // 30 21 12 03
+                                // 40 31 22 13
+                                for offset in 0..diag_len {
+                                        dview_line.push(horizontal_view[base_row - offset][base_col + offset]);
+                                }
+                                bltr_diagonal_view.push(dview_line);
                         }
-                        diagonal_view.push(dview_line);
+                        // walk bottom columns (excluding the first, which was cisted)
+                        for col_end in 1..num_cols {
+                                let (base_row, base_col) = (num_rows - 1, col_end);
+                                let diag_len = (num_cols - col_end).min(num_rows);
+                                let mut dview_line = CWordLine::new_empty(Some(diag_len));
+                                // 41 32 23
+                                // 42 33
+                                // 43
+                                for offset in 0..diag_len {
+                                        dview_line.push(horizontal_view[base_row - offset][base_col + offset]);
+                                }
+                                bltr_diagonal_view.push(dview_line);
+                        }
                 }
-                // walk bottom columns (excluding the first, which was cisted)
-                for col_end in 1..num_cols {
-                        let (base_row, base_col) = (num_rows - 1, col_end);
-                        let diag_len = (num_cols - col_end).min(num_rows);
-                        let mut dview_line = CWordLine::new_empty(Some(diag_len));
-                        // 41 32 23
-                        // 42 33
-                        // 43
-                        for offset in 0..diag_len {
-                                dview_line.push(horizontal_view[base_row - offset][base_col + offset]);
+
+                // walk bottom-right perimeter
+                // 00       03
+                //          13
+                //          23
+                //          33
+                // 40 41 42 43
+                let mut brtl_diagonal_view: Vec<CWordLine> = Vec::new();
+                {
+                        // walk left rows
+                        for row_head in 0..num_rows {
+                                let (base_row, base_col) = (row_head, num_cols - 1);
+                                let diag_len = (row_head + 1).min(num_cols);
+                                let mut dview_line = CWordLine::new_empty(Some(diag_len));
+                                // 03
+                                // 13 02
+                                // 23 12 01
+                                // 33 22 11 00
+                                // 43 32 21 10
+                                for offset in 0..diag_len {
+                                        dview_line.push(horizontal_view[base_row - offset][base_col - offset]);
+                                }
+                                brtl_diagonal_view.push(dview_line);
                         }
-                        diagonal_view.push(dview_line);
+                        // walk bottom columns (excluding the first, which was cisted)
+                        for col_end in 1..num_cols {
+                                let (base_row, base_col) = (num_rows - 1, num_cols - 1 - col_end);
+                                let diag_len = (num_cols - col_end).min(num_rows);
+                                let mut dview_line = CWordLine::new_empty(Some(diag_len));
+                                // 42 31 22
+                                // 41 30
+                                // 40
+                                for offset in 0..diag_len {
+                                        dview_line.push(horizontal_view[base_row - offset][base_col - offset]);
+                                }
+                                brtl_diagonal_view.push(dview_line);
+                        }
                 }
                 Ok(CWordPuzzle {
                         horizontal_view,
                         vertical_view,
-                        diagonal_view,
+                        bltr_diagonal_view,
+                        brtl_diagonal_view,
                 })
         }
 
-        /// Provides a copy of the puzzle in canonical (row, column) form.
+        /// Provides a reference to the horizontal view
+        #[instrument(skip_all)]
+        pub fn get_horizontal_view(&self) -> &Vec<CWordLine> {
+                &self.horizontal_view
+        }
+
+        /// Provides a reference to the vertical view
+        #[instrument(skip_all)]
+        pub fn get_vertical_view(&self) -> &Vec<CWordLine> {
+                &self.vertical_view
+        }
+
+        /// Provides a reference to the diagonal view (bottom-left to top-right)
+        #[instrument(skip_all)]
+        pub fn get_diagonal_view_bltr(&self) -> &Vec<CWordLine> {
+                &self.bltr_diagonal_view
+        }
+
+        /// Provides a reference to the diagonal view (bottom-right to top-left)
+        #[instrument(skip_all)]
+        pub fn get_diagonal_view_brtl(&self) -> &Vec<CWordLine> {
+                &self.brtl_diagonal_view
+        }
+
+        /// Provides a clone of the puzzle in canonical (row, column) form.
+        #[instrument(skip_all)]
         pub fn canonical_view(&self) -> Vec<CWordLine> {
                 self.horizontal_view.clone()
         }
@@ -113,6 +178,7 @@ pub struct CWordLine {
 }
 impl CWordLine {
         /// Turn a String into a CWordLine.
+        #[instrument(skip_all, ret(level = Level::DEBUG))]
         fn from_str<S>(strable_inp: S) -> Result<Self>
         where
                 S: AsRef<str>,
@@ -138,6 +204,7 @@ impl CWordLine {
         }
 
         /// Create a new empty CWordLine. Optionally specify the length.
+        #[instrument(skip_all)]
         fn new_empty(length: Option<usize>) -> Self {
                 match length {
                         Some(len) => CWordLine {
@@ -148,6 +215,7 @@ impl CWordLine {
         }
 
         /// Push a CWordChar onto the CWordLine.
+        #[instrument(skip_all)]
         fn push(&mut self, cw_char: CWordChar) {
                 self.chars.push(cw_char);
         }
