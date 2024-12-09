@@ -1,5 +1,6 @@
 # rustfmt.toml
-## web description of options: https://rust-lang.github.io/rustfmt/?version=v1.6.0&search=
+## web description of options:
+## https://rust-lang.github.io/rustfmt/?version=master&search=
 
 # required_version   # specify rustfmt version requirement
 # ignore = []        # files for rustfmt to ignore
