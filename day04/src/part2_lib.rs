@@ -3,17 +3,19 @@
 
 use tracing::{self as tea, Level, instrument};
 
-#[expect(unused)]
-use crate::{Result, parse::parse_input_2};
+use crate::{ErrKindDay04, Result, parse::parse_input_2};
 
 #[instrument(skip_all, ret(level = Level::DEBUG))]
 pub fn process_part2(input: &str) -> Result<u64> {
         tea::trace!(%input);
-        let example_count = parse_input_2(input, 10, None)?;
-        println!("Example count: {}", example_count);
-        let final_count = parse_input_2(input, 140, None)?;
-        println!("Final Count: {}", final_count);
-        todo!();
+        let row_length = input
+                .lines()
+                .next()
+                .ok_or(ErrKindDay04::NoInputLines {
+                        source_input: (input.to_string()),
+                })?
+                .len();
+        parse_input_2(input, row_length, None)
 }
 
 // #[cfg(test)]

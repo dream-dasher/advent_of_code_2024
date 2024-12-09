@@ -14,6 +14,8 @@ pub enum ErrKindDay04 {
         #[from(ignore)]
         #[display("error parsing char: {}", uninterpretable_char)]
         CWCharParse { uninterpretable_char: char },
+        #[display("Error extracting lines from input: {}", source_input)]
+        NoInputLines { source_input: String },
         // #[display("parse error: {}", source)]
         // Parse { source: num::ParseIntError },
         // #[display("env variable error: {}", source)]
