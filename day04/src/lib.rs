@@ -5,7 +5,7 @@ mod part1_lib;
 mod part2_lib;
 mod support;
 
-pub use parse::parse_input;
+pub use parse::{parse_input_1, parse_input_2};
 pub use part1_lib::process_part1;
 pub use part2_lib::process_part2;
 pub use support::{ErrKindDay04, Error, Result, generate_tracing_subscriber};

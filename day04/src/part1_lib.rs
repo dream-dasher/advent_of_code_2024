@@ -5,12 +5,12 @@ use derive_more::derive::Display;
 use tracing::{self as tea, Level, instrument};
 
 use crate::{Result,
-            parse::{CWordChar, CWordLine, CWordPuzzle, parse_input}};
+            parse::{CWordChar, CWordLine, CWordPuzzle, parse_input_1}};
 
 #[instrument(skip_all, ret(level = Level::DEBUG))]
 pub fn process_part1(input: &str) -> Result<u64> {
         tea::trace!(%input);
-        let puzzle = parse_input(input)?;
+        let puzzle = parse_input_1(input)?;
         let (h, v, dbl, dbr) = puzzle.count_rotations();
         Ok(h + v + dbl + dbr)
 }
@@ -172,7 +172,7 @@ mod tests {
                         XXXXXMAS
                         ");
                 let expected_horizontal_count = 7;
-                let horizontal_view = parse_input(input)?.canonical_view();
+                let horizontal_view = parse_input_1(input)?.canonical_view();
                 let horizontal_count = SearchStateMachine::new().count_xmas(&horizontal_view);
 
                 assert_eq!(horizontal_count, expected_horizontal_count);
@@ -203,7 +203,7 @@ mod tests {
                 let vert_expected = 3;
                 let diag_bltr_expected = 5;
                 let diag_brtl_expected = 5;
-                let (h, v, dbl, dbr) = parse_input(input)?.count_rotations();
+                let (h, v, dbl, dbr) = parse_input_1(input)?.count_rotations();
 
                 assert_eq!(
                         (hor_expected, vert_expected, diag_bltr_expected, diag_brtl_expected),
