@@ -2,7 +2,7 @@
 
 use std::ascii;
 
-use derive_more::derive::{Constructor, Display, FromStr, IntoIterator};
+use derive_more::derive::{Constructor, Display, FromStr, Index, IntoIterator};
 use indoc::indoc;
 use regex::Regex;
 use tracing::{self as tea, Level, instrument};
@@ -11,14 +11,15 @@ use crate::{ErrKindDay04, Result};
 
 /// Only valid chars in the CrossWordInput.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, FromStr)]
-enum CWordChar {
+pub enum CWordChar {
         X,
         M,
         A,
         S,
 }
-#[derive(Debug, Clone, PartialEq, Eq, Constructor, IntoIterator)]
-struct CWordLine {
+#[derive(Debug, Clone, PartialEq, Eq, Constructor, IntoIterator, Index)]
+pub struct CWordLine {
+        #[into_iterator(owned, ref, ref_mut)]
         chars: Vec<CWordChar>,
 }
 impl CWordLine {
@@ -47,110 +48,31 @@ impl CWordLine {
                 Ok(CWordLine { chars: cw_chars })
         }
 
-        fn push(&mut self, cw_char: CWordChar) {
-                self.chars.push(cw_char);
-        }
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Display)]
-struct SearchStateMachine {
-        state: SearchState,
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Display)]
-enum SearchState {
-        Null,
-        X,
-        XM,
-        XMA,
-        S,
-        SA,
-        SAM,
-        Found,
-}
-impl SearchStateMachine {
-        /// Start a new `XMAS|SMAX` search state machine from a null value.
-        fn new() -> Self {
-                SearchStateMachine {
-                        state: SearchState::Null,
+        /// Create a new empty CWordLine. Optionally specify the length.
+        fn new_empty(length: Option<usize>) -> Self {
+                match length {
+                        Some(len) => CWordLine {
+                                chars: Vec::with_capacity(len),
+                        },
+                        None => CWordLine { chars: Vec::new() },
                 }
         }
 
-        /// Advance the SearchStaateMachine by one char. Return the new state of the machine.
-        ///
-        /// ## Note
-        /// `Found` & `Null` are equivalent for traversal logic.
-        /// It's up to the caller to operate based on the distinction.
-        fn next(&mut self, cw_char: &CWordChar) -> SearchState {
-                let new_state = match (&cw_char, self.state) {
-                        (CWordChar::X, SearchState::Null | SearchState::Found) => SearchState::X,
-                        (CWordChar::M, SearchState::X) => SearchState::XM,
-                        (CWordChar::A, SearchState::XM) => SearchState::XMA,
-                        (CWordChar::S, SearchState::XMA) => SearchState::Found,
-                        //
-                        (CWordChar::S, SearchState::Null | SearchState::Found) => SearchState::S,
-                        (CWordChar::A, SearchState::S) => SearchState::SA,
-                        (CWordChar::M, SearchState::SA) => SearchState::SAM,
-                        (CWordChar::X, SearchState::SAM) => SearchState::Found,
-                        //
-                        _ => SearchState::Null,
-                };
-
-                self.state = new_state;
-                new_state
-        }
-
-        /// Show the state that the SearchStateMachine would enter
-        ///
-        /// ## Note
-        /// `Found` & `Null` are equivalent for traversal logic.
-        /// It's up to the caller to operate based on the distinction.
-        fn preview_next(&self, cw_char: &CWordChar) -> SearchState {
-                let new_state = match (&cw_char, self.state) {
-                        (CWordChar::X, SearchState::Null | SearchState::Found) => SearchState::X,
-                        (CWordChar::M, SearchState::X) => SearchState::XM,
-                        (CWordChar::A, SearchState::XM) => SearchState::XMA,
-                        (CWordChar::S, SearchState::XMA) => SearchState::Found,
-                        //
-                        (CWordChar::S, SearchState::Null | SearchState::Found) => SearchState::S,
-                        (CWordChar::A, SearchState::S) => SearchState::SA,
-                        (CWordChar::M, SearchState::SA) => SearchState::SAM,
-                        (CWordChar::X, SearchState::SAM) => SearchState::Found,
-                        //
-                        _ => SearchState::Null,
-                };
-
-                new_state
-        }
-
-        /// Consume a SearchStateMachine and CWordChar and produce a new, advanced, SearchStateMachine.
-        ///
-        /// ## Note
-        /// `Found` & `Null` are equivalent for traversal logic.
-        /// It's up to the caller to operate based on the distinction.
-        fn evolve(mut self, cw_char: &CWordChar) -> SearchStateMachine {
-                let new_state = match (&cw_char, self.state) {
-                        (CWordChar::X, SearchState::Null | SearchState::Found) => SearchState::X,
-                        (CWordChar::M, SearchState::X) => SearchState::XM,
-                        (CWordChar::A, SearchState::XM) => SearchState::XMA,
-                        (CWordChar::S, SearchState::XMA) => SearchState::Found,
-                        //
-                        (CWordChar::S, SearchState::Null | SearchState::Found) => SearchState::S,
-                        (CWordChar::A, SearchState::S) => SearchState::SA,
-                        (CWordChar::M, SearchState::SA) => SearchState::SAM,
-                        (CWordChar::X, SearchState::SAM) => SearchState::Found,
-                        //
-                        _ => SearchState::Null,
-                };
-
-                self.state = new_state;
-                self
+        /// Push a CWordChar onto the CWordLine.
+        fn push(&mut self, cw_char: CWordChar) {
+                self.chars.push(cw_char);
         }
 }
 
 /// Parse txt input ...
 #[instrument(skip_all, ret(level = Level::TRACE))]
-pub fn parse_input(raw_input: &str) -> Result<()> {
-        // raw_input.lines().map(|line|line.chars().collect::<Vec<ascii::Char>())
-        todo!()
+pub fn parse_input(raw_input: &str) -> Result<Vec<CWordLine>> {
+        raw_input
+                .lines()
+                .inspect(|line| tea::debug!(?line))
+                .map(CWordLine::from_str)
+                .inspect(|c_line| tea::debug!(?c_line))
+                .collect()
 }
 
 /// Example use of regex crate capture for parsing.
