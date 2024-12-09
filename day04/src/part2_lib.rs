@@ -21,9 +21,7 @@ pub fn process_part2(input: &str) -> Result<u64> {
                         source_input: (input.to_string()),
                 })?
                 .len();
-        let mut total = 0;
-        recursive_regex_search(input, &mut total, &row_length)?;
-        Ok(total)
+        recursive_regex_search(input, &row_length)
 }
 
 /// Count patterns using a simple regex, recursively re-calling it with start position shifted to allow pattern overlap.
@@ -40,7 +38,7 @@ pub fn process_part2(input: &str) -> Result<u64> {
 /// - Adaptation of the custom state machine used in Part_1
 /// - Is error handling code (which bubbles up the recursing callers) part of the issue?
 #[instrument(ret(level = Level::TRACE))]
-pub fn recursive_regex_search(raw_input: &str, mut total: &mut u64, row_length: &usize) -> Result<()> {
+pub fn recursive_regex_search(raw_input: &str, row_length: &usize) -> Result<u64> {
         let regex_mas_sized = format!(
                 r"(M.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.S|M.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.S|S.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.M|S.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.M)",
                 r_minus_one = row_length - 1
@@ -52,20 +50,16 @@ pub fn recursive_regex_search(raw_input: &str, mut total: &mut u64, row_length: 
         let Some(found_match) = re.find(raw_input) else {
                 tea::debug!("No more matches found. Starting return sequence.");
                 // return Ok(0);
-                return Ok(());
+                return Ok(0);
         };
         let match_start_position = found_match.start();
         tea::info!(match_start_position, ?found_match);
-        // Ok(1 + recursive_regex_search(&raw_input[match_start_position + 1..], row_length)?)
-        *total += 1;
         // spawn in new thread
-        recursive_regex_search(&raw_input[match_start_position + 1..], &mut total, row_length)?;
-        Ok(())
+        Ok(1 + recursive_regex_search(&raw_input[match_start_position + 1..], row_length)?)
 }
 
 #[cfg(test)]
 mod tests {
-        use indoc::indoc;
         use test_log::test;
         #[expect(unused)]
         use tracing::{self as tea, instrument};
