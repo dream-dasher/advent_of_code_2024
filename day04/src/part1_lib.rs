@@ -5,7 +5,7 @@ use derive_more::derive::Display;
 use tracing::{self as tea, Level, instrument};
 
 use crate::{Result,
-            parse::{CWordChar, parse_input}};
+            parse::{CWordChar, CWordLine, parse_input}};
 
 #[instrument(skip_all, ret(level = Level::DEBUG))]
 pub fn process_part1(input: &str) -> Result<u64> {
@@ -25,7 +25,9 @@ pub fn process_part1(input: &str) -> Result<u64> {
                         tea::debug!(?cw_char, ?new_state, ?i);
                 }
         }
+        let hor_count2 = SearchStateMachine::new().count_xmas(simplistic_input);
         println!("{}", hor_count);
+        println!("{}", hor_count2);
         todo!();
 }
 
@@ -46,6 +48,23 @@ enum SearchState {
         FoundSAMX,
 }
 impl SearchStateMachine {
+        /// Counts the occurrences of `XMAS` and `SAMX` on each line in a vector of `CWordLine`s.
+        pub fn count_xmas(&self, cw_lines: Vec<CWordLine>) -> u64 {
+                let mut total_finds = 0;
+                for (i, line) in cw_lines.iter().enumerate() {
+                        let _enter = tea::debug_span!("Processing, line", ?i, ?total_finds).entered();
+                        let mut search_state_machine = SearchStateMachine::new();
+                        for cw_char in line.into_iter() {
+                                let new_state = search_state_machine.next(cw_char);
+                                if new_state == SearchState::FoundXMAS || new_state == SearchState::FoundSAMX {
+                                        total_finds += 1;
+                                }
+                                tea::debug!(?cw_char, ?new_state, ?i);
+                        }
+                }
+                total_finds
+        }
+
         /// Start a new `XMAS|SMAX` search state machine from a null value.
         fn new() -> Self {
                 SearchStateMachine {
@@ -142,21 +161,21 @@ mod tests {
 
         #[test]
         #[instrument]
-        fn test_process_example() -> Result<()> {
-                let input = EXAMPLE_INPUT;
-                let expected = 18;
-                assert_eq!(process_part1(input)?, expected);
+        fn horizontal_count_example_test() -> Result<()> {
+                let input = indoc!("
+                        SAMXMASS
+                        XMASAMXX
+                        XMASSAMX
+                        XSSXXXXX
+                        XXXXXMAS
+                        ");
+                let expected_horizontal_count = 7;
+                let horizontal_view = parse_input(input)?.canonical_view();
+                let horizontal_count = SearchStateMachine::new().count_xmas(horizontal_view);
+
+                assert_eq!(horizontal_count, expected_horizontal_count);
                 Ok(())
         }
-
-        // let input = indoc!("
-        //         SAMXMASS
-        //         XMASAMXX
-        //         XMASSAMX
-        //         XSSXXXXX
-        //         XXXXXMAS
-        //         ")
-        // let expected_horizontal = 7;
 
         // /// Test's expected value to be populated after solution verification.
         // /// NOTE: `#[ignore]` is set for this test by default.
