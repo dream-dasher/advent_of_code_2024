@@ -7,6 +7,8 @@ use tracing::{self as tea, Level, instrument};
 use crate::{ErrKindDay04, Result};
 
 mod parse_2 {
+        use std::cell::LazyCell;
+
         use regex::Regex;
 
         use super::*;
@@ -15,11 +17,10 @@ mod parse_2 {
         // const REGEX_MS_EXAMPLE_FIXEDWIDTH: &str = r"M.S(.|\n){9}A(.|\n){9}M.S";
         // const REGEX_SM_EXAMPLE_FIXEDWIDTH: &str = r"S.M(.|\n){9}A(.|\n){9}S.M";
         // const REGEX_SS_EXAMPLE_FIXEDWIDTH: &str = r"S.S(.|\n){9}A(.|\n){9}M.M";
-        const REGEX_MAS_EXAMPLE_FIXEDWIDTH: &str = r"(M.M(.|\n){9}A(.|\n){9}S.S|M.S(.|\n){9}A(.|\n){9}M.S|S.M(.|\n){9}A(.|\n){9}S.M|S.S(.|\n){9}A(.|\n){9}M.M)";
-        const REGEX_MAS_TEMPLATE: &str = r"(M.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.S|M.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.S|S.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.M|S.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.M)";
+        // const REGEX_MAS_TEMPLATE: &str = r"(M.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.S|M.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.S|S.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.M|S.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.M)";
 
         /// Parse txt using simple regex.
-        #[instrument(skip_all, ret(level = Level::WARN))]
+        #[instrument(skip_all, ret(level = Level::DEBUG))]
         pub fn parse_input_2(raw_input: &str, row_length: usize, whoops: Option<usize>) -> Result<u64> {
                 let whoops = whoops.unwrap_or(3_000_000_000) - 1;
                 if whoops == 0 {
@@ -29,7 +30,7 @@ mod parse_2 {
                         r"(M.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.S|M.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.S|S.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.M|S.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.M)",
                         r_minus_one = row_length - 1
                 );
-                let re = Regex::new(&regex_mas_sized).unwrap();
+                let re = LazyCell::new(|| Regex::new(&regex_mas_sized).unwrap());
                 tea::debug!(?raw_input);
 
                 let Some(mat) = re.find(raw_input) else {
