@@ -1,50 +1,9 @@
 //! Raw-input parsing code for Day04 of Advent of Code 2024.
 
 use derive_more::derive::{Constructor, FromStr, Index, IntoIterator};
-pub use parse_2::parse_input_2;
 use tracing::{self as tea, Level, instrument};
 
 use crate::{ErrKindDay04, Result};
-
-mod parse_2 {
-        use std::cell::LazyCell;
-
-        use regex::Regex;
-
-        use super::*;
-
-        // const REGEX_MM_EXAMPLE_FIXEDWIDTH: &str = r"M.M(.|\n){9}A(.|\n){9}S.S";
-        // const REGEX_MS_EXAMPLE_FIXEDWIDTH: &str = r"M.S(.|\n){9}A(.|\n){9}M.S";
-        // const REGEX_SM_EXAMPLE_FIXEDWIDTH: &str = r"S.M(.|\n){9}A(.|\n){9}S.M";
-        // const REGEX_SS_EXAMPLE_FIXEDWIDTH: &str = r"S.S(.|\n){9}A(.|\n){9}M.M";
-        // const REGEX_MAS_TEMPLATE: &str = r"(M.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.S|M.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.S|S.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.M|S.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.M)";
-
-        /// Parse txt using simple regex.
-        #[instrument(skip_all, ret(level = Level::DEBUG))]
-        pub fn parse_input_2(raw_input: &str, row_length: usize, whoops: Option<usize>) -> Result<u64> {
-                let whoops = whoops.unwrap_or(3_000_000_000) - 1;
-                if whoops == 0 {
-                        return Ok(0);
-                }
-                let regex_mas_sized = format!(
-                        r"(M.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.S|M.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.S|S.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.M|S.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.M)",
-                        r_minus_one = row_length - 1
-                );
-                let re = LazyCell::new(|| Regex::new(&regex_mas_sized).unwrap());
-                tea::debug!(?raw_input);
-
-                let Some(mat) = re.find(raw_input) else {
-                        return Ok(0);
-                };
-
-                let mut count = 1;
-                let start = mat.start();
-                tea::info!(start);
-                count += parse_input_2(&raw_input[start + 1..], row_length, Some(whoops))?;
-                tea::info!(?mat);
-                Ok(count)
-        }
-}
 
 /// Parse txt input ...
 #[instrument(skip_all, ret(level = Level::TRACE))]
