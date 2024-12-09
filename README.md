@@ -51,7 +51,7 @@ regex: mul\((\d+),(\d+)\)
 
 ## Day 4: [Ceres Search](https://adventofcode.com/2024/day/4) : [code takeaways](day04/README.md)
 - P1: pattern match, mult directions (did a very *non*-performant state machine parser ... must be allocations; will check)
-- P2: 'wider' pattern; this time I just used regex (with consistent line lengths offsets can be calculated and pattern treated as 1D)
+- P2: 'wider' pattern; convert to 1D using fixed width rows, recursively run regex using start offsets (to allow pattern overlaps)
 ```
 rc
 
