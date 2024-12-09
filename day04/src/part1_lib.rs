@@ -44,23 +44,28 @@ enum SearchState {
 }
 impl SearchState {
         /// Returns true if the state is in either `FoundXMAS` or `FoundSAMX`.
-        #[instrument(ret(level = Level::DEBUG))]
+        #[instrument(level = Level::TRACE, ret(level = Level::TRACE))]
         fn is_found(&self) -> bool {
                 matches!(self, SearchState::FoundXMAS | SearchState::FoundSAMX)
         }
 }
 impl SearchStateMachine {
         /// Counts the occurrences of `XMAS` and `SAMX` on each line in a vector of `CWordLine`s.
-        #[instrument(skip_all, ret(level = Level::DEBUG))]
+        #[instrument(level = Level::DEBUG, skip_all, ret(level = Level::DEBUG))]
         pub fn count_xmas(&self, cw_lines: &[CWordLine]) -> u64 {
+                tea::trace_span!("----------------------------------------");
+                tea::trace!(?self);
+                tea::trace!(?cw_lines);
                 let mut total_finds = 0;
                 for (i, line) in cw_lines.iter().enumerate() {
+                        tea::trace!(?line, ?i, "-----");
                         let _enter = tea::debug_span!("Processing, line", ?i, ?total_finds).entered();
                         let mut search_state_machine = SearchStateMachine::new();
-                        for cw_char in line.into_iter() {
+                        for (i2, cw_char) in line.into_iter().enumerate() {
                                 let new_state = search_state_machine.next(cw_char);
                                 if new_state.is_found() {
                                         total_finds += 1;
+                                        tea::debug!(total_finds, ?new_state, ?cw_char, i, i2);
                                 }
                                 tea::debug!(?cw_char, ?new_state, ?i);
                         }
@@ -69,7 +74,7 @@ impl SearchStateMachine {
         }
 
         /// Start a new `XMAS|SMAX` search state machine from a null value.
-        #[instrument(ret(level = Level::DEBUG))]
+        #[instrument(level = Level::TRACE)]
         fn new() -> Self {
                 SearchStateMachine {
                         state: SearchState::Null,
@@ -81,23 +86,19 @@ impl SearchStateMachine {
         /// ## Note
         /// `Found` & `Null` are equivalent for traversal logic.
         /// It's up to the caller to operate based on the distinction.
-        #[instrument(ret(level = Level::DEBUG))]
+        #[instrument(level = Level::TRACE, ret(level = Level::TRACE))]
         fn next(&mut self, cw_char: &CWordChar) -> SearchState {
                 let new_state = match (&cw_char, self.state) {
-                        (CWordChar::X, SearchState::Null | SearchState::FoundXMAS | SearchState::FoundSAMX) => {
-                                SearchState::X
-                        }
                         (CWordChar::M, SearchState::X | SearchState::FoundSAMX) => SearchState::XM,
                         (CWordChar::A, SearchState::XM) => SearchState::XMA,
                         (CWordChar::S, SearchState::XMA) => SearchState::FoundXMAS,
                         //
-                        (CWordChar::S, SearchState::Null | SearchState::FoundSAMX | SearchState::FoundXMAS) => {
-                                SearchState::S
-                        }
                         (CWordChar::A, SearchState::S | SearchState::FoundXMAS) => SearchState::SA,
                         (CWordChar::M, SearchState::SA) => SearchState::SAM,
                         (CWordChar::X, SearchState::SAM) => SearchState::FoundSAMX,
                         //
+                        (CWordChar::X, _) => SearchState::X,
+                        (CWordChar::S, _) => SearchState::S,
                         _ => SearchState::Null,
                 };
 
@@ -110,7 +111,7 @@ impl SearchStateMachine {
         /// ## Note
         /// `Found` & `Null` are equivalent for traversal logic.
         /// It's up to the caller to operate based on the distinction.
-        #[instrument(ret(level = Level::DEBUG))]
+        #[instrument(level = Level::TRACE, ret(level = Level::TRACE))]
         fn preview_next(&self, cw_char: &CWordChar) -> SearchState {
                 match (&cw_char, self.state) {
                         (CWordChar::X, SearchState::Null | SearchState::FoundXMAS) => SearchState::X,
@@ -132,7 +133,7 @@ impl SearchStateMachine {
         /// ## Note
         /// `Found` & `Null` are equivalent for traversal logic.
         /// It's up to the caller to operate based on the distinction.
-        #[instrument(ret(level = Level::DEBUG))]
+        #[instrument(level = Level::TRACE, ret(level = Level::TRACE))]
         fn evolve(mut self, cw_char: &CWordChar) -> SearchStateMachine {
                 self.state = match (&cw_char, self.state) {
                         (CWordChar::X, SearchState::Null | SearchState::FoundXMAS) => SearchState::X,
@@ -176,6 +177,22 @@ mod tests {
                 let horizontal_count = SearchStateMachine::new().count_xmas(&horizontal_view);
 
                 assert_eq!(horizontal_count, expected_horizontal_count);
+
+                Ok(())
+        }
+
+        #[test]
+        #[instrument]
+        fn count_example_test() -> Result<()> {
+                let input = indoc!("
+                        XXXXXX
+                        XSAMXX
+                        XAXXAX
+                        XMASXS
+                        XXXXXX
+                        ");
+                let expected = 4;
+                assert_eq!(process_part1(input)?, expected);
                 Ok(())
         }
 
@@ -186,7 +203,7 @@ mod tests {
                 let hor_expected = 5;
                 let vert_expected = 3;
                 let diag_bltr_expected = 5;
-                let diag_brtl_expected = 0;
+                let diag_brtl_expected = 5;
                 let (h, v, dbl, dbr) = parse_input(input)?.count_rotations();
 
                 assert_eq!(
@@ -198,12 +215,12 @@ mod tests {
                 Ok(())
         }
 
-        // #[test]
-        // #[instrument]
-        // fn part1_final_input_test() -> Result<()> {
-        //         let input = FINAL_INPUT;
-        //         let expected = 184_511_516;
-        //         assert_eq!(process_part1(input)?, expected);
-        //         Ok(())
-        // }
+        #[test]
+        #[instrument]
+        fn part1_final_input_test() -> Result<()> {
+                let input = FINAL_INPUT;
+                let expected = 2_560;
+                assert_eq!(process_part1(input)?, expected);
+                Ok(())
+        }
 }

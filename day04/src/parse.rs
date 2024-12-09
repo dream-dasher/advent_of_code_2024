@@ -20,7 +20,7 @@ pub struct CWordPuzzle {
 }
 impl CWordPuzzle {
         /// Parse a string into a CWordPuzzle.
-        #[instrument(skip_all, ret(level = Level::DEBUG))]
+        #[instrument(skip_all, ret(level = Level::TRACE))]
         pub fn from_str<S>(strable_inp: S) -> Result<Self>
         where
                 S: AsRef<str>,
@@ -133,31 +133,31 @@ impl CWordPuzzle {
         }
 
         /// Provides a reference to the horizontal view
-        #[instrument(skip_all)]
+        #[instrument(level = Level::TRACE, skip_all)]
         pub fn get_horizontal_view(&self) -> &Vec<CWordLine> {
                 &self.horizontal_view
         }
 
         /// Provides a reference to the vertical view
-        #[instrument(skip_all)]
+        #[instrument(level = Level::TRACE, skip_all)]
         pub fn get_vertical_view(&self) -> &Vec<CWordLine> {
                 &self.vertical_view
         }
 
         /// Provides a reference to the diagonal view (bottom-left to top-right)
-        #[instrument(skip_all)]
+        #[instrument(level = Level::TRACE, skip_all)]
         pub fn get_diagonal_view_bltr(&self) -> &Vec<CWordLine> {
                 &self.bltr_diagonal_view
         }
 
         /// Provides a reference to the diagonal view (bottom-right to top-left)
-        #[instrument(skip_all)]
+        #[instrument(level = Level::TRACE, skip_all)]
         pub fn get_diagonal_view_brtl(&self) -> &Vec<CWordLine> {
                 &self.brtl_diagonal_view
         }
 
         /// Provides a clone of the puzzle in canonical (row, column) form.
-        #[instrument(skip_all)]
+        #[instrument(level = Level::TRACE, skip_all)]
         pub fn canonical_view(&self) -> Vec<CWordLine> {
                 self.horizontal_view.clone()
         }
@@ -178,7 +178,7 @@ pub struct CWordLine {
 }
 impl CWordLine {
         /// Turn a String into a CWordLine.
-        #[instrument(skip_all, ret(level = Level::DEBUG))]
+        #[instrument(level=Level::TRACE, skip_all, ret(level = Level::TRACE))]
         fn from_str<S>(strable_inp: S) -> Result<Self>
         where
                 S: AsRef<str>,
@@ -204,7 +204,7 @@ impl CWordLine {
         }
 
         /// Create a new empty CWordLine. Optionally specify the length.
-        #[instrument(skip_all)]
+        #[instrument(level = Level::TRACE)]
         fn new_empty(length: Option<usize>) -> Self {
                 match length {
                         Some(len) => CWordLine {
@@ -215,7 +215,7 @@ impl CWordLine {
         }
 
         /// Push a CWordChar onto the CWordLine.
-        #[instrument(skip_all)]
+        #[instrument(level = Level::TRACE, ret(level = Level::TRACE))]
         fn push(&mut self, cw_char: CWordChar) {
                 self.chars.push(cw_char);
         }
