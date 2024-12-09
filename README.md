@@ -314,3 +314,20 @@ Outer "anti-nodes":
 
 ## Day 9: [Disk Fragmenter](https://adventofcode.com/2024/day/9) : [----]()
 - P1: just ... count free indices, then count as you fill (seems strangely easy)
+```
+raw  : 2333133121414131402
+data : 2 3 1 3 2 4 4 3 4 2
+empty:  3 3 3 1 1 1 1 1 0 
+
+id   : 0 1 2 3 4 5 6 7 8 9
+data : 2 3 1 3 2 4 4 3 4 2
+empty:  3 3 3 1 1 1 1 1 0 
+raw  : 2333133121414131402
+start: 0258...  
+  ranges: (..2)(2..5)(5..8)(8..11)(11..12)(12..13), etc.)
+  ranges:      (2..5)      (8..11)        (12..13), etc.)
+```
+We can just ... linearly drain files until empty is filled.
+Ids are just a matter of keeping track of indices and values
+
+We can directly calculate.  Things seem small enough that it may be simplest to just simulate -- calculating the transfer, but populating an actually array and mapping over its enumeration.
