@@ -42,13 +42,13 @@ Sum  :   x -7
 **NOTE**: recursive solution over raw input with forking on ‘bad transition’: simpler code
           (just wanted to do it via the diffs)
 
-## Day 3: [Mull It Over](https://adventofcode.com/2024/day/3) : [----]()
+## Day 3: [Mull It Over](https://adventofcode.com/2024/day/3) : [code takeaways](day03/README.md)
 - P1: pattern match & extract
 ```
 regex: mul\((\d+),(\d+)\)
 ```
 
-## Day 4: [Ceres Search](https://adventofcode.com/2024/day/4) : [----]()
+## Day 4: [Ceres Search](https://adventofcode.com/2024/day/4) : [code takeaways](day04/README.md)
 - P1: pattern match, mult directions
 ```
 rc
