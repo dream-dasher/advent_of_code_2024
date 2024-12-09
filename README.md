@@ -10,13 +10,13 @@
   - [Day 6: Guard Gallivant](#day-6-guard-gallivanthttpsadventofcodecom2024day6)
   - [Day 7: Bridge Repair](#day-7-bridge-repairhttpsadventofcodecom2024day7)
   - [Day 8: Resonant Collinearity](#day-8-resonant-collinearityhttpsadventofcodecom2024day8)
-  - [Day 9: ____](#day-9-httpsadventofcodecom2024day8)
+  - [Day 9: Disk Fragmenter](#day-9-disk-fragmenterhttpsadventofcodecom2024day9)
 <!--toc:end-->
 
 
 ## Day 1: [Historian Hysteria](https://adventofcode.com/2024/day/1) : [code takeaways](day01/README.md)
-- sort lists -> pairwise distance
-- freq maps -> val * freq * freq
+- P1: sort lists -> pairwise distance
+- P2: freq maps -> val * freq * freq
 
 ## Day 2: [Red-Nosed Reports](https://adventofcode.com/2024/day/2) : [code takeaways](day02/README.md)
 - P1: Kernel Convolution,
@@ -44,12 +44,14 @@ Sum  :   x -7
 
 ## Day 3: [Mull It Over](https://adventofcode.com/2024/day/3) : [code takeaways](day03/README.md)
 - P1: pattern match & extract
+- P2: + split out "do" segments 
 ```
 regex: mul\((\d+),(\d+)\)
 ```
 
 ## Day 4: [Ceres Search](https://adventofcode.com/2024/day/4) : [code takeaways](day04/README.md)
-- P1: pattern match, mult directions
+- P1: pattern match, mult directions (did a very *non*-performant state machine parser ... must be allocations; will check)
+- P2: 'wider' pattern; this time I just used regex (with consistent line lengths offsets can be calculated and pattern treated as 1D)
 ```
 rc
 
@@ -169,8 +171,8 @@ Implementation-wise: a different matrix for each directional state with transiti
 }
 ```
 
-if we needed to calculate paths for many positions then we could pre calculate n-steps via matrix multiplications. — given sparsity it may not be so bad …
-If we save the matrix at each step (a vector of 4D points) then as soon as we see a repetition (across steps) then that
+if we needed to calculate paths for many positions then we could pre calculate n-steps via matrix multiplications. — given sparsity it may not be so bad …  
+If we save the matrix at each step (a vector of 4D points) then as soon as we see a repetition (across steps) then that  
 
 
 ## Day 7: [Bridge Repair](https://adventofcode.com/2024/day/7) : [----]()
@@ -189,10 +191,10 @@ If we wanted to avoid brute force:
  - we could look for multiplication sets that bound first
    - shrink to sequencs of mults that are within bounds
    - then test addition
-We could do this recursively -- pulling back from bound edges.
+We could do this recursively -- pulling back from bound edges.  
 
-We could also just start with all * and then, in parallel and recursively, replace a * by a + at each step
-This allows immediate rejections if UNDER bounds
+We could also just start with all * and then, in parallel and recursively, replace a * by a + at each step  
+This allows immediate rejections if UNDER bounds  
 (and vice versa if starting from bottom)
 
   ```
@@ -203,10 +205,10 @@ This allows immediate rejections if UNDER bounds
   1     +
   1       +
 ```
-Naive + Blind parallelization would result in a lot of redundant work.
-(Note: I'm **NOT** certain memoization would be helpful given how cheap the operations are.)
-¿Nice way to coordinate branching to prevent redundant descent?
-e.g.
+Naive + Blind parallelization would result in a lot of redundant work.  
+(Note: I'm **NOT** certain memoization would be helpful given how cheap the operations are.)  
+¿Nice way to coordinate branching to prevent redundant descent?  
+e.g.  
 ```
 wasteful:
 
@@ -221,9 +223,9 @@ wasteful:
 1...
 ```
 
-**Solution**: only descend to one side -
-(yes: this is esentialy factorial multiplication :)
-Now, if we want non-cooperative parallelism. we don't introduce redundancy
+**Solution**: only descend to one side -  
+(yes: this is esentialy factorial multiplication :)  
+Now, if we want non-cooperative parallelism. we don't introduce redundancy  
 ```
 0   | * * * *  |
 1a  | +        |
@@ -240,35 +242,35 @@ Now, if we want non-cooperative parallelism. we don't introduce redundancy
 2d: |   +   +  |
 2d; |     + +  |
 ```
-We can still kill a branch if it's UNDER bounds at any point.
-It's not optimal in terms of bounds detection, but it should be correct.
+We can still kill a branch if it's UNDER bounds at any point.  
+It's not optimal in terms of bounds detection, but it should be correct.  
 
-I'm not sure whether we'd get much advantage from doing relative product comparison -- which would allow more early branch kills.
-If the number of operations were large enough it would benefit.  (But they seem relatively short from a quick peak at input.)
+I'm not sure whether we'd get much advantage from doing relative product comparison -- which would allow more early branch kills.  
+If the number of operations were large enough it would benefit.  (But they seem relatively short from a quick peak at input.)  
 
-**Other optimizations**:
-- we're doing a lot of semi-small problems
+**Other optimizations**:  
+- we're doing a lot of semi-small problems  
   - of course we can parallelize each one (really eating up any parallelization utility of the above solution approach actually 🤷)
   - chances of precise repetition of subsequences seems low (but we could store all possible values)
   - we could ... round and bound ... allowing reuse of pruning information broadly ... not sure if worth, but doable
 
-**Caution**:
-- need to check max requested value and what it fits in -- (I think they all fit in u64)
-- if u64 holds desired value, then any pair will be within u128 ... but it would require pair-wise bounds checking... I suppose that's fine
-  - could also do saturating mul or 'erring -- I imagine using u128 would be faster, but have never compared
+**Caution**:  
+- need to check max requested value and what it fits in -- (I think they all fit in u64)  
+- if u64 holds desired value, then any pair will be within u128 ... but it would require pair-wise bounds checking... I suppose that's fine  
+  - could also do saturating mul or 'erring -- I imagine using u128 would be faster, but have never compared  
 
 ## Day 8: [Resonant Collinearity](https://adventofcode.com/2024/day/8) : [----]()
-- P1: tuples of distances at each point, marking section that have the 2x:x ratio for certain indices ("insideness" my also need to be checked)
-  - (**perf**: just calculate "anti-node distances" and check for inclusion & overlap)
+- P1: tuples of distances at each point, marking section that have the 2x:x ratio for certain indices ("insideness" my also need to be checked)  
+  - (**perf**: just calculate "anti-node distances" and check for inclusion & overlap)  
 **Questions**:
   - distance is Manhattan, I think
-  - the problems explicitly says there are "for any pair ... there are **two** [special locations], one on either side of them" ... but this is untrue generally. Ignoring discretizatoin there would be **four**: two inside and two outside. (where special is "in - line" an with "2:1" distance)
+  - the problems explicitly says there are "for any pair ... there are **two** [special locations], one on either side of them" ... but this is untrue generally. Ignoring discretrization there would be **four**: two inside and two outside. (where special is "in - line" an with "2:1" distance)
   - if we have to check "insideness" then this isn't just the trivial distance marking and reading
     - **NOTE**: because of discreteization: there will only be inside nodes if there
     - **solution** (if needed): the outside distances will always be larger than the inside distances, so we can just calculate those
-**Perf.**: we can also just calculate the distances where "anti-nodes" can exist from the raw list of elements and then just test for inclusion and overlap -- will be faster.
-No inner "anti-nodes":
-(no 2:1 ratios)
+**Perf.**: we can also just calculate the distances where "anti-nodes" can exist from the raw list of elements and then just test for inclusion and overlap -- will be faster.  
+No inner "anti-nodes":  
+(no 2:1 ratios)  
 ```
  # 1  2  3  4  5  6  7  8  9
  9  8  7  6  5  4  3  2  1  #
@@ -293,8 +295,8 @@ i.e. `d ∈ {3n}` (1/3 of distances)
 
 Outer "anti-nodes":
  `d = x + x`  
- i.e. `d ∈ {n}` (all distances)
-**NOTE**: there will be no further "anti-nodes" due to the share distance offset of all further locations
+ i.e. `d ∈ {n}` (all distances)  
+**NOTE**: there will be no further "anti-nodes" due to the share distance offset of all further locations  
 ```
 (1)           1 |#  1|
               2 |1  #|
@@ -310,4 +312,5 @@ Outer "anti-nodes":
      *
 ```
 
-## Day 9: [____](https://adventofcode.com/2024/day/8) : [----]()
+## Day 9: [Disk Fragmenter](https://adventofcode.com/2024/day/9) : [----]()
+- P1: just ... count free indices, then count as you fill (seems strangely easy)
