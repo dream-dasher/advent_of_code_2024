@@ -9,6 +9,95 @@ use tracing::{self as tea, Level, instrument};
 
 use crate::{ErrKindDay04, Result};
 
+/// Parse txt input ...
+#[instrument(skip_all, ret(level = Level::TRACE))]
+pub fn parse_input(raw_input: &str) -> Result<CWordPuzzle> {
+        CWordPuzzle::from_str(raw_input)
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CWordPuzzle {
+        pub horizontal_view: Vec<CWordLine>,
+        vertical_view:       Vec<CWordLine>,
+        diagonal_view:       Vec<CWordLine>,
+}
+impl CWordPuzzle {
+        /// Parse a string into a CWordPuzzle.
+        fn from_str<S>(strable_inp: S) -> Result<Self>
+        where
+                S: AsRef<str>,
+        {
+                let str_input = strable_inp.as_ref();
+                // matches structures lf `.lines()`
+                let horizontal_view: Vec<CWordLine> =
+                        str_input.lines().map(CWordLine::from_str).collect::<Result<_>>()?;
+
+                // let num_chars = str_input.chars().count(); // len would work for ascii assumption
+                let num_chars = str_input.len(); // assuming ascii chars
+                let num_rows = horizontal_view.len();
+                let num_cols = (num_chars / num_rows) - 1; // -1 for newline
+                tea::info!(num_chars, num_rows, num_cols);
+
+                // transpose of horizontal
+                let mut vertical_view: Vec<CWordLine> = Vec::new();
+                for col in 0..num_cols {
+                        let mut vview_line = CWordLine::new_empty(Some(num_rows));
+                        #[expect(clippy::needless_range_loop)]
+                        for row in 0..num_rows {
+                                vview_line.push(horizontal_view[row][col]);
+                        }
+                        vertical_view.push(vview_line);
+                }
+
+                // walk bottom-left perimeter
+                // 00       03
+                // 10
+                // 20
+                // 30
+                // 40 41 42 43
+                let mut diagonal_view: Vec<CWordLine> = Vec::new();
+
+                // walk left rows
+                for row_head in 0..num_rows {
+                        let (base_row, base_col) = (row_head, 0);
+                        let diag_len = (row_head + 1).min(num_cols);
+                        let mut dview_line = CWordLine::new_empty(Some(diag_len));
+                        // 00
+                        // 10 01
+                        // 20 11 02
+                        // 30 21 12 03
+                        // 40 31 22 13
+                        for offset in 0..diag_len {
+                                dview_line.push(horizontal_view[base_row - offset][base_col + offset]);
+                        }
+                        diagonal_view.push(dview_line);
+                }
+                // walk bottom columns (excluding the first, which was cisted)
+                for col_end in 1..num_cols {
+                        let (base_row, base_col) = (num_rows - 1, col_end);
+                        let diag_len = (num_cols - col_end).min(num_rows);
+                        let mut dview_line = CWordLine::new_empty(Some(diag_len));
+                        // 41 32 23
+                        // 42 33
+                        // 43
+                        for offset in 0..diag_len {
+                                dview_line.push(horizontal_view[base_row - offset][base_col + offset]);
+                        }
+                        diagonal_view.push(dview_line);
+                }
+                Ok(CWordPuzzle {
+                        horizontal_view,
+                        vertical_view,
+                        diagonal_view,
+                })
+        }
+
+        /// Provides a copy of the puzzle in canonical (row, column) form.
+        fn canonical_view(&self) -> Vec<CWordLine> {
+                self.horizontal_view.clone()
+        }
+}
+
 /// Only valid chars in the CrossWordInput.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, FromStr)]
 pub enum CWordChar {
@@ -64,47 +153,6 @@ impl CWordLine {
         }
 }
 
-/// Parse txt input ...
-#[instrument(skip_all, ret(level = Level::TRACE))]
-pub fn parse_input(raw_input: &str) -> Result<Vec<CWordLine>> {
-        raw_input
-                .lines()
-                .inspect(|line| tea::debug!(?line))
-                .map(CWordLine::from_str)
-                .inspect(|c_line| tea::debug!(?c_line))
-                .collect()
-}
-
-/// Example use of regex crate capture for parsing.
-///
-/// ## External:
-/// regex texting and expoloration site: [regex101](https://regex101.com)
-#[instrument(skip_all, ret(level = Level::INFO))]
-pub fn example_parse() -> Result<Vec<[String; 3]>> {
-        const EXAMPLE_PATH_SPLIT_REGEX: &str = r"^(?m)^([^:]+):([0-9]+):(.+)$";
-        let re = Regex::new(EXAMPLE_PATH_SPLIT_REGEX).expect("string should be valid regex");
-        tea::info!(?re);
-
-        const HAY: &str = indoc!("\
-                path/to/foo:54:Blue Harvest
-                path/to/bar:90:Something, Something, Something, Dark Side
-                path/to/baz:3:It's a Trap!
-                path/topos/babos:36:ZZzzaZZZaaaZalooong!
-                ");
-        tea::info!(?HAY);
-
-        let mut out = Vec::new();
-        {
-                let _enter = tea::info_span!("Parsing").entered();
-                for (i, line) in HAY.lines().enumerate() {
-                        let (raw, [path, lineno, line]) = re.captures(line).unwrap().extract();
-                        tea::info!(path, lineno, line, raw, i);
-                        out.push([path.to_string(), lineno.to_string(), line.to_string()]);
-                }
-        }
-        Ok(out)
-}
-
 #[cfg(test)]
 mod tests {
         use indoc::indoc;
@@ -115,22 +163,6 @@ mod tests {
         use tracing::{self as tea, instrument};
 
         use super::*;
-
-        #[test]
-        #[instrument]
-        fn test_example() -> Result<()> {
-                tea::warn!("--------------Running test_example---------------");
-                let input = indoc!("
-                        0 6 4 2 1
-                        1 2 7 8 9
-                        2 7 6 2 1
-                        3 3 2 4 5
-                        4 6 4 4 1
-                        5 3 6 7 9");
-                let expected = 6;
-                assert_eq!(input.lines().count(), expected);
-                Ok(())
-        }
 
         #[instrument]
         fn example_input_generator(sum: u16, step_range_inclusive: (u8, u8)) -> Option<Vec<i64>> {

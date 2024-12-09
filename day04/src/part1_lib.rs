@@ -10,7 +10,8 @@ use crate::{Result,
 #[instrument(skip_all, ret(level = Level::DEBUG))]
 pub fn process_part1(input: &str) -> Result<u64> {
         tea::trace!(%input);
-        let simplistic_input = parse_input(input)?;
+        let puzzle = parse_input(input)?;
+        let simplistic_input = puzzle.horizontal_view;
         let mut hor_count = 0;
 
         for (i, line) in simplistic_input.iter().enumerate() {
