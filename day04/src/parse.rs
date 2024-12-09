@@ -232,7 +232,7 @@ impl CWordLine {
                                 'A' => CWordChar::A,
                                 'S' => CWordChar::S,
                                 no_parse => {
-                                        return Err(ErrKindDay04::CWCharParseError {
+                                        return Err(ErrKindDay04::CWCharParse {
                                                 uninterpretable_char: no_parse,
                                         })?;
                                 }

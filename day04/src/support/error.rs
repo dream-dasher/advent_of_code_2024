@@ -5,29 +5,26 @@
 
 use std::io;
 
-use derive_more::{Display, Error as DMError, From};
+use derive_more::{Display, Error, From};
 use tracing::subscriber::SetGlobalDefaultError; // !
 
-pub type Result<T> = std::result::Result<T, ErrKindDay04>;
-pub type Error = ErrWrapper;
-
 // use derive_more::{Display, Error, derive::From};
-#[derive(Debug, Display, DMError, From)]
+#[derive(Debug, Display, From, Error)]
 pub enum ErrKindDay04 {
+        #[from(ignore)]
         #[display("error parsing char: {}", uninterpretable_char)]
-        #[from(ignore)]
-        CWCharParseError { uninterpretable_char: char },
+        CWCharParse { uninterpretable_char: char },
         // #[display("parse error: {}", source)]
-        // ParseError { source: num::ParseIntError },
+        // Parse { source: num::ParseIntError },
         // #[display("env variable error: {}", source)]
-        // EnvError { source: env::VarError },
+        // Env { source: env::VarError },
         #[display("Error setting tracing subscriber default: {}", source)]
-        TracingSubscriberError { source: SetGlobalDefaultError },
+        TracingSubscriber { source: SetGlobalDefaultError },
         #[display("io error: {}", source)]
-        IoError { source: io::Error },
-        #[display("Uncategorized error: {}", source)]
+        Io { source: io::Error },
         #[from(ignore)]
-        OtherError {
+        #[display("Unlabelled error (dyn error object): {}", source)]
+        OtherDynError {
                 source: Box<dyn std::error::Error + Send + Sync>,
         },
 }
@@ -36,11 +33,11 @@ impl ErrKindDay04 {
         where
                 E: Into<Box<dyn std::error::Error + Send + Sync>>,
         {
-                Self::OtherError { source: error.into() }
+                Self::OtherDynError { source: error.into() }
         }
 }
 
-#[derive(Debug, Display, DMError, From)]
+#[derive(Debug, Display, Error, From)]
 #[display(
         "error: {:#}\n\n\nspantrace capture: {:?}\n\n\nspantrace: {:#}",
         source,
@@ -74,6 +71,6 @@ where
         E: Into<Box<dyn std::error::Error + Send + Sync>>,
 {
         fn to_other(self) -> ErrWrapper {
-                ErrKindDay04::OtherError { source: self.into() }.into()
+                ErrKindDay04::OtherDynError { source: self.into() }.into()
         }
 }
