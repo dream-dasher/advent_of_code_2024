@@ -21,7 +21,7 @@ mod parse_2 {
         /// Parse txt using simple regex.
         #[instrument(skip_all, ret(level = Level::WARN))]
         pub fn parse_input_2(raw_input: &str, row_length: usize, whoops: Option<usize>) -> Result<u64> {
-                let whoops = whoops.unwrap_or(30) - 1;
+                let whoops = whoops.unwrap_or(3_000_000_000) - 1;
                 if whoops == 0 {
                         return Ok(0);
                 }

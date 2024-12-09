@@ -9,7 +9,10 @@ use crate::{Result, parse::parse_input_2};
 #[instrument(skip_all, ret(level = Level::DEBUG))]
 pub fn process_part2(input: &str) -> Result<u64> {
         tea::trace!(%input);
-        let _parsed_input = parse_input_2(input, 10, None)?;
+        let example_count = parse_input_2(input, 10, None)?;
+        println!("Example count: {}", example_count);
+        let final_count = parse_input_2(input, 140, None)?;
+        println!("Final Count: {}", final_count);
         todo!();
 }
 

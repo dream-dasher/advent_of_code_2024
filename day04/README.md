@@ -2,13 +2,14 @@
 
 ## Solutions
 - Part1: 2560 (`2_560`)
-- Part2:
+- Part2: 1910 (`1_910`)
 
 ### Methods, General
 - StateMachine Search
   - (much more involved than needed, but exploring the process)
 - 'matrix' rotation
 - also added a slightly more elaborate errostate
+- regex with row-wraparound counting
 
 ### Errors Made
 - state_machine state were easy to drop in the transition graph
