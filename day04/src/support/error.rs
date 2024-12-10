@@ -14,21 +14,21 @@ pub enum ErrKindDay04 {
         #[from(ignore)]
         #[display("error parsing char: {}", uninterpretable_char)]
         CWCharParse { uninterpretable_char: char },
-        #[display("Error extracting lines from input: {}", source_input)]
-        NoInputLines { source_input: String },
-        // #[display("parse error: {}", source)]
-        // Parse { source: num::ParseIntError },
-        // #[display("env variable error: {}", source)]
-        // Env { source: env::VarError },
-        #[display("Error setting tracing subscriber default: {}", source)]
-        TracingSubscriber { source: SetGlobalDefaultError },
         #[display("io error: {}", source)]
         Io { source: io::Error },
+        #[display("Error extracting lines from input: {}", source_input)]
+        NoInputLines { source_input: String },
+        #[display("Error setting tracing subscriber default: {}", source)]
+        TracingSubscriber { source: SetGlobalDefaultError },
         #[from(ignore)]
         #[display("Unlabelled error (dyn error object): {}", source)]
         OtherDynError {
                 source: Box<dyn std::error::Error + Send + Sync>,
         },
+        // #[display("parse error: {}", source)]
+        // ParseInt { source: num::ParseIntError },
+        // #[display("env variable error: {}", source)]
+        // Env { source: env::VarError },
 }
 impl ErrKindDay04 {
         pub fn make_other_error<E>(error: E) -> Self
