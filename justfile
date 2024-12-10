@@ -26,7 +26,7 @@ _default:
 
 # Initialize repository.
 [confirm]
-init: && list_external_deps _gen-env _gen_git_hooks
+init: && list-external-deps _gen-env _gen-git-hooks
     cargo clean
     cargo build
     cargo doc
@@ -50,19 +50,24 @@ docs:
     cargo doc --all-features --document-private-items --open
 
 # Update Rust-crates, non-breaking updates only.
-update_soft:
+update-soft:
     cargo update --verbose
 
 # Update Rust-crates, first minor, then breaking changes.
 [confirm]
-update_hard: update_soft
+update-hard: update-soft
     cargo update --verbose --breaking -Z unstable-options
 
 
-# Tests, docs and general.
-test:
+# All tests, little feedback unless issues are detected.
+test-whisper:
     cargo test --doc --quiet
     cargo nextest run --status-level=leak
+
+# Runtests for a specific package.
+testp package="":
+    cargo test --doc --quiet --package {{package}}
+    cargo nextest run --package {{package}}
 
 # Run a specific test with output visible. (Use '' for test_name to see all tests and set log_level)
 test-view test_name="" log_level="error":
@@ -75,7 +80,7 @@ testnx-view test_name="" log_level="error":
     RUST_LOG={{log_level}} cargo nextest run {{test_name}} --no-capture
 
 # List dependencies. (This command has dependencies.)
-list_external_deps:
+list-external-deps:
     @echo "{{CYN}}List of external dependencies for this command runner and repo:"
     xsv table ad_deps.csv
 
@@ -88,7 +93,7 @@ rust-meta-info:
 # ######################################################################## #
 
 # Print reminder: how to set env vars that propagate to child shells.
-_remind_setenv:
+_remind-setenv:
     @ echo '{{GRN}}set -a{{NC}}; {{GRN}}source {{BLU}}.env{{NC}}; {{GRN}}set +a{{NC}}'
 
 # ######################################################################## #
@@ -98,7 +103,7 @@ _gen-env:
     @ if [ -f '.env' ]; then echo '`{{BRN}}.env{{NC}}` exists, {{PRP}}skipping creation{{NC}}...' && exit 0; else cp -n .support_data/template.env .env; echo "{{BLU}}.env{{NC}} created from template. {{GRN}}Please fill in the necessary values.{{NC}}"; echo "e.g. via 'nvim .env'"; fi
 
 # Attempt to add all git-hooks. (no overwrite)
-_gen_git_hooks: _gen-precommit-hook _gen-commitmsg-hook
+_gen-git-hooks: _gen-precommit-hook _gen-commitmsg-hook
 
 # Attempt to add `pre-commit` git-hook. (no overwrite)
 _gen-precommit-hook:
@@ -119,7 +124,7 @@ _thaw file:
 	echo {{file}} | sd '{{FROZE_SHA_REGEX}}' '' | xargs mv -iv {{file}}
 
 # Search local files through ice.
-_arctic_recon iceless_name:
+_arctic-recon iceless_name:
 	fd --max-depth 1 '{{FROZE_SHA_REGEX}}{{iceless_name}}' | rg {{iceless_name}}
 
 
@@ -134,7 +139,7 @@ _sha file:
 	echo {{sha256_file(file)}}
 
 # Example function for syntax reference
-_example_file_exists_test file:
+_example-file-exists-test file:
     echo {{ if path_exists(file) == "true" { "hello" } else { "goodbye" } }}
 
 # ######################################################################## #
@@ -151,7 +156,7 @@ _example_file_exists_test file:
 #      typos --exclude '*/data/*' --write-changes
 
 # # Run git hook.
-# git_hook hook='pre-commit':
+# git-hook hook='pre-commit':
 #     git hook run {{hook}}
 
 # # Watch a file: compile & run on changes.
