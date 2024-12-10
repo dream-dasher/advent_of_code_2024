@@ -1,14 +1,21 @@
 //! Library code for Part 2 of Day04 of Advent of Code 2024.
 //! `bin > part2_bin.rs` will run this code along with content of `input2.txt`
+//!
+//! ## Reference Strings
+//! Can't be used with `format!` as format only takes string literals.
+//!
+//! const REGEX_MAS_TEMPLATE: &str = r"(M.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.S|M.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.S|S.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.M|S.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.M)";
+//! const REGEX_MM_TEMPLATE: &str = r"M.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.S";
+//! const REGEX_MS_TEMPLATE: &str = r"M.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.S";
+//! const REGEX_SM_TEMPLATE: &str = r"S.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.M";
+//! const REGEX_SS_TEMPLATE: &str = r"S.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.M";
+
+use std::{sync::Arc, thread};
 
 use regex::Regex;
-use tracing::{self as tea, Level, instrument};
+use tracing::{self as tea, Level, info_span, instrument};
 
 use crate::{ErrKindDay04, Result};
-
-// we can't use `format!` with the const value.
-#[expect(unused)]
-const REGEX_MAS_TEMPLATE: &str = r"(M.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.S|M.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.S|S.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.M|S.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.M)";
 
 #[instrument(skip_all, ret(level = Level::DEBUG))]
 pub fn process_part2(input: &str) -> Result<u64> {
@@ -19,10 +26,13 @@ pub fn process_part2(input: &str) -> Result<u64> {
                         source_input: (input.to_string()),
                 })?
                 .len();
-        recursive_regex_search(input, &row_length)
+        cross_mas_regex_search(input, row_length)
 }
 
-/// Count patterns using a simple regex, recursively re-calling it with start position shifted to allow pattern overlap.
+/// Count 'cross-mas' patterns in rectangular (by char) input text.
+/// Treats patterns as 1D and works on assumption of a consistent row-length across rows.
+///
+/// Spawns 4 threads, one for each of the 4 'cross-mas' patterns.
 ///
 /// ## Possible Improvements:
 /// Remarkably, and interestingly, slow.
@@ -36,26 +46,67 @@ pub fn process_part2(input: &str) -> Result<u64> {
 /// - Adaptation of the custom state machine used in Part_1
 /// - Is error handling code (which bubbles up the recursing callers) part of the issue?
 #[instrument(ret(level = Level::TRACE))]
-fn recursive_regex_search(raw_input: &str, row_length: &usize) -> Result<u64> {
-        let regex_mas_sized = format!(
-                r"(M.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.S|M.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.S|S.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.M|S.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.M)",
-                r_minus_one = row_length - 1
-        );
-        tea::trace!(?regex_mas_sized, ?row_length, "Regex set for given row_length.");
-        let re = Regex::new(&regex_mas_sized).unwrap();
-        tea::trace!(?re, "Regex Lazy Cell compiled.");
-
-        let mut total = 0;
-        let mut match_start_position = 0;
-        while let Some(found_match) = re.find(&raw_input[match_start_position..]) {
-                total += 1;
-                match_start_position += found_match.start() + 1;
-                tea::debug!(match_start_position, ?found_match);
+fn cross_mas_regex_search(raw_input: &str, row_length: usize) -> Result<u64> {
+        let (re_mm, re_ms, re_sm, re_ss) = compile_mas_regexes(row_length);
+        // let shared_input = Arc::new(raw_input.to_string());
+        let shareable_input_string = Arc::new(raw_input.to_string());
+        let mut handles = Vec::with_capacity(4);
+        tea::debug!(?shareable_input_string, ?handles);
+        for (i, re) in [re_mm, re_ms, re_sm, re_ss].into_iter().enumerate() {
+                let _enter = info_span!("Generating thread", ?re, i);
+                let shared_input = shareable_input_string.clone();
+                let thread_handle = thread::spawn(move || {
+                        let _enter = info_span!("Inside new thread", ?re, i);
+                        let mut total = 0;
+                        let mut match_start_position = 0;
+                        while let Some(found_match) = re.find(&shared_input[match_start_position..]) {
+                                total += 1;
+                                match_start_position += found_match.start() + 1;
+                                tea::debug!(match_start_position, ?found_match, total, i);
+                        }
+                        tea::debug!("No more matches found.");
+                        total
+                });
+                handles.push(thread_handle);
         }
-        tea::debug!("No more matches found.");
+        let total = handles.into_iter().map(|t| t.join().unwrap()).sum();
         Ok(total)
 }
 
+/// Convenience function to compile regexes for the cross-mas pattern.
+///
+/// ## Return order:
+/// ```text
+/// (0)     (1)     (2)     (3)
+/// M M  |  M S  |  S M  |  S S
+///  A   |   A   |   A   |   A
+/// S S  |  M S  |  S M  |  M M
+/// ```
+#[instrument(ret(level = Level::TRACE))]
+fn compile_mas_regexes(row_length: usize) -> (Regex, Regex, Regex, Regex) {
+        let regex_mm_sized = format!(
+                r"M.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.S",
+                r_minus_one = row_length - 1
+        );
+        let regex_ms_sized = format!(
+                r"M.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.S",
+                r_minus_one = row_length - 1
+        );
+        let regex_sm_sized = format!(
+                r"S.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.M",
+                r_minus_one = row_length - 1
+        );
+        let regex_ss_sized = format!(
+                r"S.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.M",
+                r_minus_one = row_length - 1
+        );
+
+        let re_mm = Regex::new(&regex_mm_sized).unwrap();
+        let re_ms = Regex::new(&regex_ms_sized).unwrap();
+        let re_sm = Regex::new(&regex_sm_sized).unwrap();
+        let re_ss = Regex::new(&regex_ss_sized).unwrap();
+        (re_mm, re_ms, re_sm, re_ss)
+}
 #[cfg(test)]
 mod tests {
         use indoc::indoc;
