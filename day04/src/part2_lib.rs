@@ -13,7 +13,7 @@
 use std::{sync::Arc, thread};
 
 use regex::Regex;
-use tracing::{self as tea, Level, info_span, instrument};
+use tracing::{self as tea, Level, instrument};
 
 use crate::{ErrKindDay04, Result};
 
@@ -58,24 +58,23 @@ fn cross_mas_regex_count(raw_input: &str, row_length: usize) -> Result<u64> {
         tea::debug!(?handles);
         tea::trace!(?shareable_input_string);
         for (i, re) in [re_mm, re_ms, re_sm, re_ss].into_iter().enumerate() {
-                let _enter = info_span!("Generating thread", ?re, i).entered();
+                let tea_span = tea::info_span!("Generating thread", ?re, i);
+                let _tea = tea_span.enter();
                 tea::info!("hi");
-                let current_span = tracing::Span::current();
                 let shared_input = shareable_input_string.clone();
-                let thread_handle = current_span.in_scope(move || {
-                        thread::spawn(move || {
-                                let _enter = info_span!("Inside new thread", ?re, i).entered();
-                                let mut total = 0;
-                                let mut match_start_position = 0;
-                                while let Some(found_match) = re.find(&shared_input[match_start_position..]) {
-                                        total += 1;
-                                        match_start_position += found_match.start() + 1;
-                                        tea::debug!(match_start_position, total, i);
-                                        tea::trace!(?found_match);
-                                }
-                                tea::debug!("No more matches found.");
-                                total
-                        })
+                let tea_span = tea_span.clone();
+                let thread_handle = thread::spawn(move || {
+                        let _tea = tea_span.clone().entered();
+                        let mut total = 0;
+                        let mut match_start_position = 0;
+                        while let Some(found_match) = re.find(&shared_input[match_start_position..]) {
+                                total += 1;
+                                match_start_position += found_match.start() + 1;
+                                tea::debug!(match_start_position, total, i);
+                                tea::trace!(?found_match);
+                        }
+                        tea::debug!("No more matches found.");
+                        total
                 });
                 handles.push(thread_handle);
         }
