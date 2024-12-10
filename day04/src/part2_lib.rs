@@ -34,11 +34,15 @@ pub fn process_part2(input: &str) -> Result<u64> {
 ///
 /// Spawns 4 threads, one for each of the 4 'cross-mas' patterns.
 ///
+/// ## Warning:
+/// A zero-width match will break the loop logic, advancing the slice index despite potentially past the end of the &str.
+/// As this is designed for a hard-coded regex I am not adding bounds or found pattern checking to address.
+/// (Any empty matches would be a logic error in the context of this function.)
+///
+/// e.g. `r"|..."` has a zero-width pattern on the left. (this typo may manifest as an indexing error)
+///
 /// ## Possible Improvements:
-/// Remarkably, and interestingly, slow.
-/// (Use on a smaller input size siginficicantly reduce runtime; so not regex compilation.)
 /// Would be fun to:
-/// - split out the OR in regex and run each serially
 /// - Rayon & manual threads over:
 ///   - each regex
 ///   - run on iter, and split input [start_x+1..start_y], [start_y+1..start_z], etc.-- allowing parallelization in search with a single regex
