@@ -32,7 +32,7 @@ type VerboseLayeredCompositeType = Layered<
 /// Generates a tracing_subcsriber.  (Convenience function.)
 ///
 /// # Use:
-/// ```
+/// ```text
 /// fn main() -> Result<()> {
 ///     let subscriber = generate_tracing_subscriber();
 ///     tracing::subscriber::set_global_default(subscriber)?;
