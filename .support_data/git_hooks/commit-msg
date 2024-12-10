@@ -44,7 +44,7 @@ echo
 echo "${CYAN}Commit Message received${NC}:"
 echo "$(cat $1)"
 echo
-echo -e "${GREEN}Consistent with committed patterns!${NC}"
+echo -e "${GREEN}^^COPY of ORIGINAL message.^^${NC}"
 echo -e "${DARK_GRAY}================================================================${NC}"
 
 # run committed on temp file holding most recent commit message
