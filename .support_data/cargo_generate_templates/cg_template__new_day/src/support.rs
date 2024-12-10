@@ -3,7 +3,7 @@
 mod error;
 mod subscriber;
 
-pub use error::{ErrKind{{ project-name | title_case }}, ErrWrapper{{ project-name | title_case }}};
+pub use error::ErrWrapper{{ project-name | title_case }};
 pub use subscriber::generate_tracing_subscriber;
 
 pub type Result<T> = std::result::Result<T, ErrWrapper{{ project-name | title_case }}>;

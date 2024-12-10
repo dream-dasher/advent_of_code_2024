@@ -46,6 +46,7 @@ tracing-subscriber = { version = "0.3.19", features = [
     "chrono",
     "env-filter",
     "tracing-log",
+    "json",
 ] }
 tracing-error = "0.2.1"
 ## --General--
