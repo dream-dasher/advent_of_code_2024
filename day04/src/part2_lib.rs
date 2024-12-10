@@ -36,7 +36,7 @@ pub fn process_part2(input: &str) -> Result<u64> {
 /// - Adaptation of the custom state machine used in Part_1
 /// - Is error handling code (which bubbles up the recursing callers) part of the issue?
 #[instrument(ret(level = Level::TRACE))]
-pub fn recursive_regex_search(raw_input: &str, row_length: &usize) -> Result<u64> {
+fn recursive_regex_search(raw_input: &str, row_length: &usize) -> Result<u64> {
         let regex_mas_sized = format!(
                 r"(M.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.S|M.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.S|S.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.M|S.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.M)",
                 r_minus_one = row_length - 1
