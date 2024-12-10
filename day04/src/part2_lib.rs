@@ -58,40 +58,42 @@ pub fn recursive_regex_search(raw_input: &str, row_length: &usize) -> Result<u64
 
 #[cfg(test)]
 mod tests {
+        use indoc::indoc;
         use test_log::test;
-        #[expect(unused)]
         use tracing::{self as tea, instrument};
 
         use super::*;
         use crate::{EXAMPLE_INPUT_2, FINAL_INPUT};
 
-        // #[test]
-        // #[instrument]
-        // fn count_example_test() -> Result<()> {
-        //         let input = indoc!("
-        //                 XXXXXX
-        //                 XSAMXX
-        //                 XAXXAX
-        //                 XMASXS
-        //                 XXXXXX
-        //                 ");
-        //         let expected = 4;
-        //         assert_eq!(process_part2(input)?, expected);
-        //         Ok(())
-        // }
-
         #[test]
         #[instrument]
-        fn part2_example_input_test() -> Result<()> {
-                let input = EXAMPLE_INPUT_2;
-                let expected = 9;
+        fn mas_test() -> Result<()> {
+                let input = indoc!("
+                        M.M...
+                        .A....
+                        S.S.S.
+                        ...A..
+                        ..M.M.
+                        ");
+                let expected = 2;
                 assert_eq!(process_part2(input)?, expected);
                 Ok(())
         }
 
         #[test]
         #[instrument]
-        fn part2_final_input_test() -> Result<()> {
+        fn part2_example_input_mas_test() -> Result<()> {
+                let input = EXAMPLE_INPUT_2;
+                let expected = 9;
+                assert_eq!(process_part2(input)?, expected);
+                Ok(())
+        }
+
+        // #[ignore = "Long runtime without release optimization"]
+        #[test]
+        #[instrument]
+        fn part2_final_input_mas_test() -> Result<()> {
+                tea::warn!("Long runtime without release optimization");
                 let input = FINAL_INPUT;
                 let expected = 1_910;
                 assert_eq!(process_part2(input)?, expected);
