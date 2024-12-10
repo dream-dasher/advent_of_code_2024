@@ -1,8 +1,6 @@
 //! Library code for Part 2 of Day04 of Advent of Code 2024.
 //! `bin > part2_bin.rs` will run this code along with content of `input2.txt`
 
-use std::cell::LazyCell;
-
 use regex::Regex;
 use tracing::{self as tea, Level, instrument};
 
@@ -39,16 +37,12 @@ pub fn process_part2(input: &str) -> Result<u64> {
 /// - Is error handling code (which bubbles up the recursing callers) part of the issue?
 #[instrument(ret(level = Level::TRACE))]
 pub fn recursive_regex_search(raw_input: &str, row_length: &usize) -> Result<u64> {
-        // static OL: LazyCell<String> = LazyCell::new();
-        // static RE: LazyCell<Regex> = LazyCell::new();
-        let regex_mas_sized = LazyCell::new(|| {
-                format!(
-                        r"(M.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.S|M.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.S|S.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.M|S.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.M)",
-                        r_minus_one = row_length - 1
-                )
-        });
+        let regex_mas_sized = format!(
+                r"(M.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.S|M.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.S|S.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.M|S.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.M)",
+                r_minus_one = row_length - 1
+        );
         tea::trace!(?regex_mas_sized, ?row_length, "Regex set for given row_length.");
-        let re = LazyCell::new(|| Regex::new(&regex_mas_sized).unwrap());
+        let re = Regex::new(&regex_mas_sized).unwrap();
         tea::trace!(?re, "Regex Lazy Cell compiled.");
 
         let mut total = 0;
