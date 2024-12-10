@@ -49,27 +49,33 @@ pub fn process_part2(input: &str) -> Result<u64> {
 ///   - have some channel or other shared counting mechanism (allowing function frames & info to be dropped? <-- not sure how this works entirely!; but perhaps with thread spawning
 /// - Adaptation of the custom state machine used in Part_1
 /// - Is error handling code (which bubbles up the recursing callers) part of the issue?
-#[instrument(ret(level = Level::TRACE))]
+#[instrument(skip(raw_input), ret(level = Level::TRACE))]
 fn cross_mas_regex_count(raw_input: &str, row_length: usize) -> Result<u64> {
         let (re_mm, re_ms, re_sm, re_ss) = compile_mas_regexes(row_length);
         // let shared_input = Arc::new(raw_input.to_string());
         let shareable_input_string = Arc::new(raw_input.to_string());
         let mut handles = Vec::with_capacity(4);
-        tea::debug!(?shareable_input_string, ?handles);
+        tea::debug!(?handles);
+        tea::trace!(?shareable_input_string);
         for (i, re) in [re_mm, re_ms, re_sm, re_ss].into_iter().enumerate() {
-                let _enter = info_span!("Generating thread", ?re, i);
+                let _enter = info_span!("Generating thread", ?re, i).entered();
+                tea::info!("hi");
+                let current_span = tracing::Span::current();
                 let shared_input = shareable_input_string.clone();
-                let thread_handle = thread::spawn(move || {
-                        let _enter = info_span!("Inside new thread", ?re, i);
-                        let mut total = 0;
-                        let mut match_start_position = 0;
-                        while let Some(found_match) = re.find(&shared_input[match_start_position..]) {
-                                total += 1;
-                                match_start_position += found_match.start() + 1;
-                                tea::debug!(match_start_position, ?found_match, total, i);
-                        }
-                        tea::debug!("No more matches found.");
-                        total
+                let thread_handle = current_span.in_scope(move || {
+                        thread::spawn(move || {
+                                let _enter = info_span!("Inside new thread", ?re, i).entered();
+                                let mut total = 0;
+                                let mut match_start_position = 0;
+                                while let Some(found_match) = re.find(&shared_input[match_start_position..]) {
+                                        total += 1;
+                                        match_start_position += found_match.start() + 1;
+                                        tea::debug!(match_start_position, total, i);
+                                        tea::trace!(?found_match);
+                                }
+                                tea::debug!("No more matches found.");
+                                total
+                        })
                 });
                 handles.push(thread_handle);
         }
