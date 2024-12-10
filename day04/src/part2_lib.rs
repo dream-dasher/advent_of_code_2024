@@ -19,7 +19,7 @@ pub fn process_part2(input: &str) -> Result<u64> {
                         source_input: (input.to_string()),
                 })?
                 .len();
-        recursive_regex_search(input, &row_length)
+        cross_mas_regex_count(input, &row_length)
 }
 
 /// Count patterns using a simple regex, recursively re-calling it with start position shifted to allow pattern overlap.
@@ -36,7 +36,7 @@ pub fn process_part2(input: &str) -> Result<u64> {
 /// - Adaptation of the custom state machine used in Part_1
 /// - Is error handling code (which bubbles up the recursing callers) part of the issue?
 #[instrument(ret(level = Level::TRACE))]
-fn recursive_regex_search(raw_input: &str, row_length: &usize) -> Result<u64> {
+fn cross_mas_regex_count(raw_input: &str, row_length: &usize) -> Result<u64> {
         let regex_mas_sized = format!(
                 r"(M.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.S|M.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.S|S.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.M|S.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.M)",
                 r_minus_one = row_length - 1
