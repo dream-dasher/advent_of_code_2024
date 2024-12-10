@@ -1,7 +1,7 @@
 //! Library code for Part 2 of Day04 of Advent of Code 2024.
 //! `bin > part2_bin.rs` will run this code along with content of `input2.txt`
 
-use std::sync::OnceLock;
+use std::cell::LazyCell;
 
 use regex::Regex;
 use tracing::{self as tea, Level, instrument};
@@ -11,8 +11,6 @@ use crate::{ErrKindDay04, Result};
 // we can't use `format!` with the const value.
 #[expect(unused)]
 const REGEX_MAS_TEMPLATE: &str = r"(M.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.S|M.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.S|S.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.M|S.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.M)";
-static OL: OnceLock<String> = OnceLock::new();
-static RE: OnceLock<Regex> = OnceLock::new();
 
 #[instrument(skip_all, ret(level = Level::DEBUG))]
 pub fn process_part2(input: &str) -> Result<u64> {
@@ -41,24 +39,27 @@ pub fn process_part2(input: &str) -> Result<u64> {
 /// - Is error handling code (which bubbles up the recursing callers) part of the issue?
 #[instrument(ret(level = Level::TRACE))]
 pub fn recursive_regex_search(raw_input: &str, row_length: &usize) -> Result<u64> {
-        let regex_mas_sized = OL.get_or_init(|| {
+        // static OL: LazyCell<String> = LazyCell::new();
+        // static RE: LazyCell<Regex> = LazyCell::new();
+        let regex_mas_sized = LazyCell::new(|| {
                 format!(
                         r"(M.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.S|M.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.S|S.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.M|S.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.M)",
                         r_minus_one = row_length - 1
                 )
         });
         tea::trace!(?regex_mas_sized, ?row_length, "Regex set for given row_length.");
-        let re = RE.get_or_init(|| Regex::new(regex_mas_sized).unwrap());
+        let re = LazyCell::new(|| Regex::new(&regex_mas_sized).unwrap());
         tea::trace!(?re, "Regex Lazy Cell compiled.");
 
-        let Some(found_match) = re.find(raw_input) else {
-                tea::debug!("No more matches found. Starting return sequence.");
-                return Ok(0);
-        };
-        let match_start_position = found_match.start();
-        tea::info!(match_start_position, ?found_match);
-        // spawn in new thread
-        Ok(1 + recursive_regex_search(&raw_input[match_start_position + 1..], row_length)?)
+        let mut total = 0;
+        let mut match_start_position = 0;
+        while let Some(found_match) = re.find(&raw_input[match_start_position..]) {
+                total += 1;
+                match_start_position += found_match.start() + 1;
+                tea::debug!(match_start_position, ?found_match);
+        }
+        tea::debug!("No more matches found.");
+        Ok(total)
 }
 
 #[cfg(test)]
@@ -68,7 +69,6 @@ mod tests {
         use tracing::{self as tea, instrument};
 
         use super::*;
-        #[expect(unused)]
         use crate::{EXAMPLE_INPUT_2, FINAL_INPUT};
 
         // #[test]
@@ -95,13 +95,12 @@ mod tests {
                 Ok(())
         }
 
-        // #[test]
-        // #[instrument]
-        // // stack overflow -- related to running debug code presumably
-        // fn part2_final_input_test() -> Result<()> {
-        //         let input = FINAL_INPUT;
-        //         let expected = 1_910;
-        //         assert_eq!(process_part2(input)?, expected);
-        //         Ok(())
-        // }
+        #[test]
+        #[instrument]
+        fn part2_final_input_test() -> Result<()> {
+                let input = FINAL_INPUT;
+                let expected = 1_910;
+                assert_eq!(process_part2(input)?, expected);
+                Ok(())
+        }
 }
