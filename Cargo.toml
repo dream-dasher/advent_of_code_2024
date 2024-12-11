@@ -26,10 +26,89 @@ unsafe_code = "forbid"
 [workspace.lints.clippy]
 allow_attributes = "warn"
 
+# # Reference Default for Release
+# [profile.release]
+# opt-level = 3
+# debug = false
+# split-debuginfo = '...'  # Platform-specific.
+# strip = "none"
+# debug-assertions = false
+# overflow-checks = false
+# lto = false
+# panic = 'unwind'
+# incremental = false
+# codegen-units = 16
+# rpath = false
+
+
+# BINFILE='day04'
+# BINARGS='2 full'
+# clear;
+# echo " \
+# cargo build --debug;
+# cargo build --release;
+# cargo build --profile=profiling;
+# cargo build --profile=release_alt_thin;
+# cargo build --profile=release_alt_fat;
+# cargo build --profile=release_alt_s;
+# cargo build --profile=release_alt_z;
+# hyperfine \
+# '            ./target/debug/BIN_FILE_NAME BIN_ARGS' \
+# '        ./target/profiling/BIN_FILE_NAME BIN_ARGS' \
+# '          ./target/release/BIN_FILE_NAME BIN_ARGS' \
+# ' ./target/release_alt_thin/BIN_FILE_NAME BIN_ARGS' \
+# '  ./target/release_alt_fat/BIN_FILE_NAME BIN_ARGS' \
+# '    ./target/release_alt_s/BIN_FILE_NAME BIN_ARGS' \
+# '    ./target/release_alt_z/BIN_FILE_NAME BIN_ARGS' \
+# --warmup=3 --shell=none;
+# fd --unrestricted          'BIN_FILE_NAME$' -t x |
+# xargs eza --long --numeric --all --classify --header --icons --sort=type --time-style=relative --git --git-repos --sort=size;" |
+# sd 'BIN_FILE_NAME' "$BINFILE" |
+# sd 'BIN_ARGS' "$BINARGS" |
+# zsh
+
 # for use with perf-analysis tools like `samply`
 [profile.profiling]
 inherits = "release"
 debug = true
+
+[profile.release_alt_s]
+inherits = "release"
+opt-level = "s"
+panic = "abort"
+debug = false
+debug-assertions = false
+overflow-checks = false
+codegen-units = 1
+
+[profile.release_alt_z]
+inherits = "release"
+opt-level = "z"
+panic = "abort"
+debug = false
+debug-assertions = false
+overflow-checks = false
+codegen-units = 1
+
+[profile.release_alt_thin]
+inherits = "release"
+opt-level = 3
+panic = "abort"
+debug = false
+debug-assertions = false
+overflow-checks = false
+lto = "thin"
+codegen-units = 1
+
+[profile.release_alt_fat]
+inherits = "release"
+opt-level = 3
+panic = "abort"
+debug = false
+debug-assertions = false
+overflow-checks = false
+lto = "fat"
+codegen-units = 1
 
 [workspace.dependencies]
 ## --CLI--
