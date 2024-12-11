@@ -26,6 +26,10 @@ unsafe_code = "forbid"
 [workspace.lints.clippy]
 allow_attributes = "warn"
 
+# for use with perf-analysis tools like `samply`
+[profile.profiling]
+inherits = "release"
+debug = true
 
 [workspace.dependencies]
 ## --CLI--

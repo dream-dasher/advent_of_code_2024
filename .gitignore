@@ -20,13 +20,18 @@
 **/no_sync/**
 **/no-sync/**
 **/nosync/**
+.output/**
+.output/logging/**
+.output/profiling/**
 
 # gitkeep -- ¡this must be _after _ all exclusion patterns!
 #         -- this excludes it from being caught in *glob* patterns
 # dir-exclusion: "It is not possible to re-include a file if a parent directory of that file is excluded." -gitignore docs
 #         -- `dir/*` will     allow .gitkeep to be tracked
 #         -- `dir/`  will NOT allow tracking
-!.gitkeep
+!**.gitkeep
+!.output/logging/
+!.output/profiling/
 
 # ===================================
 # standard GitHub GitIgnore for Rust (as of 2024-VIII-04)

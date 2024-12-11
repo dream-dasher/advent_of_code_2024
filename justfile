@@ -79,6 +79,12 @@ testnx-view test_name="" log_level="error":
     @echo "'Fun' Fact; the '--test' flag only allows integration test selection and will just fail on unit tests."
     RUST_LOG={{log_level}} cargo nextest run {{test_name}} --no-capture
 
+# Run performance analysis on a package.
+perf package *args:
+    cargo build --profile profiling --bin {{package}}
+    hyperfine --export-markdown=.output/profiling/{{package}}_hyperfine_profile.md 'target/profiling/{{package}} {{args}}'
+    samply record --output=.output/profiling/{{package}}_samply_profile.json target/profiling/{{package}} {{args}}
+
 # List dependencies. (This command has dependencies.)
 list-external-deps:
     @echo "{{CYN}}List of external dependencies for this command runner and repo:"
