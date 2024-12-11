@@ -36,19 +36,17 @@ enum SearchState {
         X,
         XM,
         XMA,
-        FoundXMAS,
         S,
         SA,
         SAM,
-        FoundSAMX,
 }
-impl SearchState {
-        /// Returns true if the state is in either `FoundXMAS` or `FoundSAMX`.
-        #[instrument(level = Level::TRACE, ret(level = Level::TRACE))]
-        fn is_found(&self) -> bool {
-                matches!(self, SearchState::FoundXMAS | SearchState::FoundSAMX)
-        }
-}
+// impl SearchState {
+//         /// Returns true if the state is in either `FoundXMAS` or `FoundSAMX`.
+//         #[instrument(level = Level::TRACE, ret(level = Level::TRACE))]
+//         fn is_found(&self) -> bool {
+//                 matches!(self, SearchState::FoundXMAS | SearchState::FoundSAMX)
+//         }
+// }
 impl SearchStateMachine {
         /// Counts the occurrences of `XMAS` and `SAMX` on each line in a vector of `CWordLine`s.
         #[instrument(level = Level::DEBUG, skip_all, ret(level = Level::DEBUG))]
@@ -62,8 +60,8 @@ impl SearchStateMachine {
                         let _enter = tea::debug_span!("Processing, line", ?i, ?total_finds).entered();
                         let mut search_state_machine = SearchStateMachine::new();
                         for (i2, cw_char) in line.into_iter().enumerate() {
-                                let new_state = search_state_machine.next(cw_char);
-                                if new_state.is_found() {
+                                let (new_state, found_match) = search_state_machine.next(cw_char);
+                                if found_match {
                                         total_finds += 1;
                                         tea::debug!(total_finds, ?new_state, ?cw_char, i, i2);
                                 }
@@ -87,69 +85,69 @@ impl SearchStateMachine {
         /// `Found` & `Null` are equivalent for traversal logic.
         /// It's up to the caller to operate based on the distinction.
         #[instrument(level = Level::TRACE, ret(level = Level::TRACE))]
-        fn next(&mut self, cw_char: &CWordChar) -> SearchState {
-                let new_state = match (&cw_char, self.state) {
-                        (CWordChar::M, SearchState::X | SearchState::FoundSAMX) => SearchState::XM,
-                        (CWordChar::A, SearchState::XM) => SearchState::XMA,
-                        (CWordChar::S, SearchState::XMA) => SearchState::FoundXMAS,
+        fn next(&mut self, cw_char: &CWordChar) -> (SearchState, bool) {
+                let (new_state, found_match) = match (&cw_char, self.state) {
+                        (CWordChar::M, SearchState::X) => (SearchState::XM, false),
+                        (CWordChar::A, SearchState::XM) => (SearchState::XMA, false),
+                        (CWordChar::S, SearchState::XMA) => (SearchState::S, true),
                         //
-                        (CWordChar::A, SearchState::S | SearchState::FoundXMAS) => SearchState::SA,
-                        (CWordChar::M, SearchState::SA) => SearchState::SAM,
-                        (CWordChar::X, SearchState::SAM) => SearchState::FoundSAMX,
+                        (CWordChar::A, SearchState::S) => (SearchState::SA, false),
+                        (CWordChar::M, SearchState::SA) => (SearchState::SAM, false),
+                        (CWordChar::X, SearchState::SAM) => (SearchState::X, true),
                         //
-                        (CWordChar::X, _) => SearchState::X,
-                        (CWordChar::S, _) => SearchState::S,
-                        _ => SearchState::Null,
+                        (CWordChar::X, _) => (SearchState::X, false),
+                        (CWordChar::S, _) => (SearchState::S, false),
+                        _ => (SearchState::Null, false),
                 };
 
                 self.state = new_state;
-                new_state
+                (new_state, found_match)
         }
 
-        /// Show the state that the SearchStateMachine would enter
-        ///
-        /// ## Note
-        /// `Found` & `Null` are equivalent for traversal logic.
-        /// It's up to the caller to operate based on the distinction.
-        #[instrument(level = Level::TRACE, ret(level = Level::TRACE))]
-        fn preview_next(&self, cw_char: &CWordChar) -> SearchState {
-                match (&cw_char, self.state) {
-                        (CWordChar::X, SearchState::Null | SearchState::FoundXMAS) => SearchState::X,
-                        (CWordChar::M, SearchState::X | SearchState::FoundSAMX) => SearchState::XM,
-                        (CWordChar::A, SearchState::XM) => SearchState::XMA,
-                        (CWordChar::S, SearchState::XMA) => SearchState::FoundXMAS,
-                        //
-                        (CWordChar::S, SearchState::Null | SearchState::FoundSAMX) => SearchState::S,
-                        (CWordChar::A, SearchState::S | SearchState::FoundXMAS) => SearchState::SA,
-                        (CWordChar::M, SearchState::SA) => SearchState::SAM,
-                        (CWordChar::X, SearchState::SAM) => SearchState::FoundSAMX,
-                        //
-                        _ => SearchState::Null,
-                }
-        }
+        // /// Show the state that the SearchStateMachine would enter
+        // ///
+        // /// ## Note
+        // /// `Found` & `Null` are equivalent for traversal logic.
+        // /// It's up to the caller to operate based on the distinction.
+        // #[instrument(level = Level::TRACE, ret(level = Level::TRACE))]
+        // fn preview_next(&self, cw_char: &CWordChar) -> SearchState {
+        //         match (&cw_char, self.state) {
+        //                 (CWordChar::X, SearchState::Null | SearchState::FoundXMAS) => SearchState::X,
+        //                 (CWordChar::M, SearchState::X | SearchState::FoundSAMX) => SearchState::XM,
+        //                 (CWordChar::A, SearchState::XM) => SearchState::XMA,
+        //                 (CWordChar::S, SearchState::XMA) => SearchState::FoundXMAS,
+        //                 //
+        //                 (CWordChar::S, SearchState::Null | SearchState::FoundSAMX) => SearchState::S,
+        //                 (CWordChar::A, SearchState::S | SearchState::FoundXMAS) => SearchState::SA,
+        //                 (CWordChar::M, SearchState::SA) => SearchState::SAM,
+        //                 (CWordChar::X, SearchState::SAM) => SearchState::FoundSAMX,
+        //                 //
+        //                 _ => SearchState::Null,
+        //         }
+        // }
 
-        /// Consume a SearchStateMachine and CWordChar and produce a new, advanced, SearchStateMachine.
-        ///
-        /// ## Note
-        /// `Found` & `Null` are equivalent for traversal logic.
-        /// It's up to the caller to operate based on the distinction.
-        #[instrument(level = Level::TRACE, ret(level = Level::TRACE))]
-        fn evolve(mut self, cw_char: &CWordChar) -> SearchStateMachine {
-                self.state = match (&cw_char, self.state) {
-                        (CWordChar::X, SearchState::Null | SearchState::FoundXMAS) => SearchState::X,
-                        (CWordChar::M, SearchState::X | SearchState::FoundSAMX) => SearchState::XM,
-                        (CWordChar::A, SearchState::XM) => SearchState::XMA,
-                        (CWordChar::S, SearchState::XMA) => SearchState::FoundXMAS,
-                        //
-                        (CWordChar::S, SearchState::Null | SearchState::FoundSAMX) => SearchState::S,
-                        (CWordChar::A, SearchState::S | SearchState::FoundXMAS) => SearchState::SA,
-                        (CWordChar::M, SearchState::SA) => SearchState::SAM,
-                        (CWordChar::X, SearchState::SAM) => SearchState::FoundSAMX,
-                        //
-                        _ => SearchState::Null,
-                };
-                self
-        }
+        // /// Consume a SearchStateMachine and CWordChar and produce a new, advanced, SearchStateMachine.
+        // ///
+        // /// ## Note
+        // /// `Found` & `Null` are equivalent for traversal logic.
+        // /// It's up to the caller to operate based on the distinction.
+        // #[instrument(level = Level::TRACE, ret(level = Level::TRACE))]
+        // fn evolve(mut self, cw_char: &CWordChar) -> SearchStateMachine {
+        //         self.state = match (&cw_char, self.state) {
+        //                 (CWordChar::X, SearchState::Null | SearchState::FoundXMAS) => SearchState::X,
+        //                 (CWordChar::M, SearchState::X | SearchState::FoundSAMX) => SearchState::XM,
+        //                 (CWordChar::A, SearchState::XM) => SearchState::XMA,
+        //                 (CWordChar::S, SearchState::XMA) => SearchState::FoundXMAS,
+        //                 //
+        //                 (CWordChar::S, SearchState::Null | SearchState::FoundSAMX) => SearchState::S,
+        //                 (CWordChar::A, SearchState::S | SearchState::FoundXMAS) => SearchState::SA,
+        //                 (CWordChar::M, SearchState::SA) => SearchState::SAM,
+        //                 (CWordChar::X, SearchState::SAM) => SearchState::FoundSAMX,
+        //                 //
+        //                 _ => SearchState::Null,
+        //         };
+        //         self
+        // }
 }
 #[cfg(test)]
 mod tests {
