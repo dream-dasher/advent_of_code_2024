@@ -45,7 +45,7 @@ allow_attributes = "warn"
 # BINARGS='2 full'
 # clear;
 # echo " \
-# cargo build --debug;
+# cargo build;
 # cargo build --release;
 # cargo build --profile=profiling;
 # cargo build --profile=release_alt_thin;
