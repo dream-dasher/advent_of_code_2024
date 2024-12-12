@@ -1,23 +1,49 @@
 //! Library code for Part 2 of Day02 of Advent of Code 2024.
 //! `bin > part2_bin.rs` will run this code along with content of `input2.txt`
 
+use rayon::prelude::*;
 use tracing::{self as tea, Level, instrument};
 
 use crate::{Result,
-            parse::{Difference, LineReport, ReportStatus, parse_input}};
+            parse::{Difference, LineReport, ReportStatus, parse_input_rayon, parse_input_serial}};
 
 #[instrument(skip_all, ret(level = Level::INFO))]
-pub fn process_part2(raw_input: &str) -> Result<u64> {
+pub fn process_part2_serial(raw_input: &str) -> Result<u64> {
         tea::trace!(%raw_input);
-        let line_reports = parse_input(raw_input)?;
-        process_parsed_2(line_reports)
+        let line_reports = parse_input_serial(raw_input)?;
+        process_parsed_2_serial(line_reports)
 }
-fn process_parsed_2(line_reports: Vec<LineReport>) -> Result<u64> {
+#[instrument(skip_all, ret(level = Level::INFO))]
+pub fn process_part2_rayon(raw_input: &str) -> Result<u64> {
+        tea::trace!(%raw_input);
+        let line_reports = parse_input_rayon(raw_input)?;
+        process_parsed_2_rayon(line_reports)
+}
+
+fn process_parsed_2_serial(line_reports: Vec<LineReport>) -> Result<u64> {
         let safe_line_reports = line_reports
                 .iter()
                 .map(|line| {
                         let first_derivative: Vec<Difference> = line
                                 .windows(2)
+                                .map(|w| match w {
+                                        &[a, b] => Difference::new(b - a),
+                                        _ => unreachable!("windows(2)"),
+                                })
+                                .collect();
+                        first_derivative
+                })
+                .map(safety_status_2)
+                .filter(|x| *x == ReportStatus::Safe)
+                .count();
+        Ok(safe_line_reports.try_into()?)
+}
+fn process_parsed_2_rayon(line_reports: Vec<LineReport>) -> Result<u64> {
+        let safe_line_reports = line_reports
+                .par_iter()
+                .map(|line| {
+                        let first_derivative: Vec<Difference> = line
+                                .par_windows(2)
                                 .map(|w| match w {
                                         &[a, b] => Difference::new(b - a),
                                         _ => unreachable!("windows(2)"),
@@ -178,35 +204,41 @@ mod tests {
                         8 6 4 4 1
                         1 3 6 7 9");
                 let expected = 4;
-                assert_eq!(process_part2(input)?, expected);
+                assert_eq!(process_part2_serial(input)?, expected);
+                assert_eq!(process_part2_rayon(input)?, expected);
                 Ok(())
         }
         #[test]
         fn test_simple_increasing_2() -> Result<()> {
                 let input = indoc!("1 2 3 4");
                 let expected = 1;
-                assert_eq!(process_part2(input)?, expected);
+                assert_eq!(process_part2_serial(input)?, expected);
+                assert_eq!(process_part2_rayon(input)?, expected);
                 Ok(())
         }
         #[test]
         fn test_single_outlier() -> Result<()> {
                 let input = indoc!("1 2 3 0");
                 let expected = 1;
-                assert_eq!(process_part2(input)?, expected);
+                assert_eq!(process_part2_serial(input)?, expected);
+                assert_eq!(process_part2_rayon(input)?, expected);
                 Ok(())
         }
         #[test]
         fn test_double_outlier() -> Result<()> {
                 let input = indoc!("2 2 3 0");
                 let expected = 0;
-                assert_eq!(process_part2(input)?, expected);
+                assert_eq!(process_part2_serial(input)?, expected);
+                assert_eq!(process_part2_rayon(input)?, expected);
+
                 Ok(())
         }
         #[test]
         fn test_simple_decreasing_2() -> Result<()> {
                 let input = indoc!("4 3 2 1");
                 let expected = 1;
-                assert_eq!(process_part2(input)?, expected);
+                assert_eq!(process_part2_serial(input)?, expected);
+                assert_eq!(process_part2_rayon(input)?, expected);
                 Ok(())
         }
 
@@ -214,7 +246,8 @@ mod tests {
         fn test_increasing_too_fast() -> Result<()> {
                 let input = indoc!("1 6 7 10 16 17");
                 let expected = 0;
-                assert_eq!(process_part2(input)?, expected);
+                assert_eq!(process_part2_serial(input)?, expected);
+                assert_eq!(process_part2_rayon(input)?, expected);
                 Ok(())
         }
 
@@ -222,21 +255,24 @@ mod tests {
         fn test_empty_diffs() -> Result<()> {
                 let input = indoc!("1");
                 let expected = 1;
-                assert_eq!(process_part2(input)?, expected);
+                assert_eq!(process_part2_serial(input)?, expected);
+                assert_eq!(process_part2_rayon(input)?, expected);
                 Ok(())
         }
         #[test]
         fn test_pair() -> Result<()> {
                 let input = indoc!("1 100");
                 let expected = 1;
-                assert_eq!(process_part2(input)?, expected);
+                assert_eq!(process_part2_serial(input)?, expected);
+                assert_eq!(process_part2_rayon(input)?, expected);
                 Ok(())
         }
         #[test]
         fn test_triple_flat() -> Result<()> {
                 let input = indoc!("1 1 1");
                 let expected = 0;
-                assert_eq!(process_part2(input)?, expected);
+                assert_eq!(process_part2_serial(input)?, expected);
+                assert_eq!(process_part2_rayon(input)?, expected);
                 Ok(())
         }
 
@@ -264,11 +300,32 @@ mod tests {
         }
 
         #[quickcheck]
-        fn test_good_sequence(len: u8, sign: bool) -> bool {
+        fn test_good_sequence_serial(len: u8, sign: bool) -> bool {
                 let len = len as usize;
                 let good_seq = generate_good_sequence(len, sign);
                 tea::warn!(?good_seq);
-                let val = process_parsed_2(good_seq.clone());
+                let val = process_parsed_2_serial(good_seq.clone());
+                match val {
+                        Ok(1) => {
+                                tea::info!(?val, ?good_seq);
+                                true
+                        }
+                        Ok(_) => {
+                                tea::error!(?val, ?good_seq);
+                                false
+                        }
+                        Err(_) => {
+                                tea::error!(?val, ?good_seq);
+                                false
+                        }
+                }
+        }
+        #[quickcheck]
+        fn test_good_sequence_rayon(len: u8, sign: bool) -> bool {
+                let len = len as usize;
+                let good_seq = generate_good_sequence(len, sign);
+                tea::warn!(?good_seq);
+                let val = process_parsed_2_rayon(good_seq.clone());
                 match val {
                         Ok(1) => {
                                 tea::info!(?val, ?good_seq);

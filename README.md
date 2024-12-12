@@ -42,6 +42,20 @@ Sum  :   x -7
 **NOTE**: recursive solution over raw input with forking on ‘bad transition’: simpler code
           (just wanted to do it via the diffs)
 
+### Perf:
+**Rayon**: For very simple tasks, the work-stealing multi-threading can cost more than it offers.  Note, that all of the lines here are short.  We'll do more involved benching in the future.  This was a bit time consuming without being even in spirit comprehensive.
+| Command | Mean [ms] | Min [ms] | Max [ms] | Relative |
+|:---|---:|---:|---:|---:|
+| `day02 1 serial example_6e0` | 7.5 ± 1.5 | 5.2 | 12.8 | 1.00 |
+| `day02 1 rayon example_6e0` | 8.1 ± 1.2 | 5.4 | 18.0 | 1.08 ± 0.27 |
+|---|---|---|---|---|
+| `day02 1 serial full_1e3` | 7.7 ± 1.2 | 5.2 | 13.5 | 1.00 |
+| `day02 1 rayon full_1e3` | 28.8 ± 1.2 | 25.3 | 33.6 | 3.74 ± 0.62 |
+|---|---|---|---|---|
+| `day02 1 serial custom`_1e9 | 245.1 ± 1.8 | 242.9 | 248.5 | 1.00 |
+| `day02 1 rayon custom_1e9` | 18410.7 ± 1014.3 | 16476.7 | 19274.3 | 75.11 ± 4.18 |
+  
+
 ## Day 3: [Mull It Over](https://adventofcode.com/2024/day/3) : [code takeaways](day03/README.md)
 - P1: pattern match & extract
 - P2: + split out "do" segments 

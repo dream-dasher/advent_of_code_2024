@@ -3,8 +3,8 @@
 use std::path::PathBuf;
 
 use clap::{Parser, Subcommand, ValueEnum};
-use day02::{CUSTOM_INPUT, EXAMPLE_INPUT, FINAL_INPUT, Result, generate_tracing_subscriber, process_part1,
-            process_part2};
+use day02::{CUSTOM_INPUT, EXAMPLE_INPUT, FINAL_INPUT, Result, generate_tracing_subscriber, process_part1_rayon,
+            process_part1_serial, process_part2_rayon, process_part2_serial};
 use tracing::{self as tea, Level, instrument};
 
 /// Choose to run Part 1 or 2 of Day02 of Advent of Code 2024.
@@ -18,10 +18,12 @@ use tracing::{self as tea, Level, instrument};
 )]
 pub struct Args {
         /// Which Part to Run
-        part:  Part,
+        part:      Part,
+        /// Serial processing or Parallel processing w/Rayon
+        proc_type: ProcessType,
         /// Input to use.
         #[command(subcommand)]
-        input: Option<Input>,
+        input:     Option<Input>,
 }
 #[derive(Debug, Clone, ValueEnum)]
 pub enum Part {
@@ -43,6 +45,13 @@ pub enum Input {
         /// Use custom input; please give a path.
         Other { path: PathBuf },
 }
+#[derive(Debug, Clone, ValueEnum)]
+pub enum ProcessType {
+        /// Serial processing
+        Serial,
+        /// Parallel processing w/Rayon
+        Rayon,
+}
 
 fn main() -> Result<()> {
         tea::subscriber::set_global_default(generate_tracing_subscriber())?;
@@ -51,14 +60,15 @@ fn main() -> Result<()> {
         let cli_user_args = Args::parse();
         tea::trace!(?cli_user_args);
         let part = cli_user_args.part;
+        let proc_type = cli_user_args.proc_type;
         let inp = cli_user_args.input.unwrap_or_else(|| {
                 tea::warn!("-- No input given.  Using Example input. -- ");
                 Input::Example
         });
         tea::trace!(?part, ?inp);
-        match (part, inp) {
-                (Part::Part1, inp) => main_part1(inp),
-                (Part::Part2, inp) => main_part2(inp),
+        match part {
+                Part::Part1 => main_part1(inp, proc_type),
+                Part::Part2 => main_part2(inp, proc_type),
         }?;
         tea::trace!("finishing main()");
         Ok(())
@@ -66,28 +76,34 @@ fn main() -> Result<()> {
 
 /// Run Part1_Lib code on binary-bound input1.txt
 #[instrument(ret(level = Level::INFO))]
-pub fn main_part1(input_type: Input) -> Result<u64> {
+pub fn main_part1(input_type: Input, proc_type: ProcessType) -> Result<u64> {
         let input = match input_type {
                 Input::Example => EXAMPLE_INPUT,
                 Input::Full => FINAL_INPUT,
                 Input::Custom => CUSTOM_INPUT,
                 Input::Other { path } => &std::fs::read_to_string(path)?,
         };
-        let val = process_part1(input)?;
+        let val = match proc_type {
+                ProcessType::Serial => process_part1_serial(input)?,
+                ProcessType::Rayon => process_part1_rayon(input)?,
+        };
         tea::info!(?val, "Part 1 Process result.");
         Ok(val)
 }
 
 /// Run Part2_Lib code on binary-bound input2.txt
 #[instrument(ret(level = Level::INFO))]
-pub fn main_part2(input_type: Input) -> Result<u64> {
+pub fn main_part2(input_type: Input, proc_type: ProcessType) -> Result<u64> {
         let input = match input_type {
                 Input::Example => EXAMPLE_INPUT,
                 Input::Full => FINAL_INPUT,
                 Input::Custom => CUSTOM_INPUT,
                 Input::Other { path } => &std::fs::read_to_string(path)?,
         };
-        let val = process_part2(input)?;
+        let val = match proc_type {
+                ProcessType::Serial => process_part2_serial(input)?,
+                ProcessType::Rayon => process_part2_rayon(input)?,
+        };
         tea::info!(?val, "Part 2 Process result.");
         Ok(val)
 }

@@ -38,6 +38,8 @@ rand.workspace = true
 regex.workspace = true
 serde.workspace = true
 serde_json.workspace = true
+## --Perf--
+rayon.workspace = true
 # Dev-Dependencies
 ## --Property Sample Testing--
 quickcheck.workspace = true
