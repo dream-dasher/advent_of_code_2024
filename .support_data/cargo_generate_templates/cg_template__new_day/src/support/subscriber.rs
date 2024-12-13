@@ -17,7 +17,7 @@
 use tracing::level_filters::LevelFilter;
 use tracing_appender::non_blocking::WorkerGuard;
 use tracing_error::ErrorLayer;
-use tracing_subscriber::prelude::*;
+use tracing_subscriber::{fmt::format::FmtSpan, prelude::*};
 
 use crate::Result;
 
@@ -39,7 +39,16 @@ pub fn active_global_default_tracing_subscriber() -> Result<WorkerGuard> {
                 .with_default_directive(LevelFilter::TRACE.into())
                 .from_env_lossy();
 
-        let tree_layer = tracing_tree::HierarchicalLayer::new(2)
+        // let tree_layer = tracing_tree::HierarchicalLayer::new(2)
+        //         .with_timer(tracing_tree::time::Uptime::default())
+        //         .with_span_modes(true)
+        //         .with_indent_lines(true)
+        //         .with_targets(true);
+
+        let error_layer = ErrorLayer::default().with_filter(LevelFilter::TRACE);
+
+        let (non_blocking_writer, trace_writer_guard) = tracing_appender::non_blocking(std::io::stderr());
+        let fmt_layer = tracing_subscriber::fmt::Layer::default()
                 // .compact()
                 // .pretty()
                 // .with_timer(<timer>)
@@ -50,13 +59,6 @@ pub fn active_global_default_tracing_subscriber() -> Result<WorkerGuard> {
                 .with_line_number(true)
                 .with_span_events(FmtSpan::FULL)
                 .with_writer(non_blocking_writer);
-
-        let error_layer = ErrorLayer::default().with_filter(LevelFilter::TRACE);
-
-        let (non_blocking_writer, trace_writer_guard) = tracing_appender::non_blocking(std::io::stderr());
-        let fmt_layer = tracing_subscriber::fmt::Layer::default()
-                .with_writer(non_blocking_writer)
-                .compact();
 
         let subscriber = tracing_subscriber::Registry::default()
                 .with(error_layer)
