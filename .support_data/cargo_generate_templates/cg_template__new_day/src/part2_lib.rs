@@ -38,6 +38,7 @@ pub fn process_part2(input: &str) -> Result<u64> {
 //         // /// NOTE: `#[ignore]` is set for this test by default.
 //         // #[ignore]
 //         // #[test]
+//         // #[instrument]
 //         // fn test_process_problem_input() -> Result<()> {
 //         //         tracing_subscriber::fmt::init();
 //         //         let input = FINAL_INPUT;
