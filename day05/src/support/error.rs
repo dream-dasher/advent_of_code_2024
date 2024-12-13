@@ -6,7 +6,7 @@
 //! `#![feature(error_generic_member_access)]`
 //! `use std::backtrace;`
 
-use std::io;
+use std::{io, num};
 
 use derive_more::{Display, Error, From};
 use tracing::subscriber::SetGlobalDefaultError; // !
@@ -16,6 +16,8 @@ use tracing::subscriber::SetGlobalDefaultError; // !
 pub enum ErrKindDay05 {
         #[display("io error: {}", source)]
         Io { source: io::Error },
+        #[display("parse error: {}", source)]
+        ParseInt { source: num::ParseIntError },
         #[display("Error setting tracing subscriber default: {}", source)]
         TracingSubscriber { source: SetGlobalDefaultError },
         #[from(ignore)]
@@ -23,13 +25,13 @@ pub enum ErrKindDay05 {
         OtherDynError {
                 source: Box<dyn std::error::Error + Send + Sync>,
         },
-        // #[display("Error extracting lines from input: {}", source_input)]
-        // NoInputLines { source_input: String },
+        #[display("Error extracting lines from input: {}", source_input)]
+        OrderPatternError { source_input: String },
+        #[display("Ordering Shapes does not Allow for rules to be a total ordering")]
+        NonTotalOrderingShape,
         // #[from(ignore)]
         // #[display("error parsing char: {}", uninterpretable_char)]
         // CharParse { uninterpretable_char: char },
-        // #[display("parse error: {}", source)]
-        // ParseInt { source: num::ParseIntError },
         // #[display("env variable error: {}", source)]
         // Env { source: env::VarError },
 }

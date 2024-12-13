@@ -3,7 +3,7 @@
 mod error;
 mod subscriber;
 
-pub use error::ErrWrapperDay05;
+pub use error::{ErrKindDay05, ErrWrapperDay05};
 pub use subscriber::generate_tracing_subscriber;
 
 pub type Result<T> = std::result::Result<T, ErrWrapperDay05>;

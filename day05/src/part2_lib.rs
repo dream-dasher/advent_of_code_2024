@@ -39,7 +39,6 @@ pub fn process_part2(input: &str) -> Result<u64> {
 //         // #[ignore]
 //         // #[test]
 //         // fn test_process_problem_input() -> Result<()> {
-//         //         tracing_subscriber::fmt::init();
 //         //         let input = FINAL_INPUT;
 //         //         let expected = todo!();
 //         //         assert_eq!(process_part2(input)?, expected);
