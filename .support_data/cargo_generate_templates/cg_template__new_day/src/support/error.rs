@@ -1,4 +1,4 @@
-//! Error & Result type for {{ project-name | title_case }} of Advent of Code 2024.
+//! Error & Result type for {{ project-name | upper_camel_case }} of Advent of Code 2024.
 //!
 //!
 //! ## Utility reference
@@ -13,7 +13,7 @@ use tracing::subscriber::SetGlobalDefaultError; // !
 
 // use derive_more::{Display, Error, derive::From};
 #[derive(Debug, Display, From, Error)]
-pub enum ErrKind{{ project-name | title_case }} {
+pub enum ErrKind{{ project-name | upper_camel_case }} {
         #[display("io error: {}", source)]
         Io { source: io::Error },
         #[display("Error setting tracing subscriber default: {}", source)]
@@ -33,7 +33,7 @@ pub enum ErrKind{{ project-name | title_case }} {
         // #[display("env variable error: {}", source)]
         // Env { source: env::VarError },
 }
-impl ErrKind{{ project-name | title_case }} {
+impl ErrKind{{ project-name | upper_camel_case }} {
         pub fn make_other_error<E>(error: E) -> Self
         where
                 E: Into<Box<dyn std::error::Error + Send + Sync>>,
@@ -49,14 +49,14 @@ impl ErrKind{{ project-name | title_case }} {
         spantrace.status(),
         spantrace,
 )]
-pub struct ErrWrapper{{ project-name | title_case }} {
-        source:    ErrKind{{ project-name | title_case }},
+pub struct ErrWrapper{{ project-name | upper_camel_case }} {
+        source:    ErrKind{{ project-name | upper_camel_case }},
         spantrace: tracing_error::SpanTrace,
         // backtrace: backtrace::Backtrace,
 }
-impl<T> From<T> for ErrWrapper{{ project-name | title_case }}
+impl<T> From<T> for ErrWrapper{{ project-name | upper_camel_case }}
 where
-        T: Into<ErrKind{{ project-name | title_case }}>,
+        T: Into<ErrKind{{ project-name | upper_camel_case }}>,
 {
         fn from(error: T) -> Self {
                 Self {
@@ -67,7 +67,7 @@ where
         }
 }
 // Using custom display as debug so we can get SpanTrace auto printed.
-impl std::fmt::Debug for ErrWrapperDay05 {
+impl std::fmt::Debug for ErrWrapper{{ project-name | upper_camel_case }} {
         fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
                 write!(f, "{}", self)
         }
@@ -75,13 +75,13 @@ impl std::fmt::Debug for ErrWrapperDay05 {
 
 #[expect(dead_code)]
 trait ToOther {
-        fn to_other(self) -> ErrWrapper{{ project-name | title_case }};
+        fn to_other(self) -> ErrWrapper{{ project-name | upper_camel_case }};
 }
 impl<E> ToOther for E
 where
         E: Into<Box<dyn std::error::Error + Send + Sync>>,
 {
-        fn to_other(self) -> ErrWrapper{{ project-name | title_case }} {
-                ErrKind{{ project-name | title_case }}::OtherDynError { source: self.into() }.into()
+        fn to_other(self) -> ErrWrapper{{ project-name | upper_camel_case }} {
+                ErrKind{{ project-name | upper_camel_case }}::OtherDynError { source: self.into() }.into()
         }
 }

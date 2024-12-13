@@ -1,4 +1,4 @@
-//! Library code for Part 2 of {{ project-name | title_case }} of Advent of Code 2024.
+//! Library code for Part 2 of {{ project-name | upper_camel_case }} of Advent of Code 2024.
 //! `bin > part2_bin.rs` will run this code along with content of `input2.txt`
 
 use tracing::{self as tea, Level, instrument};

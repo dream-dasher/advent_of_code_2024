@@ -1,4 +1,4 @@
-//! Raw-input parsing code for {{ project-name | title_case }} of Advent of Code 2024.
+//! Raw-input parsing code for {{ project-name | upper_camel_case }} of Advent of Code 2024.
 
 // use derive_more::derive::{Constructor, Deref, DerefMut, From, Into};
 use indoc::indoc;

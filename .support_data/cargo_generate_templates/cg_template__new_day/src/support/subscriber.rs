@@ -1,4 +1,4 @@
-//! Tracing Subscriber configuration for {{ project-name | title_case }} of Advent of Code 2024.
+//! Tracing Subscriber configuration for {{ project-name | upper_camel_case }} of Advent of Code 2024.
 //!
 //! `generate_tracing_subscriber()` is a convenience function designed to be used with `tracint::subscriber::set_global_default(_)`
 //! Unfortunately, the return type created by composing Layers is fragile.

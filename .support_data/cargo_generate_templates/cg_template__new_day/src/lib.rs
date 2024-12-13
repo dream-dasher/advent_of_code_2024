@@ -1,4 +1,4 @@
-//! Library code for {{ project-name | title_case }} of Advent of Code 2024.
+//! Library code for {{ project-name | upper_camel_case }} of Advent of Code 2024.
 
 mod parse;
 mod part1_lib;

@@ -1,4 +1,4 @@
-//! CLI interface to run Parts 1 & 2 of {{ project-name | title_case }} of Advent of Code 2024.
+//! CLI interface to run Parts 1 & 2 of {{ project-name | upper_camel_case }} of Advent of Code 2024.
 
 use std::path::PathBuf;
 
@@ -6,7 +6,7 @@ use clap::{Parser, Subcommand, ValueEnum};
 use {{ project-name  }}::{CUSTOM_INPUT, EXAMPLE_INPUT, FINAL_INPUT, Result, generate_tracing_subscriber, process_part1, process_part2};
 use tracing::{self as tea, Level, instrument};
 
-/// Choose to run Part 1 or 2 of {{ project-name | title_case }} of Advent of Code 2024.
+/// Choose to run Part 1 or 2 of {{ project-name | upper_camel_case }} of Advent of Code 2024.
 #[derive(Parser, Debug)]
 #[command(
         version,
@@ -24,10 +24,10 @@ pub struct Args {
 }
 #[derive(Debug, Clone, ValueEnum)]
 pub enum Part {
-        /// Part 1, of day {{ project-name | title_case }}
+        /// Part 1, of day {{ project-name | upper_camel_case }}
         #[value(alias = "1", alias = "i", alias = "I", alias = "one")]
         Part1,
-        /// Part 2, of day {{ project-name | title_case }}
+        /// Part 2, of day {{ project-name | upper_camel_case }}
         #[value(alias = "2", alias = "ii", alias = "II", alias = "two")]
         Part2,
 }

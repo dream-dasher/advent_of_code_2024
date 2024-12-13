@@ -1,4 +1,4 @@
-# {{project-name | title_case}} Notes (README) for Advent of Code 2023
+# {{project-name | upper_camel_case}} Notes (README) for Advent of Code 2023
 
 ## Solutions
 - Part1:
