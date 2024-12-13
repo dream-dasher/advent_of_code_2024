@@ -64,6 +64,7 @@ mod tests {
 
         /// Test's expected value to be populated after solution verification.
         #[test]
+        #[instrument]
         fn test_process_problem_input() -> Result<()> {
                 let input = FINAL_INPUT;
                 let expected = 5799;
