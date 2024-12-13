@@ -35,14 +35,16 @@ pub fn process_part1(input: &str) -> Result<u64> {
 
 #[cfg(test)]
 mod tests {
+
         use indoc::indoc;
         use test_log::test;
         use tracing::instrument;
 
         use super::*;
-        use crate::{EXAMPLE_INPUT, FINAL_INPUT};
+        use crate::{EXAMPLE_INPUT, FINAL_INPUT,
+                    support::{ErrKindDay05, ErrWrapperDay05}};
 
-        #[test]
+        #[test()]
         #[instrument]
         fn spot_test() -> Result<()> {
                 let input = indoc!("
@@ -52,8 +54,13 @@ mod tests {
 
                         1,2,3
                         3,2,1");
-                let expected = 2;
-                assert_eq!(process_part1(input)?, expected);
+                assert!(matches!(
+                        process_part1(input),
+                        Err(ErrWrapperDay05 {
+                                source: ErrKindDay05::NonTotalOrderingShape,
+                                ..
+                        })
+                ));
                 Ok(())
         }
 

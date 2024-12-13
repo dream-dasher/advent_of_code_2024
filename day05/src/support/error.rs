@@ -54,8 +54,8 @@ impl ErrKindDay05 {
         spantrace,
 )]
 pub struct ErrWrapperDay05 {
-        source:    ErrKindDay05,
-        spantrace: tracing_error::SpanTrace,
+        pub source:    ErrKindDay05,
+        pub spantrace: tracing_error::SpanTrace,
         // backtrace: backtrace::Backtrace,
 }
 impl<T> From<T> for ErrWrapperDay05

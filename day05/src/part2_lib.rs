@@ -43,35 +43,31 @@ pub fn process_part2(input: &str) -> Result<u64> {
         Ok(total)
 }
 
-// #[cfg(test)]
-// mod tests {
-//         use indoc::indoc;
-//         use quickcheck::TestResult;
-//         use quickcheck_macros::quickcheck;
-//         use rand::Rng;
-//         use test_log::test;
-//         use tracing::{self as tea, instrument};
+#[cfg(test)]
+mod tests {
+        use test_log::test;
+        use tracing::instrument;
 
-//         use super::*;
-//         use crate::{EXAMPLE_INPUT, FINAL_INPUT};
+        use super::*;
+        use crate::{EXAMPLE_INPUT, FINAL_INPUT};
 
-//         #[test]
-//         #[instrument]
-//         fn test_process_example() -> Result<()> {
-//                 let input = EXAMPLE_INPUT;
-//                 let expected = todo!();
-//                 assert_eq!(process_part2(input)?, expected);
-//                 Ok(())
-//         }
+        #[test]
+        #[instrument]
+        fn test_process_example() -> Result<()> {
+                let input = EXAMPLE_INPUT;
+                let expected = 123;
+                assert_eq!(process_part2(input)?, expected);
+                Ok(())
+        }
 
-//         // /// Test's expected value to be populated after solution verification.
-//         // /// NOTE: `#[ignore]` is set for this test by default.
-//         // #[ignore]
-//         // #[test]
-//         // fn test_process_problem_input() -> Result<()> {
-//         //         let input = FINAL_INPUT;
-//         //         let expected = todo!();
-//         //         assert_eq!(process_part2(input)?, expected);
-//         //         Ok(())
-//         // }
-// }
+        /// Test's expected value to be populated after solution verification.
+        /// NOTE: `#[ignore]` is set for this test by default.
+        #[ignore]
+        #[test]
+        fn test_process_problem_input() -> Result<()> {
+                let input = FINAL_INPUT;
+                let expected = 5799;
+                assert_eq!(process_part2(input)?, expected);
+                Ok(())
+        }
+}
