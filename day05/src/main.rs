@@ -3,7 +3,7 @@
 use std::path::PathBuf;
 
 use clap::{Parser, Subcommand, ValueEnum};
-use day05::{CUSTOM_INPUT, EXAMPLE_INPUT, FINAL_INPUT, Result, generate_tracing_subscriber, process_part1,
+use day05::{CUSTOM_INPUT, EXAMPLE_INPUT, FINAL_INPUT, Result, active_global_default_tracing_subscriber, process_part1,
             process_part2};
 use tracing::{self as tea, Level, instrument};
 
@@ -45,7 +45,8 @@ pub enum Input {
 }
 
 fn main() -> Result<()> {
-        tea::subscriber::set_global_default(generate_tracing_subscriber())?;
+        let _tracing_writer_guard = active_global_default_tracing_subscriber()?;
+
         let _enter = tea::debug_span!("main()").entered();
         tea::trace!("tracing subscriber set");
         let cli_user_args = Args::parse();

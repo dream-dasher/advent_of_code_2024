@@ -23,9 +23,12 @@ owo-colors.workspace = true
 indicatif.workspace = true
 ## --Diagnostics--
 tracing.workspace = true
-tracing-tree.workspace = true
-tracing-subscriber.workspace = true
+tracing-appender.workspace = true
 tracing-error.workspace = true
+tracing-flame.workspace = true
+tracing-subscriber.workspace = true
+tracing-timing.workspace = true
+tracing-tree.workspace = true
 ## --General--
 bon.workspace = true
 derive_more.workspace = true

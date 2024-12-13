@@ -3,20 +3,18 @@
 
 use tracing::{self as tea, Level, instrument};
 
-use crate::{Result, parse::parse_input, support::ErrKindDay05};
+use crate::{Result, parse::parse_input};
 
 #[instrument(skip_all, ret(level = Level::DEBUG))]
 pub fn process_part1(input: &str) -> Result<u64> {
         tea::trace!(%input);
         let mut total = 0;
         let (page_relations, to_check) = parse_input(input)?;
-        match page_relations.is_total_ordering_shape() {
-                true => tea::info!("Total ordering shape detected.  Local detection of order sufficient."),
-                false => {
-                        tea::error!("Non-total ordering shape detected. Code not implemented.");
-                        Err(ErrKindDay05::NonTotalOrderingShape)?;
-                }
+        if cfg!(debug_assertions) {
+                // throwing error: spantrace collection
+                page_relations.verify_total_ordering_shape()?
         }
+        let _tea = tea::info_span!(target: "q_pop", "abberant popping").entered();
         for seq in to_check {
                 if seq.windows(2).all(|page_slice| {
                         match page_slice {

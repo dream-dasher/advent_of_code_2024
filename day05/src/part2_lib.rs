@@ -15,18 +15,17 @@ pub fn process_part2(input: &str) -> Result<u64> {
         PAGE_RELATIONS
                 .set(page_relations)
                 .map_err(|_| ErrKindDay05::StaticPageRelationsSetFailure)?;
-        debug_assert!(match PAGE_RELATIONS.get().unwrap().is_total_ordering_shape() {
-                true => {
-                        tea::info!("Total ordering shape detected.  Local detection of order sufficient.");
-                        true
-                }
-                false => {
-                        tea::error!("Non-total ordering shape detected. Code not implemented.");
-                        Err(ErrKindDay05::NonTotalOrderingShape)?
-                }
-        });
-        for _ in 0..to_check.len() {
+
+        if cfg!(debug_assertions) {
+                // throwing error: spantrace collection
+                PAGE_RELATIONS.get().unwrap().verify_total_ordering_shape()?
+        }
+        let _tea = tea::info_span!(target: "q_pop", "abberant popping").entered();
+        tea::trace!("hello?");
+        for i in 0..to_check.len() {
+                tea::trace!(target: "q_pop",i, ?to_check);
                 let mut seq = to_check.pop().unwrap();
+                tea::trace!(target: "q_pop",?seq);
                 if !seq.windows(2).all(|page_slice| {
                         match page_slice {
                                 &[l, r] => PAGE_RELATIONS.get().unwrap().say_pair_are_ordered((l, r)),
@@ -56,17 +55,21 @@ mod tests {
         fn test_process_example() -> Result<()> {
                 let input = EXAMPLE_INPUT;
                 let expected = 123;
+                tea::warn!(
+                        "OnceLock(|Cell) means that the single-process tests of default `Cargo test` will interfere with one another.  Use `Cargo Nextest`. (Unclear if mutex to force test serialization will be sufficient, as the OnceLock is static."
+                );
                 assert_eq!(process_part2(input)?, expected);
                 Ok(())
         }
 
         /// Test's expected value to be populated after solution verification.
-        /// NOTE: `#[ignore]` is set for this test by default.
-        #[ignore]
         #[test]
         fn test_process_problem_input() -> Result<()> {
                 let input = FINAL_INPUT;
                 let expected = 5799;
+                tea::warn!(
+                        "OnceLock(|Cell) means that the single-process tests of default `Cargo test` will interfere with one another.  Use `Cargo Nextest`. (Unclear if mutex to force test serialization will be sufficient, as the OnceLock is static."
+                );
                 assert_eq!(process_part2(input)?, expected);
                 Ok(())
         }

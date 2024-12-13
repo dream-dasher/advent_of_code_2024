@@ -24,12 +24,14 @@ pub static PAGE_RELATIONS: OnceLock<PageRelations> = OnceLock::new();
 pub struct Page(u32);
 impl PartialOrd for Page {
         /// This assumes that all elements encountered were represented in the rules.
+        #[instrument]
         fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
                 Some(self.cmp(other))
         }
 }
 impl Ord for Page {
         /// This assumes that all elements encountered were represented in the rules.
+        #[instrument]
         fn cmp(&self, other: &Self) -> std::cmp::Ordering {
                 tea::debug!(%self, %other);
                 tea::debug!(?PAGE_RELATIONS);
@@ -66,18 +68,24 @@ pub struct PageRelations {
 impl PageRelations {
         /// Checks that both elements are represented in the rules and if so that their order matches the rules.
         /// Note: this assumes that the rules are self-consistent
+        #[instrument]
         pub fn say_pair_are_ordered(&self, (less, more): (Page, Page)) -> Option<bool> {
                 let _ = self.get(&more)?;
                 self.get(&less).map(|rp| rp.greater_pages.contains(&more))
         }
 
-        pub fn is_total_ordering_shape(&self) -> bool {
-                for (_page, rels) in self.iter() {
+        #[instrument()]
+        pub fn verify_total_ordering_shape(&self) -> Result<()> {
+                tea::trace!(?self);
+                for (page, rels) in self.iter() {
+                        tea::trace!(%page, ?rels);
                         if rels.total_size() != self.len() - 1 {
-                                return false;
+                                tea::warn!(%page, ?rels, total_size=rels.total_size(), len_minus_one=self.len()-1, "FALSE; not the shape of a total ordering");
+                                Err(ErrKindDay05::NonTotalOrderingShape)?
                         }
                 }
-                true
+                tea::trace!(num_elements = self.len(), "Total Order consistent chape found");
+                Ok(())
         }
 }
 /// Set of pages less than and more than a number.
@@ -87,14 +95,17 @@ pub struct RelatedPages {
         greater_pages: HashSet<Page>,
 }
 impl RelatedPages {
+        #[instrument]
         pub fn lessers_size(&self) -> usize {
                 self.lesser_pages.len()
         }
 
+        #[instrument]
         pub fn greaters_size(&self) -> usize {
                 self.greater_pages.len()
         }
 
+        #[instrument]
         pub fn total_size(&self) -> usize {
                 self.lesser_pages.len() + self.greater_pages.len()
         }
@@ -113,8 +124,14 @@ pub fn parse_input(raw_input: &str) -> Result<(PageRelations, Vec<PageSequence>)
                 })?;
                 let rule = PageRelation::new(less.parse::<Page>()?, more.parse::<Page>()?);
                 tea::trace!(%rule);
-                page_rels.entry(rule.less).or_default().greater_pages.insert(rule.more);
-                page_rels.entry(rule.more).or_default().lesser_pages.insert(rule.less);
+                {
+                        let _tea = tea::debug_span!("Inserting Local Rules", %rule).entered();
+                        tea::debug!(
+                                "CAVEAT: this assumes all local relations are described; this would need to a single loop over each HashSet it inserts to in order to describe transitive relations."
+                        );
+                        page_rels.entry(rule.less).or_default().greater_pages.insert(rule.more);
+                        page_rels.entry(rule.more).or_default().lesser_pages.insert(rule.less);
+                }
         }
         // for (key, val) in page_rels.iter() {
         //         tea::info!(%key, lt=?val.lesser_pages, rt=?val.greater_pages);
@@ -129,7 +146,7 @@ pub fn parse_input(raw_input: &str) -> Result<(PageRelations, Vec<PageSequence>)
                 to_check.push(sequence);
         }
 
-        tea::warn!(is_maybe_total_ordering = page_rels.is_total_ordering_shape());
+        tea::warn!(is_maybe_total_ordering = page_rels.verify_total_ordering_shape().is_ok());
         Ok((page_rels, to_check))
 }
 
