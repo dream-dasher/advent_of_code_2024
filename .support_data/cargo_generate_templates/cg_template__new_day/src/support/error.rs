@@ -42,7 +42,7 @@ impl ErrKind{{ project-name | title_case }} {
         }
 }
 
-#[derive(Debug, Display, Error, From)]
+#[derive(Display, Error, From)]
 #[display(
         "error: {:#}\n\n\nspantrace capture: {:?}\n\n\nspantrace: {:#}",
         source,
@@ -64,6 +64,12 @@ where
                         spantrace: tracing_error::SpanTrace::capture(),
                         // backtrace: backtrace::Backtrace::capture(),
                 }
+        }
+}
+// Using custom display as debug so we can get SpanTrace auto printed.
+impl std::fmt::Debug for ErrWrapperDay05 {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                write!(f, "{}", self)
         }
 }
 
