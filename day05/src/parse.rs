@@ -8,17 +8,44 @@
 //!   - Sequences
 //!     - n,n,n,n,n,n...   <--should be an odd number of values
 
-use std::collections::{HashMap, HashSet};
+use std::{collections::{HashMap, HashSet},
+          sync::OnceLock};
 
 use derive_more::derive::{Constructor, Deref, DerefMut, Display, From, FromStr, Into, IntoIterator};
 use tracing::{self as tea, Level, instrument};
 
 use crate::{Result, support::ErrKindDay05};
 
+pub static PAGE_RELATIONS: OnceLock<PageRelations> = OnceLock::new();
+
 /// A single page number.
 #[derive(Debug, Clone, Constructor, PartialEq, Eq, From, Into, Deref, DerefMut, Copy, FromStr, Hash, Display)]
 #[display("p_{}", _0)]
 pub struct Page(u32);
+impl PartialOrd for Page {
+        /// This assumes that all elements encountered were represented in the rules.
+        fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+                Some(self.cmp(other))
+        }
+}
+impl Ord for Page {
+        /// This assumes that all elements encountered were represented in the rules.
+        fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+                tea::debug!(%self, %other);
+                tea::debug!(?PAGE_RELATIONS);
+                tea::debug!(get_got = ?PAGE_RELATIONS.get());
+
+                match PAGE_RELATIONS
+                        .get()
+                        .expect("static should have been set")
+                        .say_pair_are_ordered((*self, *other))
+                {
+                        Some(true) => std::cmp::Ordering::Less,
+                        Some(false) => std::cmp::Ordering::Greater,
+                        None => std::cmp::Ordering::Equal,
+                }
+        }
+}
 /// A relationship between two page numbers.
 #[derive(Debug, Clone, Constructor, From, PartialEq, Eq, Into, Display)]
 #[display("{} < {}", less, more)]

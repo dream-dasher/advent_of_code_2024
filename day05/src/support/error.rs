@@ -29,6 +29,8 @@ pub enum ErrKindDay05 {
         OrderPatternError { source_input: String },
         #[display("Ordering Shapes does not Allow for rules to be a total ordering")]
         NonTotalOrderingShape,
+        #[display("Unable to set the Static Page Relations OnceLock")]
+        StaticPageRelationsSetFailure,
         // #[from(ignore)]
         // #[display("error parsing char: {}", uninterpretable_char)]
         // CharParse { uninterpretable_char: char },

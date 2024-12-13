@@ -3,14 +3,44 @@
 
 use tracing::{self as tea, Level, instrument};
 
-#[expect(unused)]
-use crate::{Result, parse::parse_input};
+use crate::{Result,
+            parse::{PAGE_RELATIONS, parse_input},
+            support::ErrKindDay05};
 
 #[instrument(skip_all, ret(level = Level::DEBUG))]
 pub fn process_part2(input: &str) -> Result<u64> {
         tea::trace!(%input);
-        // let _parsed_input = parse_input(input)?;
-        todo!();
+        let mut total = 0;
+        let (page_relations, mut to_check) = parse_input(input)?;
+        PAGE_RELATIONS
+                .set(page_relations)
+                .map_err(|_| ErrKindDay05::StaticPageRelationsSetFailure)?;
+        debug_assert!(match PAGE_RELATIONS.get().unwrap().is_total_ordering_shape() {
+                true => {
+                        tea::info!("Total ordering shape detected.  Local detection of order sufficient.");
+                        true
+                }
+                false => {
+                        tea::error!("Non-total ordering shape detected. Code not implemented.");
+                        Err(ErrKindDay05::NonTotalOrderingShape)?
+                }
+        });
+        for _ in 0..to_check.len() {
+                let mut seq = to_check.pop().unwrap();
+                if !seq.windows(2).all(|page_slice| {
+                        match page_slice {
+                                &[l, r] => PAGE_RELATIONS.get().unwrap().say_pair_are_ordered((l, r)),
+                                _ => unreachable!(),
+                        }
+                        .unwrap_or(true)
+                }) {
+                        seq.sort_unstable();
+                        // add value of middle element
+                        total += *seq[seq.len() / 2] as u64;
+                        debug_assert!(seq.len() % 2 == 1)
+                }
+        }
+        Ok(total)
 }
 
 // #[cfg(test)]
