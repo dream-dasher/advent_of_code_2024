@@ -1,8 +1,8 @@
 //! Tracing Subscriber configuration for {{ project-name | title_case }} of Advent of Code 2024.
 //!
-//! `generate_tracing_subscriber()` is a convenience function desinged to be used with `tracint::subscriber::set_global_default(_)`
+//! `generate_tracing_subscriber()` is a convenience function designed to be used with `tracint::subscriber::set_global_default(_)`
 //! Unfortunately, the return type created by composing Layers is fragile.
-//! And the desired trait (Subscriber) is not Sized and therfore not amenable to use of the `--> dyn _` syntax.
+//! And the desired trait (Subscriber) is not Sized and therefore not amenable to use of the `--> dyn _` syntax.
 //! Similarly, this makes dynamic choice difficult.
 //!
 //! A prefer solution may be to simple set the global default subscriber *in* the convenience function as a side-effect.
@@ -11,8 +11,8 @@
 //! For now, this is workable.
 //!
 //! ## Caution
-//! - Tracing is poorly documented and methods poorly named.  One can easily use, e.g., `::fmt()` instead of `::fmt` and be greated with cryptic or even mis-directing errors.
-//!   - I have no solution for this.  *Just be careful!*  It is very easy to lose a lot of time chaing one's tail, on seemingly trivial configuration.
+//! - Tracing is poorly documented and methods poorly named.  One can easily use, e.g., `::fmt()` instead of `::fmt` and be greeted with cryptic or even misdirecting errors.
+//!   - I have no solution for this.  *Just be careful!*  It is very easy to lose a lot of time chain one's tail, on seemingly trivial configuration.
 
 use std::io::Stderr;
 
@@ -59,7 +59,7 @@ pub fn generate_tracing_subscriber() -> VerboseLayeredCompositeType {
 }
 
 // /// Some example for printing to screen and to two files.
-// fn example_file_writing_subsriber_generator() -> Result<RidiculousLayeredSubscriberName> {
+// fn example_file_writing_subscriber_generator() -> Result<RidiculousLayeredSubscriberName> {
 //         let err_file = std::fs::OpenOptions::new()
 //                 .append(true)
 //                 .create(true)
