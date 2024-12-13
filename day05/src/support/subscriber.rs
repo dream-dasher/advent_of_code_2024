@@ -17,7 +17,7 @@
 use tracing::level_filters::LevelFilter;
 use tracing_appender::non_blocking::WorkerGuard;
 use tracing_error::ErrorLayer;
-use tracing_subscriber::prelude::*;
+use tracing_subscriber::{fmt::format::FmtSpan, prelude::*};
 
 use crate::Result;
 
@@ -39,22 +39,31 @@ pub fn active_global_default_tracing_subscriber() -> Result<WorkerGuard> {
                 .with_default_directive(LevelFilter::TRACE.into())
                 .from_env_lossy();
 
-        let tree_layer = tracing_tree::HierarchicalLayer::new(2)
-                .with_timer(tracing_tree::time::Uptime::default())
-                .with_span_modes(true)
-                .with_indent_lines(true)
-                .with_targets(true);
+        // let tree_layer = tracing_tree::HierarchicalLayer::new(2)
+        //         .with_timer(tracing_tree::time::Uptime::default())
+        //         .with_span_modes(true)
+        //         .with_indent_lines(true)
+        //         .with_targets(true);
 
         let error_layer = ErrorLayer::default().with_filter(LevelFilter::TRACE);
 
         let (non_blocking_writer, trace_writer_guard) = tracing_appender::non_blocking(std::io::stderr());
         let fmt_layer = tracing_subscriber::fmt::Layer::default()
-                .with_writer(non_blocking_writer)
-                .compact();
+                // .compact()
+                // .pretty()
+                // .with_timer(<timer>)
+                .with_target(true)
+                .with_thread_ids(true)
+                .with_thread_names(true)
+                .with_file(true)
+                .with_line_number(true)
+                .with_span_events(FmtSpan::FULL)
+                .with_writer(non_blocking_writer);
 
         let subscriber = tracing_subscriber::Registry::default()
                 .with(error_layer)
-                .with(fmt_layer.and_then(tree_layer).with_filter(envfilter_layer));
+                .with(fmt_layer.with_filter(envfilter_layer));
+        // .with(fmt_layer.and_then(tree_layer).with_filter(envfilter_layer));
 
         tracing::subscriber::set_global_default(subscriber)?;
         Ok(trace_writer_guard)

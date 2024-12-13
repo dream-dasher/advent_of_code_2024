@@ -40,10 +40,16 @@ pub fn active_global_default_tracing_subscriber() -> Result<WorkerGuard> {
                 .from_env_lossy();
 
         let tree_layer = tracing_tree::HierarchicalLayer::new(2)
-                .with_timer(tracing_tree::time::Uptime::default())
-                .with_span_modes(true)
-                .with_indent_lines(true)
-                .with_targets(true);
+                // .compact()
+                // .pretty()
+                // .with_timer(<timer>)
+                .with_target(true)
+                .with_thread_ids(true)
+                .with_thread_names(true)
+                .with_file(true)
+                .with_line_number(true)
+                .with_span_events(FmtSpan::FULL)
+                .with_writer(non_blocking_writer);
 
         let error_layer = ErrorLayer::default().with_filter(LevelFilter::TRACE);
 
@@ -54,7 +60,8 @@ pub fn active_global_default_tracing_subscriber() -> Result<WorkerGuard> {
 
         let subscriber = tracing_subscriber::Registry::default()
                 .with(error_layer)
-                .with(fmt_layer.and_then(tree_layer).with_filter(envfilter_layer));
+                .with(fmt_layer.with_filter(envfilter_layer));
+        // .with(fmt_layer.and_then(tree_layer).with_filter(envfilter_layer));
 
         tracing::subscriber::set_global_default(subscriber)?;
         Ok(trace_writer_guard)
