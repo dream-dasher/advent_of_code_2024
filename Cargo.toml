@@ -45,14 +45,17 @@ owo-colors = "4"
 indicatif = "0.17"
 ## --Diagnostics--
 tracing = "0.1.41"
-tracing-tree = { version = "0.4.0", features = ["time"] }
+tracing-appender = "0.2.3"
+tracing-error = "0.2.1"
+tracing-flame = "0.2.0"
 tracing-subscriber = { version = "0.3.19", features = [
     "chrono",
     "env-filter",
     "tracing-log",
     "json",
 ] }
-tracing-error = "0.2.1"
+tracing-timing = "0.6.0"
+tracing-tree = { version = "0.4.0", features = ["time"] }
 ## --General--
 bon = "3.2.0"
 derive_more = { version = "1.0.0", features = ["full"] }
