@@ -74,7 +74,7 @@ impl PageRelations {
                 self.get(&less).map(|rp| rp.greater_pages.contains(&more))
         }
 
-        #[instrument()]
+        #[instrument(skip_all)]
         pub fn verify_total_ordering_shape(&self) -> Result<()> {
                 tea::trace!(?self);
                 for (page, rels) in self.iter() {
