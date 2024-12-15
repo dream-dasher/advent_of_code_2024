@@ -40,12 +40,12 @@ impl CWordPuzzle {
                 let mut vertical_view: Vec<CWordLine> = Vec::new();
                 {
                         for col in 0..num_cols {
-                                let mut vview_line = CWordLine::new_empty(Some(num_rows));
+                                let mut vert_view_line = CWordLine::new_empty(Some(num_rows));
                                 #[expect(clippy::needless_range_loop)]
                                 for row in 0..num_rows {
-                                        vview_line.push(horizontal_view[row][col]);
+                                        vert_view_line.push(horizontal_view[row][col]);
                                 }
-                                vertical_view.push(vview_line);
+                                vertical_view.push(vert_view_line);
                         }
                 }
 
