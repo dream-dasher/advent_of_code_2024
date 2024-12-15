@@ -44,7 +44,7 @@ pub enum Input {
 }
 
 fn main() -> Result<()> {
-        tea::subscriber::set_global_default(generate_tracing_subscriber())?;
+        let _writer_guard = active_global_default_tracing_subscriber()?;
         let _enter = tea::debug_span!("main()").entered();
         tea::trace!("tracing subscriber set");
         let cli_user_args = Args::parse();
@@ -57,8 +57,8 @@ fn main() -> Result<()> {
         tea::trace!(?part, ?inp);
 
         match (part, inp) {
-                (Part::Part1, inp) => todo!(),
-                (Part::Part2, inp) => todo!(),
+                (Part::Part1, inp) => main_part1(inp),
+                (Part::Part2, inp) => main_part2(inp),
         }?;
         tea::trace!("finishing main()");
         Ok(())
