@@ -28,59 +28,70 @@ fn dirty_pause() -> Result<()> {
 #[cfg(test)]
 mod tests {
         use indoc::indoc;
+        #[expect(unused)]
         use quickcheck::TestResult;
+        #[expect(unused)]
         use quickcheck_macros::quickcheck;
         use rand::Rng;
         use test_log::test;
-        use tracing::{self as tea, instrument};
+        use tracing::{instrument, trace};
 
         use super::*;
 
         #[test]
         #[instrument]
-        fn test_example() -> Result<()> {
-                tea::warn!("--------------Running test_example---------------");
+        fn example_test() -> Result<()> {
                 let input = indoc!("
-                        0 6 4 2 1
-                        1 2 7 8 9
-                        2 7 6 2 1
-                        3 3 2 4 5
-                        4 6 4 4 1
-                        5 3 6 7 9");
-                let expected = 6;
-                assert_eq!(input.lines().count(), expected);
+                        ....#.....
+                        .........#
+                        ..........
+                        ..#.......
+                        .......#..
+                        ..........
+                        .#..^.....
+                        ........#.
+                        #.........
+                        ......#...");
+                let expected_ys = 10;
+                let expected_xs = 10;
+                let vv: Vec<&str> = input.lines().collect();
+                let found_ys = vv.len();
+                let found_xs = vv[0].len();
+                assert_eq!(found_ys, expected_ys);
+                assert_eq!(found_xs, expected_xs);
                 Ok(())
         }
 
+        /// Generates a square maze as a string of '.' and '#' characters.
+        ///
+        /// Returns a string representing a maze with:
+        /// - Random size between 1x1 and 300x300
+        /// - Random obstacles ('#') with 1-30% probability
+        /// - Empty spaces ('.') for remaining cells
+        /// - Newline character after each row
         #[instrument]
-        fn example_input_generator(sum: u16, step_range_inclusive: (u8, u8)) -> Option<Vec<i64>> {
-                let (low_step, high_step) = step_range_inclusive;
-                let low_step = low_step as i64;
-                let high_step = high_step as i64;
-                let mut sum = sum as i64;
-
-                if low_step >= high_step {
-                        tea::trace!(?low_step, ?high_step);
-                        return None;
-                }
+        fn input_maze_generator() -> String {
                 let mut rng = rand::thread_rng();
-                let mut out = Vec::new();
-                while sum > 0 {
-                        let step = rng.gen_range(low_step..=high_step).min(sum);
-                        out.push(step);
-                        sum -= step;
-                        tea::debug!(?step, ?sum);
-                }
-                Some(out)
+                let side_len = rng.gen_range(1..=300);
+                trace!(side_len);
+                let chance_of_obstacle: f64 = rng.gen_range(0.01..=0.3);
+                let is_obstacle_gen = std::iter::from_fn(move || Some(rng.gen_bool(chance_of_obstacle)));
+                let row_iter = is_obstacle_gen
+                        .take(side_len)
+                        .map(|is_obstacle| if is_obstacle { '#' } else { '.' })
+                        .chain(std::iter::once('\n'));
+                let maze_string: String = row_iter.cycle().take(side_len * (side_len + 1)).collect();
+                maze_string
         }
 
-        #[quickcheck]
-        #[instrument]
-        fn qc_example_quickcheck(sum: u16, step_range_inclusive: (u8, u8)) -> TestResult {
-                let Some(vector) = example_input_generator(sum, step_range_inclusive) else {
-                        return TestResult::discard();
-                };
-                let vector_sum: i64 = vector.iter().sum();
-                TestResult::from_bool(sum as i64 == vector_sum)
-        }
+        // #[quickcheck]
+        // #[instrument]
+        // fn qc_example_quickcheck(sum: u16, step_range_inclusive: (u8, u8)) -> TestResult {
+        //         let maze_input =
+        //         let Some(vector) = example_iw_generator(sum, step_range_inclusive) else {
+        //                 return TestResult::discard();
+        //         };
+        //         let vector_sum: i64 = vector.iter().sum();
+        //         TestResult::from_bool(sum as i64 == vector_sum)
+        // }
 }
