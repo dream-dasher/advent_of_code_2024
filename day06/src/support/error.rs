@@ -17,6 +17,16 @@ pub enum ErrKindDay06 {
         //
         // `custom` errors
         #[from(ignore)] // manually generate; would conflict with `OtherStringError` auto-derive
+        #[display(
+                "Requested Guard position is out of Maze bounds. guard_pos {:?} vs maze_max {:?}",
+                guard_pos,
+                maze_max
+        )]
+        GuardOutOfBounds {
+                guard_pos: (usize, usize),
+                maze_max:  (usize, usize),
+        },
+        #[from(ignore)] // manually generate; would conflict with `OtherStringError` auto-derive
         #[display("Error extracting lines from input: {}", source_input)]
         NoInputLines { source_input: String },
         //
