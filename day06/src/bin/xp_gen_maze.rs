@@ -1,73 +1,26 @@
-//* Checking out maze generation.
+//! Checking out maze generation.
+//!
+//! ## Utility
+//!
+/*!
+clear; RUST_LOG=trace cargo run -qp day06 --bin xp_gen_maze
+clear; RUST_LOG=trace cargo run -qp day06 --bin xp_gen_maze -- --help
+clear; RUST_LOG=trace cargo run -qp day06 --bin xp_gen_maze manual 10 5,5 up
+clear; RUST_LOG=trace cargo run -qp day06 --bin xp_gen_maze manual 10 '(5,5)' '>'
+   */
 
 use std::str::FromStr;
 
 use clap::{Parser, Subcommand, ValueEnum};
+use cli_input::*;
 use day06::{Result, active_global_default_tracing_subscriber};
 use derive_more::derive::{Add, AddAssign, Constructor, Display, From, FromStr, Into, Sub, SubAssign};
 use rand::Rng;
 use tracing::{info, instrument, trace};
 
-/// Choose to run Part 1 or 2 of Day06 of Advent of Code 2024.
-#[derive(Parser, Debug)]
-#[command(version, about, long_about, disable_help_subcommand = true)]
-struct Args {
-        /// sigh
-        #[command(subcommand)]
-        action: SubCom,
-}
-
-#[derive(Debug, Clone, Subcommand)]
-enum SubCom {
-        Default,
-        Manual {
-                sq_side_len: usize,
-                start_pos:   Position,
-                direction:   Direction,
-        },
-}
-#[derive(
-        Constructor,
-        Clone,
-        Copy,
-        From,
-        FromStr,
-        Into,
-        PartialEq,
-        Eq,
-        PartialOrd,
-        Ord,
-        Debug,
-        Add,
-        Sub,
-        SubAssign,
-        AddAssign,
-        Display,
-)]
-struct Xpos(usize);
-#[derive(
-        Constructor,
-        Clone,
-        Copy,
-        From,
-        FromStr,
-        Into,
-        PartialEq,
-        Eq,
-        PartialOrd,
-        Ord,
-        Debug,
-        Add,
-        Sub,
-        SubAssign,
-        AddAssign,
-        Display,
-)]
-struct Ypos(usize);
-
 fn main() -> Result<()> {
-        let args = Args::parse();
         let _writer_guard = active_global_default_tracing_subscriber()?;
+        let args = Args::try_parse()?;
 
         let maze_str = match args.action {
                 SubCom::Default => input_maze_generator(None),
@@ -105,63 +58,159 @@ fn input_maze_generator(sq_side_len: Option<usize>) -> String {
         maze_string
 }
 
-#[derive(
-        Clone,
-        Copy,
-        Constructor,
-        From,
-        Into,
-        PartialEq,
-        PartialOrd,
-        Parser,
-        Debug,
-        Add,
-        Sub,
-        SubAssign,
-        AddAssign,
-        Display,
-)]
-#[display("({},{})", x, y)]
-struct Position {
-        x: Xpos,
-        y: Ypos,
-}
-impl FromStr for Position {
-        type Err = PositionError;
+/// Argument related information.  Held in a mod for tidiness's sake.
+mod cli_input {
+        use super::*;
 
-        fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
-                let coords: Vec<&str> = s.trim_matches(['(', ')']).split(',').collect();
-                if coords.len() != 2 {
-                        return Err(PositionError::Format {
-                                source_string: s.to_string(),
-                        });
-                }
-                Ok(Self {
-                        x: coords[0].parse().map_err(|_| PositionError::Parse {
-                                source_string: coords[0].to_string(),
-                        })?,
-                        y: coords[1].parse().map_err(|_| PositionError::Parse {
-                                source_string: coords[1].to_string(),
-                        })?,
-                })
+        /// Make a maze.  On auto-pilot or with manual control.
+        #[derive(Parser, Debug)]
+        #[command(version, about, long_about, disable_help_subcommand = true)]
+        pub struct Args {
+                /// sigh
+                #[command(subcommand)]
+                pub action: SubCom,
         }
-}
-#[derive(Debug, Display, derive_more::Error)]
-pub enum PositionError {
-        #[display("Invalid position format: {}", source_string)]
-        Format { source_string: String },
-        #[display("Parse error: {}", source_string)]
-        Parse { source_string: String },
-}
+        /// Default options or Manual controls
+        #[derive(Debug, Clone, Subcommand)]
+        pub enum SubCom {
+                /// Default Options
+                Default,
+                /// Set side length of the maze square, and direction & start position of 'character'
+                Manual {
+                        sq_side_len: usize,
+                        start_pos:   Position,
+                        direction:   Direction,
+                },
+        }
+        #[derive(
+                Constructor,
+                Clone,
+                Copy,
+                From,
+                FromStr,
+                Into,
+                PartialEq,
+                Eq,
+                PartialOrd,
+                Ord,
+                Debug,
+                Add,
+                Sub,
+                SubAssign,
+                AddAssign,
+                Display,
+        )]
+        pub struct Xpos(usize);
+        #[derive(
+                Constructor,
+                Clone,
+                Copy,
+                From,
+                FromStr,
+                Into,
+                PartialEq,
+                Eq,
+                PartialOrd,
+                Ord,
+                Debug,
+                Add,
+                Sub,
+                SubAssign,
+                AddAssign,
+                Display,
+        )]
+        pub struct Ypos(usize);
 
-#[derive(Debug, PartialEq, Clone, FromStr, ValueEnum, Display)]
-enum Direction {
-        #[display("^")]
-        Up,
-        #[display("v")]
-        Down,
-        #[display("<")]
-        Left,
-        #[display(">")]
-        Right,
+        #[derive(
+                Clone,
+                Copy,
+                Constructor,
+                From,
+                Into,
+                PartialEq,
+                PartialOrd,
+                Parser,
+                Debug,
+                Add,
+                Sub,
+                SubAssign,
+                AddAssign,
+                Display,
+        )]
+        #[display("({},{})", x, y)]
+        pub struct Position {
+                x: Xpos,
+                y: Ypos,
+        }
+        impl FromStr for Position {
+                type Err = PositionParseError;
+
+                /// Takes `(\d+,\d+)` or `\d+,\d+` and creates a Position.
+                ///
+                /// ## Caveat
+                /// CLI input like `(...)` may not be parsed correctly by the shell unless quoted (e.g. `"(1,2)"` vs `(1,2)` )
+                #[instrument]
+                fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+                        let coords: Vec<&str> = s.trim_matches(['(', ')']).split(',').collect();
+                        if coords.len() != 2 {
+                                return Err(PositionParseError::Format {
+                                        source_string: s.to_string(),
+                                });
+                        }
+                        Ok(Self {
+                                x: coords[0].parse().map_err(|_| PositionParseError::Parse {
+                                        source_string: coords[0].to_string(),
+                                })?,
+                                y: coords[1].parse().map_err(|_| PositionParseError::Parse {
+                                        source_string: coords[1].to_string(),
+                                })?,
+                        })
+                }
+        }
+
+        /// Error for Position parsing.
+        #[derive(Debug, Display, derive_more::Error)]
+        pub enum PositionParseError {
+                #[display("Invalid position format: {}", source_string)]
+                Format { source_string: String },
+                #[display("Parse error: {}", source_string)]
+                Parse { source_string: String },
+        }
+
+        /// Direction of Facing.
+        ///
+        /// `up` : `^`
+        /// `down` : `v`
+        /// `left` : `<`
+        /// `right` : `>`
+        #[derive(Debug, PartialEq, Clone, ValueEnum, Display)]
+        pub enum Direction {
+                #[display("^")]
+                #[value(alias = "^")]
+                Up,
+                #[display("v")]
+                #[value(alias = "v")]
+                Down,
+                #[display("<")]
+                #[value(alias = "<")]
+                Left,
+                #[display(">")]
+                #[value(alias = ">")]
+                Right,
+        }
+
+        impl FromStr for Direction {
+                type Err = String;
+
+                #[instrument]
+                fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+                        match s.to_lowercase().as_str() {
+                                "up" | "^" => Ok(Direction::Up),
+                                "down" | "v" => Ok(Direction::Down),
+                                "left" | "<" => Ok(Direction::Left),
+                                "right" | ">" => Ok(Direction::Right),
+                                _ => Err(format!("Invalid direction: {}", s)),
+                        }
+                }
+        }
 }
