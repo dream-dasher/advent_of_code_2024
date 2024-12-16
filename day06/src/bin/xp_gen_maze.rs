@@ -79,7 +79,7 @@ mod cli_input {
                 Manual {
                         sq_side_len: usize,
                         start_pos:   Position,
-                        direction:   Direction,
+                        direction:   DirectionReImplement,
                 },
         }
         #[derive(
@@ -178,13 +178,14 @@ mod cli_input {
         }
 
         /// Direction of Facing.
+        /// (Separate implementation from `parse::simulation`)
         ///
         /// `up` : `^`
         /// `down` : `v`
         /// `left` : `<`
         /// `right` : `>`
         #[derive(Debug, PartialEq, Clone, ValueEnum, Display)]
-        pub enum Direction {
+        pub enum DirectionReImplement {
                 #[display("^")]
                 #[value(alias = "^")]
                 Up,
@@ -199,17 +200,17 @@ mod cli_input {
                 Right,
         }
 
-        impl FromStr for Direction {
+        impl FromStr for DirectionReImplement {
                 type Err = String;
 
                 #[instrument]
                 fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
                         match s.to_lowercase().as_str() {
-                                "up" | "^" => Ok(Direction::Up),
-                                "down" | "v" => Ok(Direction::Down),
-                                "left" | "<" => Ok(Direction::Left),
-                                "right" | ">" => Ok(Direction::Right),
-                                _ => Err(format!("Invalid direction: {}", s)),
+                                "up" | "^" => Ok(DirectionReImplement::Up),
+                                "down" | "v" => Ok(DirectionReImplement::Down),
+                                "left" | "<" => Ok(DirectionReImplement::Left),
+                                "right" | ">" => Ok(DirectionReImplement::Right),
+                                _ => Err(format!("Unparsable direction: {}", s)),
                         }
                 }
         }

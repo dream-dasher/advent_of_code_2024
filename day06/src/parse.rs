@@ -2,10 +2,179 @@
 
 use std::io;
 
-// use derive_more::derive::{Constructor, Deref, DerefMut, From, Into};
-use tracing::{self as tea, Level, instrument};
+use tracing::{Level, debug, instrument};
 
 use crate::Result;
+
+mod brute_simulate {
+        use std::str::FromStr;
+
+        use super::*;
+
+        #[derive(Debug, PartialEq, Eq)]
+        pub struct Maze {
+                maze:    Vec<Direction>,
+                row_len: usize,
+                col_len: usize,
+        }
+        impl std::fmt::Display for Maze {
+                fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                        let row_len = self.row_len;
+                        for (i, cell) in self.maze.iter().enumerate() {
+                                write!(f, "{}", cell)?;
+                                if i % row_len == row_len - 1 {
+                                        writeln!(f)?;
+                                }
+                        }
+                        debug_assert_eq!(self.maze.len(), (row_len * self.col_len));
+                        Ok(())
+                }
+        }
+        // impl FromStr for Maze {
+        //         type Err = MazeParseError;
+
+        //         #[instrument]
+        //         fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        //                 let mut maze = Vec::new();
+        //                 let mut row_len = 0;
+        //                 let mut col_len = 0;
+        //                 for (i, line) in s.lines().enumerate() {
+        //                         let row: Vec<Cell> =
+        //                                 line.chars().map(|c| c.try_into()).collect::<Result<Vec<Cell>>>()?;
+        //                         if i == 0 {
+        //                                 row_len = row.len();
+        //                         } else {
+        //                                 if row.len() != row_len {
+        //                                         return Err(MazeParseError::RowLengthMismatch {
+        //                                                 row_num:  i,
+        //                                                 expected: row_len,
+        //                                                 found:    row.len(),
+        //                                         });
+        //                                 }
+        //                         }
+        //                         maze.extend(row);
+        //                         col_len += 1;
+        //                 }
+        //                 Ok(Self { maze, row_len, col_len })
+        //         }
+        // }
+
+        #[derive(Copy, Clone, PartialEq, Eq, Debug, derive_more::Display)]
+        pub enum Cell {
+                #[display(".")]
+                Empty,
+                #[display("#")]
+                Obstacle,
+                // // Unneeded when there's a single guard and none can interact
+                // Guard { dir: Direction },
+        }
+        impl TryFrom<char> for Cell {
+                type Error = CellParseError;
+
+                #[instrument(skip_all)]
+                fn try_from(c: char) -> std::result::Result<Self, Self::Error> {
+                        match c {
+                                '.' => Ok(Cell::Empty),
+                                '#' => Ok(Cell::Obstacle),
+                                '\n' => Err(CellParseError::Newline {
+                                        source_string: c.to_string(),
+                                }),
+                                _ => Err(CellParseError::OtherParse {
+                                        source_string: c.to_string(),
+                                }),
+                        }
+                }
+        }
+        impl FromStr for Cell {
+                type Err = CellParseError;
+
+                #[instrument]
+                fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+                        match s.to_lowercase().as_str() {
+                                "." => Ok(Cell::Empty),
+                                "#" => Ok(Cell::Obstacle),
+                                "\n" => Err(CellParseError::Newline {
+                                        source_string: s.to_string(),
+                                }),
+                                _ => Err(CellParseError::OtherParse {
+                                        source_string: s.to_string(),
+                                }),
+                        }
+                }
+        }
+        /// Direction parsing.
+        #[derive(Debug, derive_more::Display, derive_more::Error)]
+        pub enum CellParseError {
+                #[display("Newline character. {}", source_string)]
+                Newline { source_string: String },
+                #[display("Unparsable direction: {}", source_string)]
+                OtherParse { source_string: String },
+        }
+
+        /// Direction of Facing.
+        ///
+        /// `up` : `^`
+        /// `down` : `v`
+        /// `left` : `<`
+        /// `right` : `>`
+        #[derive(Copy, Clone, PartialEq, Eq, Debug, derive_more::Display)]
+        pub enum Direction {
+                #[display("^")]
+                Up,
+                #[display("v")]
+                Down,
+                #[display("<")]
+                Left,
+                #[display(">")]
+                Right,
+        }
+        impl TryFrom<char> for Direction {
+                type Error = DirectionParseError;
+
+                #[instrument(skip_all)]
+                fn try_from(c: char) -> std::result::Result<Self, Self::Error> {
+                        match c {
+                                '^' => Ok(Direction::Up),
+                                'v' => Ok(Direction::Down),
+                                '<' => Ok(Direction::Left),
+                                '>' => Ok(Direction::Right),
+                                '\n' => Err(DirectionParseError::Newline {
+                                        source_string: c.to_string(),
+                                }),
+                                _ => Err(DirectionParseError::OtherParse {
+                                        source_string: c.to_string(),
+                                }),
+                        }
+                }
+        }
+        impl FromStr for Direction {
+                type Err = DirectionParseError;
+
+                #[instrument]
+                fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+                        match s.to_lowercase().as_str() {
+                                "up" | "^" => Ok(Direction::Up),
+                                "down" | "v" => Ok(Direction::Down),
+                                "left" | "<" => Ok(Direction::Left),
+                                "right" | ">" => Ok(Direction::Right),
+                                "\n" => Err(DirectionParseError::Newline {
+                                        source_string: s.to_string(),
+                                }),
+                                _ => Err(DirectionParseError::OtherParse {
+                                        source_string: s.to_string(),
+                                }),
+                        }
+                }
+        }
+        /// Direction parsing.
+        #[derive(Debug, derive_more::Display, derive_more::Error)]
+        pub enum DirectionParseError {
+                #[display("Newline character. {}", source_string)]
+                Newline { source_string: String },
+                #[display("Unparsable direction: {}", source_string)]
+                OtherParse { source_string: String },
+        }
+}
 
 /// Parse txt input ...
 #[instrument(skip_all, ret(level = Level::TRACE))]
@@ -21,7 +190,7 @@ fn dirty_pause() -> Result<()> {
         println!("Press Enter to continue...");
         let mut _input = String::new();
         let read_in = io::stdin().read_line(&mut _input)?;
-        tea::debug!(?read_in);
+        debug!(?read_in);
         Ok(())
 }
 
