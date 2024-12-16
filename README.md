@@ -174,6 +174,14 @@ Implementation-wise: a different matrix for each directional state with transiti
 if we needed to calculate paths for many positions then we could pre calculate n-steps via matrix multiplications. — given sparsity it may not be so bad …  
 If we save the matrix at each step (a vector of 4D points) then as soon as we see a repetition (across steps) then that  
 
+**Alt**: Implementing binary tensory multiplication with portable SIMD would be fun, but not the right task for right now.  And, regardless, from a perf standpoint this would be a sparse tensor anyway and we'd be unlikely to want to implement it with full tensor multiplicattion.  (Not that we're too worried about such things, but still notable, lol.)  One alternative would be to just record obstacles' positions and then from those calculate '*lead*' and '*follow*' segments.  These segments just being a range of positions. [Slight mucking in defining a 2D range; but since only axis directions it wouldn't be too pokey.]  
+What's our max problem scope then: n obstacles -> max 4n (lead,follow) segments. Each segment 'indexed' by a pair of ranges [actually one range and a coordinate, since only axial translation], with segments posesing overlapping indices. Oh, and a direction, ofc (so each 'segment' gets a `dir` associatted with it, even though lead-follow dir pairs are fixed). 
+
+So:
+- scan input for dimensions & obstacle positions, give each position an arbitrary id, then calculate 4 segment pairs for each (@xy -> (0.max(obstaclish)..x),(x+1..xmax.min(obstaclisih)) @y (0.max(obstacliesh)..y),(y+1..ymax.min(obstacleish)@x)
+- now, for each segment search for overlap to create a map of segment ownership
+- search segment map for cycles and pull positions back out
+... not very exciting, but probably performant, and would allow branching parallelism with a shared hashmap or the like (if problems were large enough -- overhead of multi threading may outstrip the time taken to solve the problem as is.)
 
 ## Day 7: [Bridge Repair](https://adventofcode.com/2024/day/7) : [----]()
 - P1: combinatorial
