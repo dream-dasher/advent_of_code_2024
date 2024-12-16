@@ -1,6 +1,6 @@
 //! Support code for Day06 of Advent of Code 2024.
 
-mod error;
+pub mod error;
 mod subscriber;
 
 pub use error::ErrWrapperDay06;

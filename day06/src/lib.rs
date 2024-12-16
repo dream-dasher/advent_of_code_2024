@@ -3,7 +3,7 @@
 mod parse;
 mod part1_lib;
 mod part2_lib;
-mod support;
+pub mod support;
 
 pub use parse::parse_input;
 pub use part1_lib::process_part1;

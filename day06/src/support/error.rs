@@ -19,10 +19,12 @@ pub enum ErrKindDay06 {
         #[display("Error setting tracing subscriber default: {}", source)]
         TracingSubscriber { source: SetGlobalDefaultError },
         #[from(ignore)]
-        #[display("Unlabelled error (dyn error object): {}", source)]
+        #[display("Uncategorized Error (dyn error object): {}", source)]
         OtherDynError {
                 source: Box<dyn std::error::Error + Send + Sync>,
         },
+        #[display(r#"Uncategorized string err: "{}""#, source_string)]
+        OtherStringError { source_string: String },
         // #[display("Error extracting lines from input: {}", source_input)]
         // NoInputLines { source_input: String },
         // #[from(ignore)]
@@ -73,8 +75,7 @@ impl std::fmt::Debug for ErrWrapperDay06 {
         }
 }
 
-#[expect(dead_code)]
-trait ToOther {
+pub trait ToOther {
         fn to_other(self) -> ErrWrapperDay06;
 }
 impl<E> ToOther for E
