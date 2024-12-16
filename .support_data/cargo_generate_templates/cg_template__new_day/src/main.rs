@@ -47,7 +47,7 @@ fn main() -> Result<()> {
         let _writer_guard = active_global_default_tracing_subscriber()?;
         let _enter = tea::debug_span!("main()").entered();
         tea::trace!("tracing subscriber set");
-        let cli_user_args = Args::parse();
+        let cli_user_args = Args::try_parse()?;
         tea::trace!(?cli_user_args);
         let part = cli_user_args.part;
         let inp = cli_user_args.input.unwrap_or_else(|| {
