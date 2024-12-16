@@ -101,7 +101,8 @@ c -- x
 |l      |b     |     |      |
 
 ## Day 6: [Guard Gallivant](https://adventofcode.com/2024/day/6) : [----]()
-P1: agent simulation (optional tensor multiplication)
+- P1: agent simulation (optional tensor multiplication)
+  - range and segment calculations as simple start
 ```
 Simulation while checking for location + direction repetition (3D statespace)
 For speed (if dealing with many positions) one could pre-calculate "trap regions"
@@ -182,6 +183,7 @@ So:
 - now, for each segment search for overlap to create a map of segment ownership
 - search segment map for cycles and pull positions back out
 ... not very exciting, but probably performant, and would allow branching parallelism with a shared hashmap or the like (if problems were large enough -- overhead of multi threading may outstrip the time taken to solve the problem as is.)
+**Edit**: boundaries are not obstacles; sequence *also* ends if unit **exits** past a boundary.
 
 ## Day 7: [Bridge Repair](https://adventofcode.com/2024/day/7) : [----]()
 - P1: combinatorial
