@@ -51,7 +51,7 @@ pub fn active_global_default_tracing_subscriber() -> Result<WorkerGuard> {
                 .with_thread_names(true)
                 .with_file(true)
                 .with_line_number(true)
-                .with_span_events(FmtSpan::FULL)
+                .with_span_events(FmtSpan::NONE)
                 .with_writer(non_blocking_writer)
                 .with_filter(envfilter_layer);
 
