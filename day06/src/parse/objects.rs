@@ -1,11 +1,11 @@
 //! Objects for Parsing into
 
-use bon::bon;
 use derive_more::derive::{From, Index, Into};
 use itertools::Itertools as _;
 use tracing::{Level, event, instrument};
 
-use crate::support::{ErrWrapperDay06, error::ErrKindDay06};
+use crate::{Result,
+            support::{ErrWrapperDay06, error::ErrKindDay06}};
 
 #[derive(Index, Debug, Clone, From, Into)]
 pub struct Maze {
@@ -24,19 +24,28 @@ impl std::fmt::Display for Maze {
                 Ok(())
         }
 }
-#[bon]
 impl Maze {
-        #[builder]
         #[instrument(skip_all, err, ret(level = Level::TRACE))]
-        fn new(positions: Vec<PositionState>, max_dims: Point2D) -> Result<Self, String> {
+        fn new(positions: Vec<PositionState>, max_dims: Point2D) -> Result<Self> {
                 if positions.len() != max_dims.x * max_dims.y {
                         Err("Maze dimensions do not match the positions vector length.".to_string())?
                 }
                 Ok(Self { positions, max_dims })
         }
 
+        #[instrument(skip_all)]
+        pub fn from_input_string(input: &str) -> Result<Self> {
+                let positions: Result<Vec<PositionState>> =
+                        input.chars().filter(|c| *c != '\n').map(|c| c.try_into()).collect();
+                let max_dims = Point2D {
+                        x: input.lines().next().unwrap().len(),
+                        y: input.lines().count(),
+                };
+                Self::new(positions?, max_dims)
+        }
+
         #[instrument(skip(self),ret(level = Level::DEBUG))]
-        fn get(&self, point: Point2D) -> Option<PositionState> {
+        pub fn get(&self, point: Point2D) -> Option<PositionState> {
                 self.pt_to_ln_index(point).map(|index| self.positions[index])
         }
 
@@ -98,12 +107,9 @@ impl TryFrom<char> for PositionState {
                 match c {
                         '#' => Ok(PositionState::Obstacle),
                         '.' => Ok(PositionState::Empty),
-                        '\n' => Err(ErrKindDay06::ParseNewline {
-                                source_string: c.to_string(),
-                        })?,
-                        _ => Err(ErrKindDay06::ParseOther {
-                                source_string: c.to_string(),
-                        })?,
+                        '\n' => Err(ErrKindDay06::ParseNewline { source_char: c })?,
+                        '^' | 'v' | '<' | '>' => Err(ErrKindDay06::ParseUnexpectedDirection { source_char: c })?,
+                        _ => Err(ErrKindDay06::ParseOther { source_char: c })?,
                 }
         }
 }
@@ -117,12 +123,9 @@ impl TryFrom<char> for Direction {
                         'v' => Ok(Direction::Down),
                         '<' => Ok(Direction::Left),
                         '>' => Ok(Direction::Right),
-                        '\n' => Err(ErrKindDay06::ParseNewline {
-                                source_string: c.to_string(),
-                        })?,
-                        _ => Err(ErrKindDay06::ParseOther {
-                                source_string: c.to_string(),
-                        })?,
+                        '\n' => Err(ErrKindDay06::ParseNewline { source_char: c })?,
+                        '#' | '.' => Err(ErrKindDay06::ParseUnexpectedPositionState { source_char: c })?,
+                        _ => Err(ErrKindDay06::ParseOther { source_char: c })?,
                 }
         }
 }

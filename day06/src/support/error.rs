@@ -27,11 +27,17 @@ pub enum ErrKindDay06 {
                 maze_max:  (usize, usize),
         },
         #[from(ignore)]
-        #[display("Newline character. {}", source_string)]
-        ParseNewline { source_string: String },
+        #[display("Newline character. {}", source_char)]
+        ParseNewline { source_char: char },
         #[from(ignore)]
-        #[display("Unparsable direction: {}", source_string)]
-        ParseOther { source_string: String },
+        #[display("Unexpected PositionState char: {}", source_char)]
+        ParseUnexpectedPositionState { source_char: char },
+        #[from(ignore)]
+        #[display("Unexpected Direction char: {}", source_char)]
+        ParseUnexpectedDirection { source_char: char },
+        #[from(ignore)]
+        #[display("Unparsable character: {}", source_char)]
+        ParseOther { source_char: char },
         #[from(ignore)]
         #[display("Error extracting lines from input: {}", source_input)]
         NoInputLines { source_input: String },

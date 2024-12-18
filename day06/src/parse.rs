@@ -3,7 +3,6 @@
 use std::io;
 
 mod objects;
-#[expect(unused_imports)]
 pub use objects::*;
 use tracing::{Level, debug, instrument};
 
@@ -14,6 +13,9 @@ use crate::Result;
 pub fn parse_input(raw_input: &str) -> Result<()> {
         println!("\n{}\n", raw_input);
         dirty_pause()?;
+        let maze = Maze::from_input_string(raw_input)?;
+        println!("maze: {}", maze);
+
         todo!()
 }
 
