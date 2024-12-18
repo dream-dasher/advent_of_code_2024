@@ -2,7 +2,8 @@
 
 use std::{io, str::FromStr};
 
-use derive_more::derive::{Add, AddAssign, Constructor, Deref, DerefMut, From, FromStr, Into, Sub, SubAssign};
+use derive_more::derive::{Add, AddAssign, Constructor, Deref, DerefMut, From, FromStr, Into, Sub,
+                          SubAssign};
 use tracing::{Level, debug, instrument};
 
 use super::*;
@@ -100,101 +101,4 @@ impl std::fmt::Display for Maze {
 pub struct Guard {
         pos: Position,
         dir: Direction,
-}
-
-#[derive(
-        Constructor,
-        Clone,
-        Copy,
-        From,
-        FromStr,
-        Into,
-        PartialEq,
-        Eq,
-        PartialOrd,
-        Ord,
-        Debug,
-        Add,
-        Sub,
-        SubAssign,
-        AddAssign,
-        derive_more::derive::Display,
-        Deref,
-        DerefMut,
-)]
-pub struct Xpos(usize);
-#[derive(
-        Constructor,
-        Clone,
-        Copy,
-        From,
-        FromStr,
-        Into,
-        PartialEq,
-        Eq,
-        PartialOrd,
-        Ord,
-        Debug,
-        Add,
-        Sub,
-        SubAssign,
-        AddAssign,
-        derive_more::derive::Display,
-        Deref,
-        DerefMut,
-)]
-pub struct Ypos(usize);
-#[derive(
-        Clone,
-        Copy,
-        Constructor,
-        From,
-        Into,
-        PartialEq,
-        PartialOrd,
-        Debug,
-        Add,
-        Sub,
-        SubAssign,
-        AddAssign,
-        derive_more::derive::Display,
-        Eq,
-)]
-#[display("({},{})", x, y)]
-pub struct Position {
-        x: Xpos,
-        y: Ypos,
-}
-impl FromStr for Position {
-        type Err = PositionParseError;
-
-        /// Takes `(\d+,\d+)` or `\d+,\d+` and creates a Position.
-        ///
-        /// ## Caveat
-        /// CLI input like `(...)` may not be parsed correctly by the shell unless quoted (e.g. `"(1,2)"` vs `(1,2)` )
-        #[instrument]
-        fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
-                let coords: Vec<&str> = s.trim_matches(['(', ')']).split(',').collect();
-                if coords.len() != 2 {
-                        return Err(PositionParseError::Format {
-                                source_string: s.to_string(),
-                        });
-                }
-                Ok(Self {
-                        x: coords[0].parse().map_err(|_| PositionParseError::Parse {
-                                source_string: coords[0].to_string(),
-                        })?,
-                        y: coords[1].parse().map_err(|_| PositionParseError::Parse {
-                                source_string: coords[1].to_string(),
-                        })?,
-                })
-        }
-}
-/// Error for Position parsing.
-#[derive(Debug, derive_more::derive::Display, derive_more::Error)]
-pub enum PositionParseError {
-        #[display("Invalid position format: {}", source_string)]
-        Format { source_string: String },
-        #[display("Parse error: {}", source_string)]
-        Parse { source_string: String },
 }
