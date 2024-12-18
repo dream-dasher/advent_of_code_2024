@@ -86,8 +86,8 @@ impl ErrKindDay06 {
         spantrace,
 )]
 pub struct ErrWrapperDay06 {
-        source:    ErrKindDay06,
-        spantrace: tracing_error::SpanTrace,
+        pub source:    ErrKindDay06,
+        pub spantrace: tracing_error::SpanTrace,
         // backtrace: backtrace::Backtrace,
 }
 // Using custom display as debug so we can get SpanTrace auto printed.
