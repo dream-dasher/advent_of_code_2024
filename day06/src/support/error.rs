@@ -26,7 +26,13 @@ pub enum ErrKindDay06 {
                 guard_pos: (usize, usize),
                 maze_max:  (usize, usize),
         },
-        #[from(ignore)] // manually generate; would conflict with `OtherStringError` auto-derive
+        #[from(ignore)]
+        #[display("Newline character. {}", source_string)]
+        ParseNewline { source_string: String },
+        #[from(ignore)]
+        #[display("Unparsable direction: {}", source_string)]
+        ParseOther { source_string: String },
+        #[from(ignore)]
         #[display("Error extracting lines from input: {}", source_input)]
         NoInputLines { source_input: String },
         //
