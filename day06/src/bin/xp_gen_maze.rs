@@ -14,7 +14,8 @@ use std::str::FromStr;
 use clap::{Parser, Subcommand, ValueEnum};
 use cli_input::*;
 use day06::{Result, active_global_default_tracing_subscriber};
-use derive_more::derive::{Add, AddAssign, Constructor, Display, From, FromStr, Into, Sub, SubAssign};
+use derive_more::derive::{Add, AddAssign, Constructor, Display, From, FromStr, Into, Sub,
+                          SubAssign};
 use rand::Rng;
 use tracing::{info, instrument, trace};
 

@@ -19,15 +19,27 @@ use crate::{Result, support::ErrKindDay05};
 pub static PAGE_RELATIONS: OnceLock<PageRelations> = OnceLock::new();
 
 /// A single page number.
-#[derive(Debug, Clone, Constructor, PartialEq, Eq, From, Into, Deref, DerefMut, Copy, FromStr, Hash, Display)]
+#[derive(
+        Debug,
+        Clone,
+        Constructor,
+        PartialEq,
+        Eq,
+        From,
+        Into,
+        Deref,
+        DerefMut,
+        Copy,
+        FromStr,
+        Hash,
+        Display,
+)]
 #[display("p_{}", _0)]
 pub struct Page(u32);
 impl PartialOrd for Page {
         /// This assumes that all elements encountered were represented in the rules.
         #[instrument]
-        fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-                Some(self.cmp(other))
-        }
+        fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> { Some(self.cmp(other)) }
 }
 impl Ord for Page {
         /// This assumes that all elements encountered were represented in the rules.
@@ -96,19 +108,13 @@ pub struct RelatedPages {
 }
 impl RelatedPages {
         #[instrument]
-        pub fn lessers_size(&self) -> usize {
-                self.lesser_pages.len()
-        }
+        pub fn lessers_size(&self) -> usize { self.lesser_pages.len() }
 
         #[instrument]
-        pub fn greaters_size(&self) -> usize {
-                self.greater_pages.len()
-        }
+        pub fn greaters_size(&self) -> usize { self.greater_pages.len() }
 
         #[instrument]
-        pub fn total_size(&self) -> usize {
-                self.lesser_pages.len() + self.greater_pages.len()
-        }
+        pub fn total_size(&self) -> usize { self.lesser_pages.len() + self.greater_pages.len() }
 }
 
 /// Parse txt input ...
@@ -117,11 +123,15 @@ pub fn parse_input(raw_input: &str) -> Result<(PageRelations, Vec<PageSequence>)
         let mut to_check: Vec<PageSequence> = Vec::new();
         let mut page_rels = PageRelations::new(HashMap::new());
 
-        let (order_relations, sequences) = raw_input.split_once("\n\n").expect("blank line to split input on");
+        let (order_relations, sequences) = raw_input
+                .split_once("\n\n")
+                .expect("blank line to split input on");
         for line in order_relations.lines() {
-                let (less, more) = line.split_once('|').ok_or_else(|| ErrKindDay05::OrderPatternError {
-                        source_input: line.to_string(),
-                })?;
+                let (less, more) =
+                        line.split_once('|')
+                                .ok_or_else(|| ErrKindDay05::OrderPatternError {
+                                        source_input: line.to_string(),
+                                })?;
                 let rule = PageRelation::new(less.parse::<Page>()?, more.parse::<Page>()?);
                 tea::trace!(%rule);
                 {
@@ -129,8 +139,16 @@ pub fn parse_input(raw_input: &str) -> Result<(PageRelations, Vec<PageSequence>)
                         tea::debug!(
                                 "CAVEAT: this assumes all local relations are described; this would need to a single loop over each HashSet it inserts to in order to describe transitive relations."
                         );
-                        page_rels.entry(rule.less).or_default().greater_pages.insert(rule.more);
-                        page_rels.entry(rule.more).or_default().lesser_pages.insert(rule.less);
+                        page_rels
+                                .entry(rule.less)
+                                .or_default()
+                                .greater_pages
+                                .insert(rule.more);
+                        page_rels
+                                .entry(rule.more)
+                                .or_default()
+                                .lesser_pages
+                                .insert(rule.less);
                 }
         }
         // for (key, val) in page_rels.iter() {

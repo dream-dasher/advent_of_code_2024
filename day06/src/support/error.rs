@@ -68,7 +68,9 @@ impl ErrKindDay06 {
         where
                 E: Into<Box<dyn std::error::Error + Send + Sync>>,
         {
-                Self::OtherDynError { source: error.into() }
+                Self::OtherDynError {
+                        source: error.into(),
+                }
         }
 }
 
@@ -87,9 +89,7 @@ pub struct ErrWrapperDay06 {
 // Using custom display as debug so we can get SpanTrace auto printed.
 impl std::fmt::Debug for ErrWrapperDay06 {
         #[instrument(skip_all)]
-        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                write!(f, "{}", self)
-        }
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(f, "{}", self) }
 }
 impl<T> From<T> for ErrWrapperDay06
 where
@@ -114,6 +114,9 @@ where
 {
         #[instrument(skip_all)]
         fn to_other(self) -> ErrWrapperDay06 {
-                ErrKindDay06::OtherDynError { source: self.into() }.into()
+                ErrKindDay06::OtherDynError {
+                        source: self.into(),
+                }
+                .into()
         }
 }

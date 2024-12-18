@@ -67,7 +67,8 @@ fn cross_mas_regex_count(raw_input: &str, row_length: usize) -> Result<u64> {
                         let _tea = tea_span.clone().entered();
                         let mut total = 0;
                         let mut match_start_position = 0;
-                        while let Some(found_match) = re.find(&shared_input[match_start_position..]) {
+                        while let Some(found_match) = re.find(&shared_input[match_start_position..])
+                        {
                                 total += 1;
                                 match_start_position += found_match.start() + 1;
                                 tea::debug!(match_start_position, total, i);

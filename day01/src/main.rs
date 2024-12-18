@@ -3,8 +3,8 @@
 use std::path::PathBuf;
 
 use clap::{Parser, Subcommand, ValueEnum};
-use day01::{EXAMPLE_INPUT_1, EXAMPLE_INPUT_2, FINAL_INPUT_1, FINAL_INPUT_2, Result, generate_tracing_subscriber,
-            process_part1, process_part2};
+use day01::{EXAMPLE_INPUT_1, EXAMPLE_INPUT_2, FINAL_INPUT_1, FINAL_INPUT_2, Result,
+            generate_tracing_subscriber, process_part1, process_part2};
 use tracing::{self as tea, instrument};
 
 /// Choose to run Part 1 or 2 of Day01 of Advent of Code 2024.

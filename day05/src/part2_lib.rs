@@ -18,7 +18,10 @@ pub fn process_part2(input: &str) -> Result<u64> {
 
         if cfg!(debug_assertions) {
                 // throwing error: spantrace collection
-                PAGE_RELATIONS.get().unwrap().verify_total_ordering_shape()?
+                PAGE_RELATIONS
+                        .get()
+                        .unwrap()
+                        .verify_total_ordering_shape()?
         }
         let _tea = tea::info_span!(target: "q_pop", "abberant popping").entered();
         tea::trace!("hello?");
@@ -28,7 +31,9 @@ pub fn process_part2(input: &str) -> Result<u64> {
                 tea::trace!(target: "q_pop",?seq);
                 if !seq.windows(2).all(|page_slice| {
                         match page_slice {
-                                &[l, r] => PAGE_RELATIONS.get().unwrap().say_pair_are_ordered((l, r)),
+                                &[l, r] => {
+                                        PAGE_RELATIONS.get().unwrap().say_pair_are_ordered((l, r))
+                                }
                                 _ => unreachable!(),
                         }
                         .unwrap_or(true)

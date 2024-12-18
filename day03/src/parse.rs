@@ -13,16 +13,16 @@ const REGEX_MUL_PAIR: &str = r"mul\((?<left_num>\d+),(?<right_num>\d+)\)";
 
 /// Multiplies pair internally.
 /// Does **NOT** check for overflow.
-#[derive(Debug, Add, Sub, Mul, Div, Display, PartialEq, Eq, Clone, Copy, Constructor, From, Into)]
+#[derive(
+        Debug, Add, Sub, Mul, Div, Display, PartialEq, Eq, Clone, Copy, Constructor, From, Into,
+)]
 #[display("({}, {})", left_num, right_num)]
 pub struct MulPair {
         left_num:  u64,
         right_num: u64,
 }
 impl MulPair {
-        pub fn self_multiply(&self) -> u64 {
-                self.left_num * self.right_num
-        }
+        pub fn self_multiply(&self) -> u64 { self.left_num * self.right_num }
 }
 
 /// Parse txt input: extracting number pairs from text.

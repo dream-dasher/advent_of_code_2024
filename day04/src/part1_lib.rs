@@ -19,8 +19,10 @@ impl CWordPuzzle {
         fn count_rotations(&self) -> (u64, u64, u64, u64) {
                 let hor_count = SearchStateMachine::new().count_xmas(self.get_horizontal_view());
                 let vert_count = SearchStateMachine::new().count_xmas(self.get_vertical_view());
-                let diag_bltr_count = SearchStateMachine::new().count_xmas(self.get_diagonal_view_bltr());
-                let diag_brtl_count = SearchStateMachine::new().count_xmas(self.get_diagonal_view_brtl());
+                let diag_bltr_count =
+                        SearchStateMachine::new().count_xmas(self.get_diagonal_view_bltr());
+                let diag_brtl_count =
+                        SearchStateMachine::new().count_xmas(self.get_diagonal_view_brtl());
                 tea::info!(hor_count, vert_count, diag_bltr_count, diag_brtl_count);
                 (hor_count, vert_count, diag_bltr_count, diag_brtl_count)
         }
@@ -59,7 +61,8 @@ impl SearchStateMachine {
                 let mut total_finds = 0;
                 for (i, line) in cw_lines.iter().enumerate() {
                         tea::trace!(?line, ?i, "-----");
-                        let _enter = tea::debug_span!("Processing, line", ?i, ?total_finds).entered();
+                        let _enter =
+                                tea::debug_span!("Processing, line", ?i, ?total_finds).entered();
                         let mut search_state_machine = SearchStateMachine::new();
                         for (i2, cw_char) in line.into_iter().enumerate() {
                                 let new_state = search_state_machine.next(cw_char);
@@ -114,12 +117,16 @@ impl SearchStateMachine {
         #[instrument(level = Level::TRACE, ret(level = Level::TRACE))]
         fn preview_next(&self, cw_char: &CWordChar) -> SearchState {
                 match (&cw_char, self.state) {
-                        (CWordChar::X, SearchState::Null | SearchState::FoundXMAS) => SearchState::X,
+                        (CWordChar::X, SearchState::Null | SearchState::FoundXMAS) => {
+                                SearchState::X
+                        }
                         (CWordChar::M, SearchState::X | SearchState::FoundSAMX) => SearchState::XM,
                         (CWordChar::A, SearchState::XM) => SearchState::XMA,
                         (CWordChar::S, SearchState::XMA) => SearchState::FoundXMAS,
                         //
-                        (CWordChar::S, SearchState::Null | SearchState::FoundSAMX) => SearchState::S,
+                        (CWordChar::S, SearchState::Null | SearchState::FoundSAMX) => {
+                                SearchState::S
+                        }
                         (CWordChar::A, SearchState::S | SearchState::FoundXMAS) => SearchState::SA,
                         (CWordChar::M, SearchState::SA) => SearchState::SAM,
                         (CWordChar::X, SearchState::SAM) => SearchState::FoundSAMX,
@@ -136,12 +143,16 @@ impl SearchStateMachine {
         #[instrument(level = Level::TRACE, ret(level = Level::TRACE))]
         fn evolve(mut self, cw_char: &CWordChar) -> SearchStateMachine {
                 self.state = match (&cw_char, self.state) {
-                        (CWordChar::X, SearchState::Null | SearchState::FoundXMAS) => SearchState::X,
+                        (CWordChar::X, SearchState::Null | SearchState::FoundXMAS) => {
+                                SearchState::X
+                        }
                         (CWordChar::M, SearchState::X | SearchState::FoundSAMX) => SearchState::XM,
                         (CWordChar::A, SearchState::XM) => SearchState::XMA,
                         (CWordChar::S, SearchState::XMA) => SearchState::FoundXMAS,
                         //
-                        (CWordChar::S, SearchState::Null | SearchState::FoundSAMX) => SearchState::S,
+                        (CWordChar::S, SearchState::Null | SearchState::FoundSAMX) => {
+                                SearchState::S
+                        }
                         (CWordChar::A, SearchState::S | SearchState::FoundXMAS) => SearchState::SA,
                         (CWordChar::M, SearchState::SA) => SearchState::SAM,
                         (CWordChar::X, SearchState::SAM) => SearchState::FoundSAMX,
