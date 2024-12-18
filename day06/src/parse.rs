@@ -3,6 +3,7 @@
 use std::io;
 
 mod objects;
+#[expect(unused_imports)]
 pub use objects::*;
 use tracing::{Level, debug, instrument};
 

@@ -36,11 +36,8 @@ impl Maze {
         }
 
         #[instrument(skip(self),ret(level = Level::DEBUG))]
-        fn get(&self, p: Point2D) -> Option<PositionState> {
-                match self.pt_to_ln_index(p) {
-                        Some(index) => Some(self.positions[index]),
-                        None => None,
-                }
+        fn get(&self, point: Point2D) -> Option<PositionState> {
+                self.pt_to_ln_index(point).map(|index| self.positions[index])
         }
 
         #[instrument]
