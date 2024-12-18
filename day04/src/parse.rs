@@ -7,7 +7,9 @@ use crate::{ErrKindDay04, Result};
 
 /// Parse txt input ...
 #[instrument(skip_all, ret(level = Level::TRACE))]
-pub fn parse_input_1(raw_input: &str) -> Result<CWordPuzzle> { CWordPuzzle::from_str(raw_input) }
+pub fn parse_input_1(raw_input: &str) -> Result<CWordPuzzle> {
+        CWordPuzzle::from_str(raw_input)
+}
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct CWordPuzzle {
@@ -25,10 +27,8 @@ impl CWordPuzzle {
         {
                 let str_input = strable_inp.as_ref();
                 // matches structures lf `.lines()`
-                let horizontal_view: Vec<CWordLine> = str_input
-                        .lines()
-                        .map(CWordLine::from_str)
-                        .collect::<Result<_>>()?;
+                let horizontal_view: Vec<CWordLine> =
+                        str_input.lines().map(CWordLine::from_str).collect::<Result<_>>()?;
 
                 // let num_chars = str_input.chars().count(); // len would work for ascii assumption
                 let num_chars = str_input.len(); // assuming ascii chars
@@ -68,8 +68,7 @@ impl CWordPuzzle {
                                 // 30 21 12 03
                                 // 40 31 22 13
                                 for offset in 0..diag_len {
-                                        dview_line.push(horizontal_view[base_row - offset]
-                                                [base_col + offset]);
+                                        dview_line.push(horizontal_view[base_row - offset][base_col + offset]);
                                 }
                                 bltr_diagonal_view.push(dview_line);
                         }
@@ -82,8 +81,7 @@ impl CWordPuzzle {
                                 // 42 33
                                 // 43
                                 for offset in 0..diag_len {
-                                        dview_line.push(horizontal_view[base_row - offset]
-                                                [base_col + offset]);
+                                        dview_line.push(horizontal_view[base_row - offset][base_col + offset]);
                                 }
                                 bltr_diagonal_view.push(dview_line);
                         }
@@ -108,8 +106,7 @@ impl CWordPuzzle {
                                 // 33 22 11 00
                                 // 43 32 21 10
                                 for offset in 0..diag_len {
-                                        dview_line.push(horizontal_view[base_row - offset]
-                                                [base_col - offset]);
+                                        dview_line.push(horizontal_view[base_row - offset][base_col - offset]);
                                 }
                                 brtl_diagonal_view.push(dview_line);
                         }
@@ -122,8 +119,7 @@ impl CWordPuzzle {
                                 // 41 30
                                 // 40
                                 for offset in 0..diag_len {
-                                        dview_line.push(horizontal_view[base_row - offset]
-                                                [base_col - offset]);
+                                        dview_line.push(horizontal_view[base_row - offset][base_col - offset]);
                                 }
                                 brtl_diagonal_view.push(dview_line);
                         }
@@ -138,23 +134,33 @@ impl CWordPuzzle {
 
         /// Provides a reference to the horizontal view
         #[instrument(level = Level::TRACE, skip_all)]
-        pub fn get_horizontal_view(&self) -> &Vec<CWordLine> { &self.horizontal_view }
+        pub fn get_horizontal_view(&self) -> &Vec<CWordLine> {
+                &self.horizontal_view
+        }
 
         /// Provides a reference to the vertical view
         #[instrument(level = Level::TRACE, skip_all)]
-        pub fn get_vertical_view(&self) -> &Vec<CWordLine> { &self.vertical_view }
+        pub fn get_vertical_view(&self) -> &Vec<CWordLine> {
+                &self.vertical_view
+        }
 
         /// Provides a reference to the diagonal view (bottom-left to top-right)
         #[instrument(level = Level::TRACE, skip_all)]
-        pub fn get_diagonal_view_bltr(&self) -> &Vec<CWordLine> { &self.bltr_diagonal_view }
+        pub fn get_diagonal_view_bltr(&self) -> &Vec<CWordLine> {
+                &self.bltr_diagonal_view
+        }
 
         /// Provides a reference to the diagonal view (bottom-right to top-left)
         #[instrument(level = Level::TRACE, skip_all)]
-        pub fn get_diagonal_view_brtl(&self) -> &Vec<CWordLine> { &self.brtl_diagonal_view }
+        pub fn get_diagonal_view_brtl(&self) -> &Vec<CWordLine> {
+                &self.brtl_diagonal_view
+        }
 
         /// Provides a clone of the puzzle in canonical (row, column) form.
         #[instrument(level = Level::TRACE, skip_all)]
-        pub fn canonical_view(&self) -> Vec<CWordLine> { self.horizontal_view.clone() }
+        pub fn canonical_view(&self) -> Vec<CWordLine> {
+                self.horizontal_view.clone()
+        }
 }
 
 /// Only valid chars in the CrossWordInput.
@@ -210,7 +216,9 @@ impl CWordLine {
 
         /// Push a CWordChar onto the CWordLine.
         #[instrument(level = Level::TRACE, ret(level = Level::TRACE))]
-        fn push(&mut self, cw_char: CWordChar) { self.chars.push(cw_char); }
+        fn push(&mut self, cw_char: CWordChar) {
+                self.chars.push(cw_char);
+        }
 }
 
 // #[cfg(test)]

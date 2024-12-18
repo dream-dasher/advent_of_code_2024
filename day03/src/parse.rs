@@ -13,16 +13,16 @@ const REGEX_MUL_PAIR: &str = r"mul\((?<left_num>\d+),(?<right_num>\d+)\)";
 
 /// Multiplies pair internally.
 /// Does **NOT** check for overflow.
-#[derive(
-        Debug, Add, Sub, Mul, Div, Display, PartialEq, Eq, Clone, Copy, Constructor, From, Into,
-)]
+#[derive(Debug, Add, Sub, Mul, Div, Display, PartialEq, Eq, Clone, Copy, Constructor, From, Into)]
 #[display("({}, {})", left_num, right_num)]
 pub struct MulPair {
         left_num:  u64,
         right_num: u64,
 }
 impl MulPair {
-        pub fn self_multiply(&self) -> u64 { self.left_num * self.right_num }
+        pub fn self_multiply(&self) -> u64 {
+                self.left_num * self.right_num
+        }
 }
 
 /// Parse txt input: extracting number pairs from text.
@@ -156,21 +156,11 @@ mod tests {
                         do()+mul(22,22)(mul(33,33)undo()?mul(44,44))don't()mul(99,99)
                         on't()_mul(99,99)do()+mul(55,55)
                         ");
-                let expected: Vec<MulPair> = vec![
-                        (1, 1),
-                        (2, 2),
-                        (3, 3),
-                        (4, 4),
-                        (5, 5),
-                        (11, 11),
-                        (22, 22),
-                        (33, 33),
-                        (44, 44),
-                        (55, 55),
-                ]
-                .into_iter()
-                .map(|(left, right)| MulPair::new(left, right))
-                .collect();
+                let expected: Vec<MulPair> =
+                        vec![(1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (11, 11), (22, 22), (33, 33), (44, 44), (55, 55)]
+                                .into_iter()
+                                .map(|(left, right)| MulPair::new(left, right))
+                                .collect();
                 let x = parse_input_2(input);
                 tea::warn!(?x);
                 assert_eq!(parse_input_2(input)?, expected);

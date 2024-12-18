@@ -7,10 +7,8 @@ use tracing_subscriber::{EnvFilter, Registry, layer::Layered, prelude::*};
 use tracing_tree::HierarchicalLayer;
 
 // workaround to hairy return type
-type SpecificLayered = Layered<
-        EnvFilter,
-        Layered<HierarchicalLayer<fn() -> Stderr, tracing_tree::time::Uptime>, Registry>,
->;
+type SpecificLayered =
+        Layered<EnvFilter, Layered<HierarchicalLayer<fn() -> Stderr, tracing_tree::time::Uptime>, Registry>>;
 
 /// Generates a tracing_subcsriber.  (Convenience function.)
 pub fn generate_tracing_subscriber() -> SpecificLayered {

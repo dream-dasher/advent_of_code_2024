@@ -67,8 +67,7 @@ fn cross_mas_regex_count(raw_input: &str, row_length: usize) -> Result<u64> {
                         let _tea = tea_span.clone().entered();
                         let mut total = 0;
                         let mut match_start_position = 0;
-                        while let Some(found_match) = re.find(&shared_input[match_start_position..])
-                        {
+                        while let Some(found_match) = re.find(&shared_input[match_start_position..]) {
                                 total += 1;
                                 match_start_position += found_match.start() + 1;
                                 tea::debug!(match_start_position, total, i);
@@ -94,22 +93,14 @@ fn cross_mas_regex_count(raw_input: &str, row_length: usize) -> Result<u64> {
 /// ```
 #[instrument(ret(level = Level::TRACE))]
 fn compile_mas_regexes(row_length: usize) -> (Regex, Regex, Regex, Regex) {
-        let regex_mm_sized = format!(
-                r"M.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.S",
-                r_minus_one = row_length - 1
-        );
-        let regex_ms_sized = format!(
-                r"M.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.S",
-                r_minus_one = row_length - 1
-        );
-        let regex_sm_sized = format!(
-                r"S.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.M",
-                r_minus_one = row_length - 1
-        );
-        let regex_ss_sized = format!(
-                r"S.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.M",
-                r_minus_one = row_length - 1
-        );
+        let regex_mm_sized =
+                format!(r"M.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.S", r_minus_one = row_length - 1);
+        let regex_ms_sized =
+                format!(r"M.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.S", r_minus_one = row_length - 1);
+        let regex_sm_sized =
+                format!(r"S.M(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}S.M", r_minus_one = row_length - 1);
+        let regex_ss_sized =
+                format!(r"S.S(.|\n){{{r_minus_one}}}A(.|\n){{{r_minus_one}}}M.M", r_minus_one = row_length - 1);
 
         let re_mm = Regex::new(&regex_mm_sized).unwrap();
         let re_ms = Regex::new(&regex_ms_sized).unwrap();

@@ -22,11 +22,7 @@ pub fn parse_input2(hay: &str) -> Result<(Vec<u64>, Vec<u64>)> {
                 right_vec.push(right.parse()?);
         }
         tea::trace!(?left_vec, ?right_vec);
-        tea::debug!(
-                hay_line_count = hay.lines().count(),
-                left_len = left_vec.len(),
-                right_len = right_vec.len()
-        );
+        tea::debug!(hay_line_count = hay.lines().count(), left_len = left_vec.len(), right_len = right_vec.len());
         Ok((left_vec, right_vec))
 }
 

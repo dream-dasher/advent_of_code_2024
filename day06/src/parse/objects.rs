@@ -30,13 +30,9 @@ impl Maze {
         #[instrument(skip_all, err, ret(level = Level::TRACE))]
         fn new(positions: Vec<PositionState>, max_dims: Point2D) -> Result<Self, String> {
                 if positions.len() != max_dims.x * max_dims.y {
-                        Err("Maze dimensions do not match the positions vector length."
-                                .to_string())?
+                        Err("Maze dimensions do not match the positions vector length.".to_string())?
                 }
-                Ok(Self {
-                        positions,
-                        max_dims,
-                })
+                Ok(Self { positions, max_dims })
         }
 
         #[instrument(skip(self),ret(level = Level::DEBUG))]

@@ -3,19 +3,13 @@
 use std::path::PathBuf;
 
 use clap::{Parser, Subcommand, ValueEnum};
-use day02::{CUSTOM_INPUT, EXAMPLE_INPUT, FINAL_INPUT, Result, generate_tracing_subscriber,
-            process_part1, process_part2};
+use day02::{CUSTOM_INPUT, EXAMPLE_INPUT, FINAL_INPUT, Result, generate_tracing_subscriber, process_part1,
+            process_part2};
 use tracing::{self as tea, Level, instrument};
 
 /// Choose to run Part 1 or 2 of Day02 of Advent of Code 2024.
 #[derive(Parser, Debug)]
-#[command(
-        version,
-        about,
-        long_about,
-        disable_help_subcommand = true,
-        subcommand_help_heading = "input source"
-)]
+#[command(version, about, long_about, disable_help_subcommand = true, subcommand_help_heading = "input source")]
 pub struct Args {
         /// Which Part to Run
         part:  Part,

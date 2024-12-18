@@ -55,10 +55,7 @@ fn safety_status_2(diffs: Vec<Difference>) -> ReportStatus {
                                 tea::trace!(?a, ?b, ?c, ?diffs, "destructured values");
                                 common_sign([*a, *b, *c])
                         } else {
-                                tea::error!(
-                                        ?diffs,
-                                        "Guaranteed destructuring failed. Logic error."
-                                );
+                                tea::error!(?diffs, "Guaranteed destructuring failed. Logic error.");
                                 unreachable!("triple destructuring should always be valid");
                         }
                 }
@@ -80,19 +77,13 @@ fn safety_status_2(diffs: Vec<Difference>) -> ReportStatus {
                         }
                         (false, true) => return ReportStatus::Unsafe,
                         (false, false) => {
-                                let _enter =
-                                        tea::warn_span!("Unacceptable Value", ?diff, i).entered();
-                                let pre_val =
-                                        i.checked_sub(1).and_then(|pre_index| diffs.get(pre_index));
-                                let post_val = i
-                                        .checked_add(1)
-                                        .and_then(|post_index| diffs.get(post_index));
-                                let is_post_val_safe =
-                                        post_val.is_none_or(|p| is_safe_value(p, needed_sign));
-                                let is_pre_sum_safe = pre_val
-                                        .is_none_or(|p| is_safe_value(&(*p + *diff), needed_sign));
-                                let is_post_sum_safe = post_val
-                                        .is_none_or(|p| is_safe_value(&(*p + *diff), needed_sign));
+                                let _enter = tea::warn_span!("Unacceptable Value", ?diff, i).entered();
+                                let pre_val = i.checked_sub(1).and_then(|pre_index| diffs.get(pre_index));
+                                let post_val = i.checked_add(1).and_then(|post_index| diffs.get(post_index));
+                                let is_post_val_safe = post_val.is_none_or(|p| is_safe_value(p, needed_sign));
+                                let is_pre_sum_safe = pre_val.is_none_or(|p| is_safe_value(&(*p + *diff), needed_sign));
+                                let is_post_sum_safe =
+                                        post_val.is_none_or(|p| is_safe_value(&(*p + *diff), needed_sign));
 
                                 tea::debug!(
                                         ?i,
