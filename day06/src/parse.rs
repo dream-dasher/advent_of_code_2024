@@ -2,6 +2,8 @@
 
 use std::io;
 
+mod objects;
+pub use objects::*;
 use tracing::{Level, debug, instrument};
 
 use crate::Result;
@@ -22,70 +24,6 @@ fn dirty_pause() -> Result<()> {
         let read_in = io::stdin().read_line(&mut _input)?;
         debug!(?read_in);
         Ok(())
-}
-
-mod objects {
-        use tracing::instrument;
-
-        use crate::support::{ErrWrapperDay06, error::ErrKindDay06};
-
-        /// State of Position
-        /// ('guard is not part state')
-        #[derive(Clone, Copy, PartialEq, Eq, Debug, derive_more::Display)]
-        enum PositionState {
-                #[display("#")]
-                Obstacle,
-                #[display(".")]
-                Empty,
-        }
-        impl TryFrom<char> for PositionState {
-                type Error = ErrWrapperDay06;
-
-                #[instrument(skip_all)]
-                fn try_from(c: char) -> std::result::Result<Self, Self::Error> {
-                        match c {
-                                '#' => Ok(PositionState::Obstacle),
-                                '.' => Ok(PositionState::Empty),
-                                '\n' => Err(ErrKindDay06::ParseNewline {
-                                        source_string: c.to_string(),
-                                })?,
-                                _ => Err(ErrKindDay06::ParseOther {
-                                        source_string: c.to_string(),
-                                })?,
-                        }
-                }
-        }
-        /// Direction of Facing.
-        #[derive(Copy, Clone, PartialEq, Eq, Debug, derive_more::Display)]
-        pub enum Direction {
-                #[display("^")]
-                Up,
-                #[display("v")]
-                Down,
-                #[display("<")]
-                Left,
-                #[display(">")]
-                Right,
-        }
-        impl TryFrom<char> for Direction {
-                type Error = ErrWrapperDay06;
-
-                #[instrument(skip_all)]
-                fn try_from(c: char) -> std::result::Result<Self, Self::Error> {
-                        match c {
-                                '^' => Ok(Direction::Up),
-                                'v' => Ok(Direction::Down),
-                                '<' => Ok(Direction::Left),
-                                '>' => Ok(Direction::Right),
-                                '\n' => Err(ErrKindDay06::ParseNewline {
-                                        source_string: c.to_string(),
-                                })?,
-                                _ => Err(ErrKindDay06::ParseOther {
-                                        source_string: c.to_string(),
-                                })?,
-                        }
-                }
-        }
 }
 
 #[cfg(test)]
