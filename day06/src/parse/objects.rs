@@ -9,7 +9,7 @@
 //!
 //!
 
-use derive_more::derive::{Constructor, From, Index, Into};
+use derive_more::derive::{Add, AddAssign, Constructor, From, Index, Into};
 use itertools::Itertools as _;
 use tracing::instrument;
 
@@ -108,7 +108,9 @@ pub struct Guard {
         pub dir: Direction,
 }
 
-#[derive(Clone, Copy, From, Into, PartialEq, Eq, PartialOrd, Debug, derive_more::Display, Constructor)]
+#[derive(
+        Clone, Copy, From, Into, PartialEq, Eq, PartialOrd, Debug, derive_more::Display, Constructor, Add, AddAssign,
+)]
 #[display("({},{})", x, y)]
 #[from(forward)]
 pub struct Point2D {

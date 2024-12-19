@@ -17,16 +17,6 @@ pub fn parse_input(raw_input: &str) -> Result<(Maze, Option<Guard>)> {
         Ok((maze, mb_guard))
 }
 
-/// Quick and dirty pause button so I can watch as program runs.
-#[instrument]
-fn dirty_pause() -> Result<()> {
-        println!("Press Enter to continue...");
-        let mut _input = String::new();
-        let read_in = io::stdin().read_line(&mut _input)?;
-        tracing::event![tracing::Level::DEBUG, ?read_in];
-        Ok(())
-}
-
 #[cfg(test)]
 mod tests {
         use indoc::indoc;
