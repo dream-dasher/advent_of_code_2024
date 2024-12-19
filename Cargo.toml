@@ -69,6 +69,7 @@ regex = { version = "1.11.1", features = ["logging"] }
 serde = { version = "1.0.215", features = ["derive"] }
 serde_json = "1.0.133"
 # Dev-Dependencies
+pretty_assertions = "1.4.1"
 ## --Property Sample Testing--
 quickcheck = "1.0.3"
 quickcheck_macros = "1.0.0"

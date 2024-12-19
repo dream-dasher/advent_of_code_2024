@@ -42,6 +42,7 @@ regex.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 # Dev-Dependencies
+pretty_assertions.workspace = true
 ## --Property Sample Testing--
 quickcheck.workspace = true
 quickcheck_macros.workspace = true
