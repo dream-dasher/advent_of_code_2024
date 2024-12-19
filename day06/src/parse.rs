@@ -4,22 +4,18 @@ use std::io;
 
 mod objects;
 pub use objects::*;
-use tracing::{Level, debug, instrument};
+use tracing::{Level, instrument};
 
 use crate::Result;
 
 /// Parse txt input ...
 #[instrument(skip_all, ret(level = Level::TRACE))]
-pub fn parse_input(raw_input: &str) -> Result<()> {
+pub fn parse_input(raw_input: &str) -> Result<(Maze, Option<Guard>)> {
         println!("\n{}\n", raw_input);
-        dirty_pause()?;
-
         let (maze, mb_guard) = Maze::from_input_string(raw_input)?;
-        println!("maze: {}", maze);
-        println!("mb_guard: {:?}", mb_guard);
+        tracing::event![tracing::Level::TRACE, %maze, ?mb_guard];
 
-        println!("maze: {}", maze.to_string().trim());
-        todo!("---------------td :) ---------------------")
+        Ok((maze, mb_guard))
 }
 
 /// Quick and dirty pause button so I can watch as program runs.
@@ -28,7 +24,7 @@ fn dirty_pause() -> Result<()> {
         println!("Press Enter to continue...");
         let mut _input = String::new();
         let read_in = io::stdin().read_line(&mut _input)?;
-        debug!(?read_in);
+        tracing::event![tracing::Level::DEBUG, ?read_in];
         Ok(())
 }
 
@@ -63,33 +59,11 @@ mod tests {
                 let expected_dims = (10, 10);
                 let expected_guard = Guard::new(Point2D::new(4, 6), Direction::Up);
 
-                let (maze, mb_guard) = Maze::from_input_string(input)?;
+                let (maze, mb_guard) = parse_input(input)?;
                 let found_dims = maze.max_dims.into();
-                let found_guard = mb_guard.expect("should have guard");
+                let found_guard = mb_guard.expect("guard should found");
                 assert_eq!(expected_dims, found_dims);
                 assert_eq!(expected_guard, found_guard);
-                Ok(())
-        }
-        /// Note: this looks at (trimmed) maze string representation matching the raw input, but for input with*out* a guard (direction) char.  (Which is, by intention stripped out.)
-        #[test]
-        #[instrument]
-        fn guardless_string_equivalence() -> Result<()> {
-                let input = indoc!("
-                        ....#.....
-                        .........#
-                        ..........
-                        ..#.......
-                        .......#..
-                        ..........
-                        .#........
-                        ........#.
-                        #.........
-                        ......#...");
-                let (maze, mb_guard) = Maze::from_input_string(input)?;
-                let found_guard = mb_guard;
-
-                assert_eq!(None, found_guard);
-                assert_eq!(input.trim(), maze.to_string().trim());
                 Ok(())
         }
 

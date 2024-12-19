@@ -173,6 +173,53 @@ mod test {
 
         #[test]
         #[instrument]
+        fn maze_parse_test() -> Result<()> {
+                let input = indoc!("
+                        ....#.....
+                        .........#
+                        ..........
+                        ..#.......
+                        .......#..
+                        ..........
+                        .#..^.....
+                        ........#.
+                        #.........
+                        ......#...");
+                let expected_dims = (10, 10);
+                let expected_guard = Guard::new(Point2D::new(4, 6), Direction::Up);
+
+                let (maze, mb_guard) = Maze::from_input_string(input)?;
+                let found_dims = maze.max_dims.into();
+                let found_guard = mb_guard.expect("should have guard");
+                assert_eq!(expected_dims, found_dims);
+                assert_eq!(expected_guard, found_guard);
+                Ok(())
+        }
+        /// Note: this looks at (trimmed) maze string representation matching the raw input, but for input with*out* a guard (direction) char.  (Which is, by intention stripped out.)
+        #[test]
+        #[instrument]
+        fn guardless_string_equivalence_maze_test() -> Result<()> {
+                let input = indoc!("
+                        ....#.....
+                        .........#
+                        ..........
+                        ..#.......
+                        .......#..
+                        ..........
+                        .#........
+                        ........#.
+                        #.........
+                        ......#...");
+                let (maze, mb_guard) = Maze::from_input_string(input)?;
+                let found_guard = mb_guard;
+
+                assert_eq!(None, found_guard);
+                assert_eq!(input.trim(), maze.to_string().trim());
+                Ok(())
+        }
+
+        #[test]
+        #[instrument]
         fn test_maze_from_input_string() {
                 let input = indoc!["##
                                     .#"];
