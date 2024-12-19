@@ -11,7 +11,7 @@
 
 use derive_more::derive::{Constructor, From, Index, Into};
 use itertools::Itertools as _;
-use tracing::{Level, event, instrument};
+use tracing::instrument;
 
 use crate::{Result,
             support::{ErrWrapperDay06, error::ErrKindDay06}};
@@ -34,7 +34,7 @@ impl std::fmt::Display for Maze {
         }
 }
 impl Maze {
-        #[instrument(skip_all, err, ret(level = Level::TRACE))]
+        #[instrument(skip_all, err)]
         fn new(positions: Vec<PositionState>, max_dims: Point2D) -> Result<Self> {
                 if positions.len() != max_dims.x * max_dims.y {
                         Err("Maze dimensions do not match the positions vector length.".to_string())?
@@ -75,7 +75,7 @@ impl Maze {
                 Ok((maze, guard))
         }
 
-        #[instrument(skip(self),ret(level = Level::DEBUG))]
+        #[instrument(skip(self),ret(level = tracing::Level::DEBUG))]
         pub fn get(&self, point: Point2D) -> Option<PositionState> {
                 self.pt_to_ln_index(point).map(|index| self.positions[index])
         }
@@ -83,7 +83,7 @@ impl Maze {
         #[instrument]
         fn pt_to_ln_index(&self, point: Point2D) -> Option<usize> {
                 if point.x >= self.max_dims.x || point.y >= self.max_dims.y {
-                        event![Level::DEBUG, %point, ?self.max_dims, "point out of bounds"];
+                        tracing::event![tracing::Level::DEBUG, %point, ?self.max_dims, "point out of bounds"];
                         None
                 } else {
                         Some(point.y * self.max_dims.x + point.x)
@@ -104,8 +104,8 @@ pub enum PositionState {
 #[derive(Clone, Copy, Debug, derive_more::Display, PartialEq, Eq, Constructor)]
 #[display("G_'{}'@{}", dir, pos)]
 pub struct Guard {
-        pos: Point2D,
-        dir: Direction,
+        pub pos: Point2D,
+        pub dir: Direction,
 }
 
 #[derive(Clone, Copy, From, Into, PartialEq, Eq, PartialOrd, Debug, derive_more::Display, Constructor)]

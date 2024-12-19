@@ -11,7 +11,6 @@ use crate::Result;
 /// Parse txt input ...
 #[instrument(skip_all, ret(level = Level::TRACE))]
 pub fn parse_input(raw_input: &str) -> Result<(Maze, Option<Guard>)> {
-        println!("\n{}\n", raw_input);
         let (maze, mb_guard) = Maze::from_input_string(raw_input)?;
         tracing::event![tracing::Level::TRACE, %maze, ?mb_guard];
 

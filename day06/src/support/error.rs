@@ -18,7 +18,7 @@ pub enum ErrKindDay06 {
         // `custom` errors
         #[from(ignore)]
         #[display("No guard found in maze input")]
-        NoGuardFound { source_input: String },
+        NoGuardFound { source_input: Option<String> },
         #[from(ignore)] // manually generate; would conflict with `OtherStringError` auto-derive
         #[display(
                 "Requested Guard position is out of Maze bounds. guard_pos {:?} vs maze_max {:?}",
