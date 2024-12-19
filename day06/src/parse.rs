@@ -13,10 +13,13 @@ use crate::Result;
 pub fn parse_input(raw_input: &str) -> Result<()> {
         println!("\n{}\n", raw_input);
         dirty_pause()?;
-        let maze = Maze::from_input_string(raw_input)?;
-        println!("maze: {}", maze);
 
-        todo!()
+        let (maze, mb_guard) = Maze::from_input_string(raw_input)?;
+        println!("maze: {}", maze);
+        println!("mb_guard: {:?}", mb_guard);
+
+        println!("maze: {}", maze.to_string().trim());
+        todo!("---------------td :) ---------------------")
 }
 
 /// Quick and dirty pause button so I can watch as program runs.
@@ -56,13 +59,15 @@ mod tests {
                         ........#.
                         #.........
                         ......#...");
-                let expected_ys = 10;
-                let expected_xs = 10;
-                let vv: Vec<&str> = input.lines().collect();
-                let found_ys = vv.len();
-                let found_xs = vv[0].len();
-                assert_eq!(found_ys, expected_ys);
-                assert_eq!(found_xs, expected_xs);
+                let expected_dims = (10, 10);
+                let expected_guard = Guard::new(Point2D::new(4, 6), Direction::Up);
+
+                let (maze, mb_guard) = Maze::from_input_string(input)?;
+                let found_dims = maze.max_dims.into();
+                let found_guard = mb_guard.expect("should have guard");
+                assert_eq!(expected_dims, found_dims);
+                assert_eq!(expected_guard, found_guard);
+                assert_eq!(input.trim(), maze.to_string().trim());
                 Ok(())
         }
 
