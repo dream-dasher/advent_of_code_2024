@@ -22,6 +22,9 @@ pub fn process_part1(input: &str) -> Result<u64> {
                 let pm = populated_maze_rep(&maze, &guard);
                 println!("pm:\n{}", pm);
                 dirty_pause()?;
+                if !(0..maze.max_dims.x).contains(&guard.pos.x) || !(0..maze.max_dims.y).contains(&guard.pos.y) {
+                        break;
+                }
                 guard.pos += Point2D::new(1, 1);
         }
 
@@ -56,7 +59,7 @@ mod dirty_terminal {
 pub fn populated_maze_rep(maze: &Maze, guard: &Guard) -> String {
         let mut output = String::new();
         for (r, c) in (0..maze.max_dims.y).cartesian_product(0..maze.max_dims.x) {
-                if c == 0 && r != 0 {
+                if c == 0 {
                         output.push('\n');
                 }
 
