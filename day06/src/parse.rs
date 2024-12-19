@@ -1,7 +1,5 @@
 //! Raw-input parsing code for Day06 of Advent of Code 2024.
 
-use std::io;
-
 mod objects;
 pub use objects::*;
 use tracing::{Level, instrument};

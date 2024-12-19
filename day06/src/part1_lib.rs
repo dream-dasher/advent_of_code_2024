@@ -4,7 +4,7 @@
 use dirty_terminal::*;
 use itertools::Itertools as _;
 use owo_colors::OwoColorize as _;
-use tracing::{self as tea, Level, instrument};
+use tracing::{Level, instrument};
 
 use crate::{Result,
             parse::{Guard, Maze, Point2D, parse_input},
@@ -33,6 +33,8 @@ pub fn process_part1(input: &str) -> Result<u64> {
 mod dirty_terminal {
         use std::{io, io::Write as _};
 
+        use tracing::event;
+
         use super::*;
         /// Clear terminal screen using ANSI escape code.
         ///
@@ -51,7 +53,7 @@ mod dirty_terminal {
                 println!("Press Enter to continue...");
                 let mut _input = String::new();
                 let read_in = io::stdin().read_line(&mut _input)?;
-                tracing::event![tracing::Level::DEBUG, ?read_in];
+                event![Level::DEBUG, ?read_in];
                 Ok(())
         }
 }
