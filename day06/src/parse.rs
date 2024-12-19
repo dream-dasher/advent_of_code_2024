@@ -35,6 +35,7 @@ fn dirty_pause() -> Result<()> {
 #[cfg(test)]
 mod tests {
         use indoc::indoc;
+        use pretty_assertions::assert_eq;
         #[expect(unused)]
         use quickcheck::TestResult;
         #[expect(unused)]
@@ -47,7 +48,7 @@ mod tests {
 
         #[test]
         #[instrument]
-        fn example_test() -> Result<()> {
+        fn input_parse_test() -> Result<()> {
                 let input = indoc!("
                         ....#.....
                         .........#
@@ -67,6 +68,27 @@ mod tests {
                 let found_guard = mb_guard.expect("should have guard");
                 assert_eq!(expected_dims, found_dims);
                 assert_eq!(expected_guard, found_guard);
+                Ok(())
+        }
+        /// Note: this looks at (trimmed) maze string representation matching the raw input, but for input with*out* a guard (direction) char.  (Which is, by intention stripped out.)
+        #[test]
+        #[instrument]
+        fn guardless_string_equivalence() -> Result<()> {
+                let input = indoc!("
+                        ....#.....
+                        .........#
+                        ..........
+                        ..#.......
+                        .......#..
+                        ..........
+                        .#........
+                        ........#.
+                        #.........
+                        ......#...");
+                let (maze, mb_guard) = Maze::from_input_string(input)?;
+                let found_guard = mb_guard;
+
+                assert_eq!(None, found_guard);
                 assert_eq!(input.trim(), maze.to_string().trim());
                 Ok(())
         }

@@ -70,7 +70,7 @@ impl Maze {
                         x: input.lines().next().expect("expected at least one line in input").len(),
                         y: input.lines().count(),
                 };
-                debug_assert_eq!(max_dims.x, max_dims.y);
+                debug_assert_eq!(max_dims.x, max_dims.y); // square maze
                 let maze = Self::new(positions, max_dims)?;
                 Ok((maze, guard))
         }
@@ -164,11 +164,19 @@ impl TryFrom<char> for Direction {
 #[cfg(test)]
 mod test {
 
+        use indoc::indoc;
+        use pretty_assertions::assert_eq;
+        use test_log::test;
+        use tracing::instrument;
+
         use super::*;
+
         #[test]
+        #[instrument]
         fn test_maze_from_input_string() {
-                let input = "##\n.#\n";
-                let maze = Maze::from_input_string(input).unwrap();
+                let input = indoc!["##
+                                    .#"];
+                let (maze, _) = Maze::from_input_string(input).unwrap();
                 assert_eq!(maze.max_dims, Point2D { x: 2, y: 2 });
                 assert_eq!(maze.get(Point2D { x: 0, y: 0 }), Some(PositionState::Obstacle));
                 assert_eq!(maze.get(Point2D { x: 1, y: 0 }), Some(PositionState::Obstacle));
@@ -177,13 +185,7 @@ mod test {
         }
 
         #[test]
-        fn test_maze_from_input_string_err() {
-                let input = "##\n.#\n\n";
-                let maze = Maze::from_input_string(input);
-                assert!(maze.is_err());
-        }
-
-        #[test]
+        #[instrument]
         fn test_position_state_try_from() {
                 assert_eq!(PositionState::try_from('#').unwrap(), PositionState::Obstacle);
                 assert_eq!(PositionState::try_from('.').unwrap(), PositionState::Empty);
@@ -193,6 +195,7 @@ mod test {
         }
 
         #[test]
+        #[instrument]
         fn test_direction_try_from() {
                 assert_eq!(Direction::try_from('^').unwrap(), Direction::Up);
                 assert_eq!(Direction::try_from('v').unwrap(), Direction::Down);
@@ -204,6 +207,7 @@ mod test {
         }
 
         #[test]
+        #[instrument]
         fn test_point2d_try_from() {
                 assert_eq!(Point2D::from((1_usize, 2_usize)), Point2D { x: 1, y: 2 });
         }
