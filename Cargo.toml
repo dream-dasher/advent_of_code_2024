@@ -32,17 +32,6 @@ inherits = "release"
 debug = true
 
 [workspace.dependencies]
-## --CLI--
-clap = { version = "4", features = [
-    "env",
-    "derive",
-    "string",
-    "unicode",
-    "wrap_help",
-] }
-dialoguer = "0.11"
-owo-colors = "4"
-indicatif = "0.17"
 ## --Diagnostics--
 tracing = "0.1.41"
 tracing-appender = "0.2.3"
@@ -61,6 +50,26 @@ bon = "3.2.0"
 derive_more = { version = "1.0.0", features = ["full"] }
 indoc = "2.0.5"
 itertools = "0.13.0"
+## --Interface--
+### - CLI -
+clap = { version = "4", features = [
+    "env",
+    "derive",
+    "string",
+    "unicode",
+    "wrap_help",
+] }
+dialoguer = "0.11"
+owo-colors = "4"
+indicatif = "0.17"
+### - egui -
+egui = "0.30"
+eframe = { version = "0.30", default-features = false, features = [
+    "default_fonts", # Embed the default egui fonts.
+    "glow",          # Use the glow rendering backend. Alternative: "wgpu".
+    "persistence",   # Enable restoring app state when restarting the app.
+    "wayland",       # To support Linux (and CI)
+] }
 ## --Math--
 chrono = { version = "0.4.38", features = ["serde"] }
 rand = "0.8.5"
@@ -68,6 +77,7 @@ rand = "0.8.5"
 regex = { version = "1.11.1", features = ["logging"] }
 serde = { version = "1.0.215", features = ["derive"] }
 serde_json = "1.0.133"
+
 # Dev-Dependencies
 pretty_assertions = "1.4.1"
 ## --Property Sample Testing--
