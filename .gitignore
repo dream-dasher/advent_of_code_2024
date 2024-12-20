@@ -15,11 +15,16 @@
 # ===================================
 # Custom GitIgnore, Boilerplate
 
+# general security exclusions (api keys, etc.)
+**/.env*
+**/*.log
+
 # designate a directory that won't have its contents synced
 # typically this is part of (`data/no_sync/`)
 **/no_sync/**
 **/no-sync/**
 **/nosync/**
+
 .output/**
 .output/logging/**
 .output/profiling/**
@@ -32,6 +37,19 @@
 !**.gitkeep
 !.output/logging/
 !.output/profiling/
+
+# ===================================
+# Tooling-specific GitIgnore
+
+# additional target gitignores (from egui)
+target_ra/
+target_wasm/
+
+# trunk output folder (wasm)
+dist/
+
+# https://github.com/lycheeverse/lychee (link checker tooling)
+.lycheecache
 
 # ===================================
 # standard GitHub GitIgnore for Rust (as of 2024-VIII-04)
