@@ -5,32 +5,33 @@ use egui::{Key, Label, SidePanel, TopBottomPanel, Ui};
 use indoc::indoc;
 use tracing::{Level, event, instrument};
 
+const INPUT: &str = indoc!["
+        ....#.....
+        ....^....#
+        ..........
+        ..#.......
+        .......#..
+        ..........
+        .#........
+        ........#.
+        #.........
+        ......#..."];
+
 fn main() -> Result<()> {
         let _write_guard = activate_global_default_tracing_subscriber()?;
-        let input = indoc!["
-                ....#.....
-                ....^....#
-                ..........
-                ..#.......
-                .......#..
-                ..........
-                .#........
-                ........#.
-                #.........
-                ......#..."];
-
-        let (maze, mb_guard) = parse_input(input)?;
+        let (maze, mb_guard) = parse_input(INPUT)?;
         let guard = mb_guard.ok_or(ErrKindDay06::NoGuardFound {
-                source_input: Some(input.to_string()),
+                source_input: Some(INPUT.to_string()),
         })?;
         let pop_maze = PopulatedMaze::new(maze.clone(), guard)?;
-        let mut maze_state = MazeState::new(input);
+        let mut maze_state = MazeState::new(INPUT);
 
-        let mut input = input.to_string();
+        let mut input = INPUT.to_string();
         let eframe_config = eframe::NativeOptions::default();
         let mut my_string = String::from("my_string");
         run_simple_native("Maze Code Expolorer", eframe_config, move |ctx, _frame| {
                 SidePanel::left("left").show(ctx, |ui| {
+                        ui.label("Side Panel -LEFT- Label");
                         event![Level::TRACE, "get_key"];
                         for key in [Key::ArrowLeft, Key::ArrowRight, Key::ArrowUp, Key::ArrowDown] {
                                 // ¿TODO: how does debouncing work?  (I think we're just looking ad press && release)
@@ -52,33 +53,82 @@ fn main() -> Result<()> {
                                         }
                                 });
                         }
+                        ui.horizontal(|ui| ui.label('x'.to_string()));
+                        ui.horizontal(|ui| {
+                                ui.label('x'.to_string());
+                                ui.label('x'.to_string());
+                        });
+                        ui.horizontal(|ui| {
+                                ui.label('x'.to_string());
+                                ui.label('x'.to_string());
+                                ui.label('x'.to_string());
+                                ui.label('x'.to_string());
+                        });
+                        ui.horizontal(|ui| {
+                                ui.label('x'.to_string());
+                                ui.label('x'.to_string());
+                                ui.label('x'.to_string());
+                                ui.label('x'.to_string());
+                                ui.label('x'.to_string());
+                                ui.label('x'.to_string());
+                                ui.label('x'.to_string());
+                                ui.label('x'.to_string());
+                        });
+                        ui.horizontal(|_ui| {});
+                        ui.label('y'.to_string());
+                        ui.label('y'.to_string());
+                        ui.label('y'.to_string());
+                        ui.label('y'.to_string());
+                        ui.label('y'.to_string());
+                        ui.label('y'.to_string());
+                        ui.label('y'.to_string());
+                        ui.horizontal(|ui| {
+                                ui.label('x'.to_string());
+                                ui.label('x'.to_string());
+                                ui.label('x'.to_string());
+                                ui.label('x'.to_string());
+                                ui.label('x'.to_string());
+                                ui.label('x'.to_string());
+                                ui.label('x'.to_string());
+                                ui.label('x'.to_string());
+                                ui.label('x'.to_string());
+                                ui.label('x'.to_string());
+                                ui.label('x'.to_string());
+                                ui.label('x'.to_string());
+                                ui.label('x'.to_string());
+                                ui.label('x'.to_string());
+                                ui.label('x'.to_string());
+                                ui.label('x'.to_string());
+                        });
+                        ui.horizontal(|_ui| {});
+                        ui.horizontal(|_ui| {});
+                        ui.horizontal(|_ui| {});
 
                         event![Level::TRACE, "show cursor position, raw"];
                         ui.label(format!(
                                 "Cursor position: ({}, {})",
                                 maze_state.cursor_pos.0, maze_state.cursor_pos.1
                         ));
+                });
 
-                        SidePanel::right("right").show(ctx, |ui| {
-                                ui.label("ui.label(_)");
-                                ui.add(Label::new("ui.add(Label::new(_))"));
-                                ui.add(egui::TextEdit::multiline(&mut pop_maze.to_string())
+                SidePanel::right("right").show(ctx, |ui| {
+                        ui.label("Side Panel -RIGHT- Label");
+                        ui.label("ui.label(_)");
+                        ui.add(Label::new("ui.add(Label::new(_))"));
+                        ui.add(egui::TextEdit::multiline(&mut pop_maze.to_string())
+                                .code_editor()
+                                .desired_width(ui.available_width()));
+                        ui.add(
+                                // ui.available_size(),
+                                egui::TextEdit::multiline(&mut input)
                                         .code_editor()
-                                        .desired_width(ui.available_width()));
-                                ui.add_sized(
-                                        ui.available_size(),
-                                        egui::TextEdit::multiline(&mut input)
-                                                .code_editor()
-                                                .desired_width(ui.available_width()),
-                                );
-                        });
+                                        .desired_width(ui.available_width()),
+                        );
+                });
 
-                        TopBottomPanel::bottom("bot").show(ctx, |ui| {
-                                ui.add_sized(
-                                        ui.available_size(),
-                                        egui::TextEdit::multiline(&mut my_string).interactive(true),
-                                );
-                        })
+                TopBottomPanel::bottom("bot").show(ctx, |ui| {
+                        ui.label("Bottom Panel Label");
+                        ui.add_sized(ui.available_size(), egui::TextEdit::multiline(&mut my_string).interactive(true));
                 });
         })?;
         Ok(())
