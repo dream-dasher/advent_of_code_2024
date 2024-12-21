@@ -53,56 +53,64 @@ fn main() -> Result<()> {
                                         }
                                 });
                         }
-                        ui.horizontal(|ui| ui.label('x'.to_string()));
-                        ui.horizontal(|ui| {
-                                ui.label('x'.to_string());
-                                ui.label('x'.to_string());
-                        });
-                        ui.horizontal(|ui| {
-                                ui.label('x'.to_string());
-                                ui.label('x'.to_string());
-                                ui.label('x'.to_string());
-                                ui.label('x'.to_string());
-                        });
-                        ui.horizontal(|ui| {
-                                ui.label('x'.to_string());
-                                ui.label('x'.to_string());
-                                ui.label('x'.to_string());
-                                ui.label('x'.to_string());
-                                ui.label('x'.to_string());
-                                ui.label('x'.to_string());
-                                ui.label('x'.to_string());
-                                ui.label('x'.to_string());
-                        });
-                        ui.horizontal(|_ui| {});
-                        ui.label('y'.to_string());
-                        ui.label('y'.to_string());
-                        ui.label('y'.to_string());
-                        ui.label('y'.to_string());
-                        ui.label('y'.to_string());
-                        ui.label('y'.to_string());
-                        ui.label('y'.to_string());
-                        ui.horizontal(|ui| {
-                                ui.label('x'.to_string());
-                                ui.label('x'.to_string());
-                                ui.label('x'.to_string());
-                                ui.label('x'.to_string());
-                                ui.label('x'.to_string());
-                                ui.label('x'.to_string());
-                                ui.label('x'.to_string());
-                                ui.label('x'.to_string());
-                                ui.label('x'.to_string());
-                                ui.label('x'.to_string());
-                                ui.label('x'.to_string());
-                                ui.label('x'.to_string());
-                                ui.label('x'.to_string());
-                                ui.label('x'.to_string());
-                                ui.label('x'.to_string());
-                                ui.label('x'.to_string());
-                        });
-                        ui.horizontal(|_ui| {});
-                        ui.horizontal(|_ui| {});
-                        ui.horizontal(|_ui| {});
+                        // ui.label() layouts.
+                        {
+                                // No Visual
+                                ui.horizontal(|ui| ui.label('x'.to_string()));
+                                ui.horizontal(|ui| {
+                                        ui.label('x'.to_string());
+                                        ui.label('x'.to_string());
+                                });
+                                ui.horizontal(|ui| {
+                                        ui.label('x'.to_string());
+                                        ui.label('x'.to_string());
+                                        ui.label('x'.to_string());
+                                        ui.label('x'.to_string());
+                                });
+                                ui.horizontal(|ui| {
+                                        ui.label('x'.to_string());
+                                        ui.label('x'.to_string());
+                                        ui.label('x'.to_string());
+                                        ui.label('x'.to_string());
+                                        ui.label('x'.to_string());
+                                        ui.label('x'.to_string());
+                                        ui.label('x'.to_string());
+                                        ui.label('x'.to_string());
+                                });
+                                // Vertical
+                                ui.horizontal(|_ui| {});
+                                ui.label('y'.to_string());
+                                ui.label('y'.to_string());
+                                ui.label('y'.to_string());
+                                ui.label('y'.to_string());
+                                ui.label('y'.to_string());
+                                ui.label('y'.to_string());
+                                ui.label('y'.to_string());
+                                ui.horizontal(|ui| {
+                                        // Horizontal
+                                        ui.label('x'.to_string());
+                                        ui.label('x'.to_string());
+                                        ui.label('x'.to_string());
+                                        ui.label('x'.to_string());
+                                        ui.label('x'.to_string());
+                                        ui.label('x'.to_string());
+                                        ui.label('x'.to_string());
+                                        ui.label('x'.to_string());
+                                        ui.label('x'.to_string());
+                                        ui.label('x'.to_string());
+                                        ui.label('x'.to_string());
+                                        ui.label('x'.to_string());
+                                        ui.label('x'.to_string());
+                                        ui.label('x'.to_string());
+                                        ui.label('x'.to_string());
+                                        ui.label('x'.to_string());
+                                });
+                                ui.label("".to_string()); // No Visual, but adds spacing
+                                ui.horizontal(|ui| {
+                                        ui.label("".to_string()); // No Visual, but adds spacing
+                                        ui.label("|-|".to_string());
+                                });
+                        }
 
                         event![Level::TRACE, "show cursor position, raw"];
                         ui.label(format!(
