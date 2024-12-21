@@ -1,4 +1,4 @@
-use day06::{Result, activate_global_default_tracing_subscriber, process_part1};
+use day06::{Result, activate_global_default_tracing_subscriber};
 use eframe::run_simple_native;
 use egui::{CentralPanel, Label, Ui};
 use indoc::indoc;
@@ -6,7 +6,7 @@ use tracing::{Level, event, instrument, span};
 
 fn main() -> Result<()> {
         let _write_guard = activate_global_default_tracing_subscriber()?;
-        let inp = indoc!["
+        let _inp = indoc!["
                 ....#.....
                 ....^....#
                 ..........
@@ -22,9 +22,9 @@ fn main() -> Result<()> {
         let mut age = 42;
         let eframe_config = eframe::NativeOptions::default();
         let span = span!(Level::INFO, "starting eframe", name, age);
-        eframe::run_simple_native("My egui App", eframe_config, move |ctx, _frame| {
+        run_simple_native("My egui App", eframe_config, move |ctx, _frame| {
                 let _enter = span.enter();
-                egui::CentralPanel::default().show(ctx, |ui| {
+                CentralPanel::default().show(ctx, |ui| {
                         ui.add(Label::new("Hello World!"));
                         ui.label("A shorter and more convenient way to add a label.");
                         ui.heading("My egui Application");

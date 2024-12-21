@@ -1,8 +1,6 @@
 //! Library code for Part 1 of Day06 of Advent of Code 2024.
 //! `bin > part1_bin.rs` will run this code along with content of `input1.txt`
 
-use std::path::Display;
-
 use derive_more::derive::Index;
 use dirty_terminal::*;
 use itertools::Itertools as _;
@@ -16,7 +14,7 @@ use crate::{Result,
 #[instrument(skip_all, ret(level = Level::INFO))]
 pub fn process_part1(input: &str) -> Result<u64> {
         let (maze, mb_guard) = parse_input(input)?;
-        let mut guard = mb_guard.ok_or(ErrKindDay06::NoGuardFound {
+        let guard = mb_guard.ok_or(ErrKindDay06::NoGuardFound {
                 source_input: Some(input.to_string()),
         })?;
         let mut pop_maze = PopulatedMaze::new(maze, guard)?;
