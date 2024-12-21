@@ -23,7 +23,7 @@ pub enum ErrKindDay06 {
         NoGuardFound { source_input: Option<String> },
         // #[from(ignore)] // manually generate; would conflict with `OtherStringError` auto-derive
         #[display(
-                "Guard position overlaps witha non-empty maze position state: guard_pos {} vs position_state {}",
+                "Guard position overlaps with non-empty maze position state: guard_pos {} vs position_state {}",
                 guard_pos,
                 position_state
         )]

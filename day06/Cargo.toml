@@ -16,11 +16,6 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
-## --CLI--
-clap.workspace = true
-dialoguer.workspace = true
-owo-colors.workspace = true
-indicatif.workspace = true
 ## --Diagnostics--
 tracing.workspace = true
 tracing-appender.workspace = true
@@ -34,6 +29,15 @@ bon.workspace = true
 derive_more.workspace = true
 indoc.workspace = true
 itertools.workspace = true
+## --Interface--
+### - CLI -
+clap.workspace = true
+dialoguer.workspace = true
+owo-colors.workspace = true
+indicatif.workspace = true
+### - egui -
+egui.workspace = true
+eframe.workspace = true
 ## --Math--
 chrono.workspace = true
 rand.workspace = true
