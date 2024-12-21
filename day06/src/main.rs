@@ -3,8 +3,8 @@
 use std::path::PathBuf;
 
 use clap::{Parser, Subcommand, ValueEnum};
-use day06::{CUSTOM_INPUT, EXAMPLE_INPUT, FINAL_INPUT, Result, active_global_default_tracing_subscriber, process_part1,
-            process_part2};
+use day06::{CUSTOM_INPUT, EXAMPLE_INPUT, FINAL_INPUT, Result, activate_global_default_tracing_subscriber,
+            process_part1, process_part2};
 use tracing::{self as tea, Level, instrument};
 
 /// Choose to run Part 1 or 2 of Day06 of Advent of Code 2024.
@@ -39,7 +39,7 @@ pub enum Input {
 }
 
 fn main() -> Result<()> {
-        let _writer_guard = active_global_default_tracing_subscriber()?;
+        let _writer_guard = activate_global_default_tracing_subscriber()?;
         let _enter = tea::debug_span!("main()").entered();
         tea::trace!("tracing subscriber set");
         let cli_user_args = Args::try_parse()?;

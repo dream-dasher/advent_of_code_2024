@@ -34,10 +34,10 @@ use crate::Result;
 ///    Ok(())
 /// }
 /// ```
-pub fn active_global_default_tracing_subscriber() -> Result<WorkerGuard> {
+pub fn activate_global_default_tracing_subscriber() -> Result<WorkerGuard> {
         let envfilter_layer = tracing_subscriber::EnvFilter::builder()
                 .with_default_directive(LevelFilter::INFO.into())
-                .from_env_lossy();
+                .from_env()?;
 
         let error_layer = ErrorLayer::default().with_filter(LevelFilter::TRACE);
 

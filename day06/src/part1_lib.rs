@@ -1,13 +1,16 @@
 //! Library code for Part 1 of Day06 of Advent of Code 2024.
 //! `bin > part1_bin.rs` will run this code along with content of `input1.txt`
 
+use std::path::Display;
+
+use derive_more::derive::Index;
 use dirty_terminal::*;
 use itertools::Itertools as _;
 use owo_colors::OwoColorize as _;
 use tracing::{Level, instrument};
 
 use crate::{Result,
-            parse::{Guard, Maze, Point2D, parse_input},
+            parse::{Guard, Maze, Point2D, PositionState, parse_input},
             support::error::ErrKindDay06};
 
 #[instrument(skip_all, ret(level = Level::INFO))]
@@ -16,19 +19,68 @@ pub fn process_part1(input: &str) -> Result<u64> {
         let mut guard = mb_guard.ok_or(ErrKindDay06::NoGuardFound {
                 source_input: Some(input.to_string()),
         })?;
+        let mut pop_maze = PopulatedMaze::new(maze, guard)?;
         // moving guard
         for _ in 0..10 {
                 clear_screen_ansi();
-                let pm = populated_maze_rep(&maze, &guard);
-                println!("pm:\n{}", pm);
+                println!("populated maze:\n{}", pop_maze);
                 dirty_pause()?;
-                if !(0..maze.max_dims.x).contains(&guard.pos.x) || !(0..maze.max_dims.y).contains(&guard.pos.y) {
+                if !(0..pop_maze.maze.max_dims.x).contains(&pop_maze.guard.pos.x)
+                        || !(0..pop_maze.maze.max_dims.y).contains(&pop_maze.guard.pos.y)
+                {
                         break;
                 }
-                guard.pos += Point2D::new(1, 1);
+                pop_maze.guard.pos += Point2D::new(1, 1);
         }
 
         todo!();
+}
+
+#[derive(Index, Debug, Clone, PartialEq, Eq)]
+struct PopulatedMaze {
+        #[index]
+        maze:  Maze,
+        guard: Guard,
+}
+impl PopulatedMaze {
+        /// Create a new PopulatedMaze instance. Checking for guard being within bounds and placed in an empty space.
+        fn new(maze: Maze, guard: Guard) -> Result<Self> {
+                if !(0..maze.max_dims.x).contains(&guard.pos.x) || !(0..maze.max_dims.y).contains(&guard.pos.y) {
+                        Err(ErrKindDay06::GuardOutOfBounds {
+                                guard_pos: guard.pos.into(),
+                                maze_max:  maze.max_dims.into(),
+                        })?
+                }
+                if maze.get(guard.pos)
+                        .expect("maze filled, and guard position overlap checked")
+                        != PositionState::Empty
+                {
+                        Err(ErrKindDay06::GuardOnNonEmptySpace {
+                                guard_pos:      guard.pos,
+                                position_state: maze.get(guard.pos).expect("some maze position state checked already"),
+                        })?
+                }
+                Ok(Self { maze, guard })
+        }
+}
+impl std::fmt::Display for PopulatedMaze {
+        #[instrument(skip_all)]
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                let maze = &self.maze;
+                let guard = &self.guard;
+                for (r, c) in (0..maze.max_dims.y).cartesian_product(0..maze.max_dims.x) {
+                        if c == 0 {
+                                writeln!(f)?;
+                        }
+
+                        if r == guard.pos.y && c == guard.pos.x {
+                                write!(f, "{}", guard.dir.to_string().on_red().green().bold())?;
+                        } else {
+                                write!(f, "{}", &maze.positions[r * maze.max_dims.x + c].to_string())?;
+                        }
+                }
+                Ok(())
+        }
 }
 mod dirty_terminal {
         use std::{io, io::Write as _};
@@ -56,23 +108,6 @@ mod dirty_terminal {
                 event![Level::DEBUG, ?read_in];
                 Ok(())
         }
-}
-#[instrument(skip_all)]
-pub fn populated_maze_rep(maze: &Maze, guard: &Guard) -> String {
-        let mut output = String::new();
-        for (r, c) in (0..maze.max_dims.y).cartesian_product(0..maze.max_dims.x) {
-                if c == 0 {
-                        output.push('\n');
-                }
-
-                if r == guard.pos.y && c == guard.pos.x {
-                        // Use guard's direction character in bright cyan
-                        output.push_str(&format!("{}", guard.dir.to_string().bright_cyan()));
-                } else {
-                        output.push_str(&maze.positions[r * maze.max_dims.x + c].to_string());
-                }
-        }
-        output
 }
 
 // #[cfg(test)]

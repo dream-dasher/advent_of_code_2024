@@ -9,7 +9,9 @@
 use std::io;
 
 use derive_more::{Display, Error, From};
-use tracing::{instrument, subscriber::SetGlobalDefaultError};
+use tracing::instrument;
+
+use crate::parse::{Point2D, PositionState};
 
 // use derive_more::{Display, Error, derive::From};
 #[derive(Debug, Display, From, Error)]
@@ -19,13 +21,25 @@ pub enum ErrKindDay06 {
         #[from(ignore)]
         #[display("No guard found in maze input")]
         NoGuardFound { source_input: Option<String> },
-        #[from(ignore)] // manually generate; would conflict with `OtherStringError` auto-derive
+        // #[from(ignore)] // manually generate; would conflict with `OtherStringError` auto-derive
         #[display(
+                "Guard position overlaps witha non-empty maze position state: guard_pos {} vs position_state {}",
+                guard_pos,
+                position_state
+        )]
+        GuardOnNonEmptySpace {
+                guard_pos:      Point2D,
+                position_state: PositionState,
+        },
+        // #[from(ignore)] // manually generate; would conflict with `OtherStringError` auto-derive
+        #[display(
+                // note: raw Point2D instead of (usize, usize)  -- best practices?
                 "Requested Guard position is out of Maze bounds. guard_pos {:?} vs maze_max {:?}",
                 guard_pos,
                 maze_max
         )]
         GuardOutOfBounds {
+                // note: down cast of Point2D to (usize, usize)  -- best practices?
                 guard_pos: (usize, usize),
                 maze_max:  (usize, usize),
         },
@@ -46,12 +60,20 @@ pub enum ErrKindDay06 {
         NoInputLines { source_input: String },
         //
         // `packed` errors
+        #[display("Error with tracing_subscriber::EnvFilter parsing env directive: {}", source)]
+        EnvError {
+                source: tracing_subscriber::filter::FromEnvError,
+        },
+        #[display("eframe (egui) error: {}", source)]
+        EFrame { source: eframe::Error },
         #[display("CLI parsing library error: {}", source)]
         Clap { source: clap::Error },
         #[display("io error: {}", source)]
         Io { source: io::Error },
         #[display("Error setting tracing subscriber default: {}", source)]
-        TracingSubscriber { source: SetGlobalDefaultError },
+        TracingSubscriber {
+                source: tracing::subscriber::SetGlobalDefaultError,
+        },
         //
         // `other` errors
         #[from(ignore)] // use `make_dyn_error` instead; would conflict with auto-derives

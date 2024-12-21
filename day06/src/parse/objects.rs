@@ -16,7 +16,7 @@ use tracing::instrument;
 use crate::{Result,
             support::{ErrWrapperDay06, error::ErrKindDay06}};
 
-#[derive(Index, Debug, Clone, From, Into)]
+#[derive(Index, Debug, Clone, From, Into, PartialEq, Eq)]
 pub struct Maze {
         #[index]
         pub positions: Vec<PositionState>,
