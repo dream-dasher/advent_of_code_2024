@@ -35,14 +35,14 @@ pub fn process_part1(input: &str) -> Result<u64> {
 }
 
 #[derive(Index, Debug, Clone, PartialEq, Eq)]
-struct PopulatedMaze {
+pub struct PopulatedMaze {
         #[index]
-        maze:  Maze,
-        guard: Guard,
+        pub maze:  Maze,
+        pub guard: Guard,
 }
 impl PopulatedMaze {
         /// Create a new PopulatedMaze instance. Checking for guard being within bounds and placed in an empty space.
-        fn new(maze: Maze, guard: Guard) -> Result<Self> {
+        pub fn new(maze: Maze, guard: Guard) -> Result<Self> {
                 if !(0..maze.max_dims.x).contains(&guard.pos.x) || !(0..maze.max_dims.y).contains(&guard.pos.y) {
                         Err(ErrKindDay06::GuardOutOfBounds {
                                 guard_pos: guard.pos.into(),
