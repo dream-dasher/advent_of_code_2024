@@ -57,7 +57,7 @@ pub enum ErrKindDay06 {
         ParseOther { source_char: char },
         #[from(ignore)]
         #[display("Error extracting lines from input: {}", source_input)]
-        NoInputLines { source_input: String },
+        InputNoLines { source_input: String },
         //
         // `packed` errors
         #[display("Error with tracing_subscriber::EnvFilter parsing env directive: {}", source)]
@@ -78,11 +78,11 @@ pub enum ErrKindDay06 {
         // `other` errors
         #[from(ignore)] // use `make_dyn_error` instead; would conflict with auto-derives
         #[display("Uncategorized Error (dyn error object): {}", source)]
-        OtherDynError {
+        OtherErrorDyn {
                 source: Box<dyn std::error::Error + Send + Sync>,
         },
         #[display(r#"Uncategorized string err: "{}""#, source_string)]
-        OtherStringError { source_string: String },
+        OtherErrorString { source_string: String },
         //
         // // common error types
         // #[from(ignore)]
@@ -99,7 +99,7 @@ impl ErrKindDay06 {
         where
                 E: Into<Box<dyn std::error::Error + Send + Sync>>,
         {
-                Self::OtherDynError { source: error.into() }
+                Self::OtherErrorDyn { source: error.into() }
         }
 }
 
@@ -145,6 +145,6 @@ where
 {
         #[instrument(skip_all)]
         fn to_other(self) -> ErrWrapperDay06 {
-                ErrKindDay06::OtherDynError { source: self.into() }.into()
+                ErrKindDay06::OtherErrorDyn { source: self.into() }.into()
         }
 }

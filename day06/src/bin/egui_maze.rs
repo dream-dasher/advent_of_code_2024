@@ -2,6 +2,7 @@ use day06::{PopulatedMaze, Result, activate_global_default_tracing_subscriber, p
             support::error::ErrKindDay06};
 use eframe::run_simple_native;
 use egui::{Key, Label, SidePanel, TopBottomPanel, Ui};
+use egui_commonmark::{CommonMarkCache, CommonMarkViewer};
 use indoc::indoc;
 use tracing::{Level, event, instrument};
 
@@ -117,6 +118,22 @@ fn main() -> Result<()> {
                                 "Cursor position: ({}, {})",
                                 maze_state.cursor_pos.0, maze_state.cursor_pos.1
                         ));
+
+                        let markdown = r#"
+                                # Markdown Viewer
+                                This is a markdown viewer.
+                                - It supports lists
+                                **bold** and *italic*
+                                [links](www.google.com)
+                                ```rust
+                                println!("Hello, world!");
+                                for in in 0..10 {
+                                        println!(\"{}\", i);
+                                }
+                                ```
+                                "#;
+                        let mut cache = CommonMarkCache::default();
+                        CommonMarkViewer::new().show(ui, &mut cache, markdown);
                 });
 
                 SidePanel::right("right").show(ctx, |ui| {
