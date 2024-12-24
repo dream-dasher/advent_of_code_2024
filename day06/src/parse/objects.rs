@@ -125,7 +125,7 @@ impl Point2D {
                         Direction::Down => {
                                 if let Some(bounds) = opt_bounds {
                                         self.y.checked_add(1)
-                                                .filter(|n| *n <= bounds.y)
+                                                .filter(|n| *n < bounds.y)
                                                 .map(|y| Point2D::new(self.x, y))
                                 } else {
                                         self.y.checked_add(1).map(|y| Point2D::new(self.x, y))
@@ -134,7 +134,7 @@ impl Point2D {
                         Direction::Right => {
                                 if let Some(bounds) = opt_bounds {
                                         self.x.checked_add(1)
-                                                .filter(|n| *n <= bounds.x)
+                                                .filter(|n| *n < bounds.x)
                                                 .map(|x| Point2D::new(x, self.y))
                                 } else {
                                         self.x.checked_add(1).map(|x| Point2D::new(x, self.y))

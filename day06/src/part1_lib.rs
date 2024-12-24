@@ -57,6 +57,7 @@ impl PopulatedMaze {
                 })
         }
 
+        #[instrument()]
         pub fn update(&mut self) -> Option<Guard> {
                 // circularly ordered by right-turns
                 const DIR_ARRAY: [Direction; 4] = [Direction::Up, Direction::Right, Direction::Down, Direction::Left];
@@ -79,7 +80,8 @@ impl PopulatedMaze {
                                 return None;
                         };
 
-                        if self.maze.get(check_pos).expect("guard checked for being in bounds") == PositionState::Empty
+                        if self.maze.get(check_pos).expect("check pos checked for being in bounds")
+                                == PositionState::Empty
                         {
                                 let new_guard = Guard::new(check_pos, dir);
                                 self.guard_time_path.push(new_guard);
