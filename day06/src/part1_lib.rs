@@ -7,8 +7,8 @@ use owo_colors::OwoColorize as _;
 use tracing::{Level, instrument};
 
 use crate::{Result,
-            parse::{Direction, Guard, Maze, Point2D, PositionState, parse_input},
-            support::{dirty_terminal::*, error::ErrKindDay06}};
+            parse::{Direction, Guard, Maze, PositionState, parse_input},
+            support::{dirty_terminal, error::ErrKindDay06}};
 
 #[instrument(skip_all, ret(level = Level::INFO))]
 pub fn process_part1(input: &str) -> Result<u64> {
@@ -17,7 +17,12 @@ pub fn process_part1(input: &str) -> Result<u64> {
                 source_input: Some(input.to_string()),
         })?;
         let mut pop_maze = PopulatedMaze::new(maze, guard)?;
-        // moving guard
+        for i in 0.. {
+                dirty_terminal::clear_screen_ansi();
+                println!("update {}: {:?}", i, pop_maze.update());
+                println!("{}", pop_maze);
+                dirty_terminal::dirty_pause()?;
+        }
 
         todo!();
 }
@@ -53,15 +58,37 @@ impl PopulatedMaze {
         }
 
         pub fn update(&mut self) -> Option<Guard> {
-                let guard = self
+                // circularly ordered by right-turns
+                const DIR_ARRAY: [Direction; 4] = [Direction::Up, Direction::Right, Direction::Down, Direction::Left];
+                let bounds = self.maze.max_dims;
+                let guard_now = *self
                         .guard_time_path
                         .last()
                         .expect("guard_time_path should not be empty");
-                let dir = guard.dir;
-                let x = guard.pos.x;
-                let y = guard.pos.y;
+                let cycle_start_idx: usize = match guard_now.dir {
+                        Direction::Up => 0,
+                        Direction::Right => 1,
+                        Direction::Down => 2,
+                        Direction::Left => 3,
+                };
 
-                todo!()
+                for i in 0..4 {
+                        let dir = DIR_ARRAY[(cycle_start_idx + i).rem_euclid(4)];
+                        let Some(check_pos) = guard_now.pos.try_move(dir, Some(bounds)) else {
+                                // 'None' Means guard has escaped maze
+                                return None;
+                        };
+
+                        if self.maze.get(check_pos).expect("guard checked for being in bounds") == PositionState::Empty
+                        {
+                                let new_guard = Guard::new(check_pos, dir);
+                                self.guard_time_path.push(new_guard);
+                                return Some(new_guard);
+                        }
+                }
+
+                self.guard_time_path.push(guard_now);
+                Some(guard_now)
         }
 }
 impl std::fmt::Display for PopulatedMaze {
