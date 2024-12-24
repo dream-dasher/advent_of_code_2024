@@ -1,5 +1,6 @@
 //! Support code for Day06 of Advent of Code 2024.
 
+pub mod dirty_terminal;
 pub mod error;
 mod subscriber;
 

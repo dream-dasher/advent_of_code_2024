@@ -9,7 +9,9 @@
 //!
 //!
 
-use derive_more::derive::{Add, AddAssign, Constructor, From, Index, Into};
+use std::ops::Sub;
+
+use derive_more::derive::{Add, AddAssign, Constructor, Error, From, Index, Into};
 use itertools::Itertools as _;
 use tracing::instrument;
 
@@ -99,6 +101,7 @@ pub enum PositionState {
         Obstacle,
         #[display(".")]
         Empty,
+        OutOfBounds,
 }
 
 #[derive(Clone, Copy, Debug, derive_more::Display, PartialEq, Eq, Constructor)]
@@ -108,9 +111,7 @@ pub struct Guard {
         pub dir: Direction,
 }
 
-#[derive(
-        Clone, Copy, From, Into, PartialEq, Eq, PartialOrd, Debug, derive_more::Display, Constructor, Add, AddAssign,
-)]
+#[derive(Clone, Copy, From, Into, PartialEq, Eq, PartialOrd, Debug, derive_more::Display, Constructor)]
 #[display("({},{})", x, y)]
 #[from(forward)]
 pub struct Point2D {

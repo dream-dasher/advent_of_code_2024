@@ -2,14 +2,13 @@
 //! `bin > part1_bin.rs` will run this code along with content of `input1.txt`
 
 use derive_more::derive::Index;
-use dirty_terminal::*;
 use itertools::Itertools as _;
 use owo_colors::OwoColorize as _;
 use tracing::{Level, instrument};
 
 use crate::{Result,
-            parse::{Guard, Maze, Point2D, PositionState, parse_input},
-            support::error::ErrKindDay06};
+            parse::{Direction, Guard, Maze, Point2D, PositionState, parse_input},
+            support::{dirty_terminal::*, error::ErrKindDay06}};
 
 #[instrument(skip_all, ret(level = Level::INFO))]
 pub fn process_part1(input: &str) -> Result<u64> {
@@ -19,17 +18,6 @@ pub fn process_part1(input: &str) -> Result<u64> {
         })?;
         let mut pop_maze = PopulatedMaze::new(maze, guard)?;
         // moving guard
-        for _ in 0..10 {
-                clear_screen_ansi();
-                println!("populated maze:\n{}", pop_maze);
-                dirty_pause()?;
-                if !(0..pop_maze.maze.max_dims.x).contains(&pop_maze.guard.pos.x)
-                        || !(0..pop_maze.maze.max_dims.y).contains(&pop_maze.guard.pos.y)
-                {
-                        break;
-                }
-                pop_maze.guard.pos += Point2D::new(1, 1);
-        }
 
         todo!();
 }
@@ -37,8 +25,8 @@ pub fn process_part1(input: &str) -> Result<u64> {
 #[derive(Index, Debug, Clone, PartialEq, Eq)]
 pub struct PopulatedMaze {
         #[index]
-        pub maze:  Maze,
-        pub guard: Guard,
+        pub maze:            Maze,
+        pub guard_time_path: Vec<Guard>,
 }
 impl PopulatedMaze {
         /// Create a new PopulatedMaze instance. Checking for guard being within bounds and placed in an empty space.
@@ -58,14 +46,32 @@ impl PopulatedMaze {
                                 position_state: maze.get(guard.pos).expect("some maze position state checked already"),
                         })?
                 }
-                Ok(Self { maze, guard })
+                Ok(Self {
+                        maze,
+                        guard_time_path: vec![guard],
+                })
+        }
+
+        pub fn update(&mut self) -> Option<Guard> {
+                let guard = self
+                        .guard_time_path
+                        .last()
+                        .expect("guard_time_path should not be empty");
+                let dir = guard.dir;
+                let x = guard.pos.x;
+                let y = guard.pos.y;
+
+                todo!()
         }
 }
 impl std::fmt::Display for PopulatedMaze {
         #[instrument(skip_all)]
         fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
                 let maze = &self.maze;
-                let guard = &self.guard;
+                let guard = &self
+                        .guard_time_path
+                        .last()
+                        .expect("guard_time_path should not be empty");
                 for (r, c) in (0..maze.max_dims.y).cartesian_product(0..maze.max_dims.x) {
                         if c == 0 {
                                 writeln!(f)?;
@@ -77,33 +83,6 @@ impl std::fmt::Display for PopulatedMaze {
                                 write!(f, "{}", &maze.positions[r * maze.max_dims.x + c].to_string())?;
                         }
                 }
-                Ok(())
-        }
-}
-mod dirty_terminal {
-        use std::{io, io::Write as _};
-
-        use tracing::event;
-
-        use super::*;
-        /// Clear terminal screen using ANSI escape code.
-        ///
-        /// Not the most robust, but decent in a pinch.
-        #[instrument]
-        pub fn clear_screen_ansi() {
-                // There are ANSI escape codes that can be used to clear the screen!
-                const ANSI_CLEAR_SCREEN: &str = "\x1B[2J\x1B[H";
-                print!("{}", ANSI_CLEAR_SCREEN);
-                std::io::stdout().flush().unwrap();
-        }
-
-        /// Quick and dirty pause button so I can watch as program runs.
-        #[instrument]
-        pub fn dirty_pause() -> Result<()> {
-                println!("Press Enter to continue...");
-                let mut _input = String::new();
-                let read_in = io::stdin().read_line(&mut _input)?;
-                event![Level::DEBUG, ?read_in];
                 Ok(())
         }
 }
