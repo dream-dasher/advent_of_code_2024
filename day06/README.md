@@ -1,20 +1,26 @@
 # Day06 Notes (README) for Advent of Code 2023
 
 ## Solutions
-- Part1:
+- Part1: 4711 (`4_711`)
 - Part2:
 
 ### Methods, General
--
+- New types, checked math, some validity checks only on instantiation (burntsushi unwrap style), 
+- Direct simulation (more work and less efficient, but worked nicely touched some visualization library work I wanted to do; mostly done outside of this project)
+- Traits to simplify type-specific 'algebras' (operations)
 
 ### Errors Made
--
+- Lots of pausing over how to deal with 2 hard and soft bounds on top of newtype ~indirection.
+  - simply defining the math/interaction traits from the outset would be the simplest
+  - trying to lean too much on auto-derives and then work around what they could give ultimately used time
 
 ### Logistics
--
+- The more time efficient methods (e.g. just working on paths with obstacles) would have been faster, but, intentioanlly, I chose direct, step-by-step simulation as I wanted to look some visualization approaches.
 
 ### Had to Lookup
--
+- many variations on addition (e.g. *checked*, *borrowed*, *saturating*)
+- terminal methods for clearing screen and pausing (waiting on input)
+  - methods for setting up an running egui (but this was mostly a parllel work route that wasn't brought back here)
 
 ### Needs
 -

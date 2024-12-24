@@ -11,21 +11,34 @@ use crate::{Result,
             support::error::ErrKindDay06};
 
 #[instrument(skip_all, ret(level = Level::INFO))]
-pub fn process_part1(input: &str) -> Result<u64> {
+pub fn process_part1(input: &str) -> Result<usize> {
         let (maze, mb_guard) = parse_input(input)?;
-        let guard = mb_guard.ok_or(ErrKindDay06::NoGuardFound {
+        let guard_initial = mb_guard.ok_or(ErrKindDay06::NoGuardFound {
                 source_input: Some(input.to_string()),
         })?;
-        let mut pop_maze = PopulatedMaze::new(maze, guard)?;
-        for i in 0.. {
-                use crate::support::dirty_terminal;
-                dirty_terminal::clear_screen_ansi();
-                println!("update {}: {:?}", i, pop_maze.update());
-                println!("{}", pop_maze);
-                dirty_terminal::dirty_pause()?;
+        let mut pop_maze = PopulatedMaze::new(maze, guard_initial)?;
+        for _i in 0.. {
+                let opt_guard_update = pop_maze.update();
+                // {
+                //         use crate::support::dirty_terminal;
+                //         dirty_terminal::dirty_pause()?;
+                //         dirty_terminal::clear_screen_ansi();
+                //         println!("update {}: {:?}", i, opt_guard_update);
+                //         println!("{}", pop_maze);
+                //         println!("guard_time_path: {:?}", pop_maze.guard_time_path);
+                // }
+
+                if let Some(guard_update) = opt_guard_update {
+                        if guard_update != guard_initial {
+                                continue;
+                        }
+                }
+                // repeat or None
+                break;
         }
 
-        todo!();
+        let distinct_positions = pop_maze.guard_time_path.iter().map(|guard| guard.pos).unique().count();
+        Ok(distinct_positions)
 }
 
 #[derive(Index, Debug, Clone, PartialEq, Eq)]

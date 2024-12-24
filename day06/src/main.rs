@@ -61,7 +61,7 @@ fn main() -> Result<()> {
 
 /// Run Part1_Lib code on binary-bound input1.txt
 #[instrument(skip_all, ret(level = Level::DEBUG))]
-pub fn main_part1(input: Input) -> Result<u64> {
+pub fn main_part1(input: Input) -> Result<usize> {
         let input = match input {
                 Input::Example => EXAMPLE_INPUT,
                 Input::Full => FINAL_INPUT,
@@ -75,7 +75,7 @@ pub fn main_part1(input: Input) -> Result<u64> {
 
 /// Run Part2_Lib code on binary-bound input2.txt
 #[instrument(skip_all, ret(level = Level::DEBUG))]
-pub fn main_part2(input: Input) -> Result<u64> {
+pub fn main_part2(input: Input) -> Result<usize> {
         let input = match input {
                 Input::Example => EXAMPLE_INPUT,
                 Input::Full => FINAL_INPUT,
@@ -84,5 +84,5 @@ pub fn main_part2(input: Input) -> Result<u64> {
         };
         let val = process_part2(input)?;
         tea::info!(?val, "Part 2 Process result.");
-        Ok(val)
+        todo!()
 }

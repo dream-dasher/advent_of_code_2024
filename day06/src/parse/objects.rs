@@ -102,14 +102,14 @@ pub enum PositionState {
         OutOfBounds,
 }
 
-#[derive(Clone, Copy, Debug, derive_more::Display, PartialEq, Eq, Constructor)]
+#[derive(Clone, Copy, Debug, derive_more::Display, PartialEq, Eq, Constructor, Hash)]
 #[display("G_'{}'@{}", dir, pos)]
 pub struct Guard {
         pub pos: Point2D,
         pub dir: Direction,
 }
 
-#[derive(Clone, Copy, From, Into, PartialEq, Eq, PartialOrd, Debug, derive_more::Display, Constructor)]
+#[derive(Clone, Copy, From, Into, PartialEq, Eq, PartialOrd, Debug, derive_more::Display, Constructor, Hash)]
 #[display("({},{})", x, y)]
 #[from(forward)]
 pub struct Point2D {
@@ -145,7 +145,7 @@ impl Point2D {
 }
 
 /// Direction of Facing.
-#[derive(Copy, Clone, PartialEq, Eq, Debug, derive_more::Display)]
+#[derive(Copy, Clone, PartialEq, Eq, Debug, derive_more::Display, Hash)]
 pub enum Direction {
         #[display("^")]
         Up,
