@@ -8,7 +8,7 @@ use tracing::{Level, instrument};
 
 use crate::{Result,
             parse::{Direction, Guard, Maze, PositionState, parse_input},
-            support::{dirty_terminal, error::ErrKindDay06}};
+            support::error::ErrKindDay06};
 
 #[instrument(skip_all, ret(level = Level::INFO))]
 pub fn process_part1(input: &str) -> Result<u64> {
@@ -18,6 +18,7 @@ pub fn process_part1(input: &str) -> Result<u64> {
         })?;
         let mut pop_maze = PopulatedMaze::new(maze, guard)?;
         for i in 0.. {
+                use crate::support::dirty_terminal;
                 dirty_terminal::clear_screen_ansi();
                 println!("update {}: {:?}", i, pop_maze.update());
                 println!("{}", pop_maze);
