@@ -118,6 +118,33 @@ pub struct Point2D {
         pub x: usize,
         pub y: usize,
 }
+impl Point2D {
+        #[instrument(skip_all)]
+        pub fn try_move(&self, dir: Direction, opt_bounds: Option<Point2D>) -> Option<Point2D> {
+                match dir {
+                        Direction::Up => self.y.checked_sub(1).map(|y| Point2D::new(self.x, y)),
+                        Direction::Left => self.x.checked_sub(1).map(|x| Point2D::new(x, self.y)),
+                        Direction::Down => {
+                                if let Some(bounds) = opt_bounds {
+                                        self.y.checked_add(1)
+                                                .filter(|n| *n <= bounds.y)
+                                                .map(|y| Point2D::new(self.x, y))
+                                } else {
+                                        self.y.checked_add(1).map(|y| Point2D::new(self.x, y))
+                                }
+                        }
+                        Direction::Right => {
+                                if let Some(bounds) = opt_bounds {
+                                        self.x.checked_add(1)
+                                                .filter(|n| *n <= bounds.x)
+                                                .map(|x| Point2D::new(x, self.y))
+                                } else {
+                                        self.x.checked_add(1).map(|x| Point2D::new(x, self.y))
+                                }
+                        }
+                }
+        }
+}
 
 /// Direction of Facing.
 #[derive(Copy, Clone, PartialEq, Eq, Debug, derive_more::Display)]
