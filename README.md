@@ -72,7 +72,8 @@ up-rt, diag: [+1, -1]   new start: 00 [0, +1] 0_MAX [+1, 0] MAX_MAX
 ```
 
 ## Day 5: [Print Queue](https://adventofcode.com/2024/day/5) : [----]()
-- P1: checks against partial order
+- P1: checks against partial order [edit: data (a) a full order & (b) gave sufficient local rules for checks (didn't require deriving transitive relations) -- was a somewhat a bummer after working out various solutions to the harder problem  :shrug:]
+- P2: sorting; already derived comparisons above, so just `impl Ord for PageNewType`
 ```
 a < b
 a < d
