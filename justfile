@@ -29,7 +29,7 @@ _default:
 init: && list-external-deps _gen-env _gen-git-hooks
     cargo clean
     cargo build
-    cargo doc --all-features --document-private-items
+    cargo doc --all-features --document-private-items --open
 
 # Add a package to workspace // update-comment: the heck am I doing adding, removing, then using cargo-generate?
 newday day_digits:

@@ -26,6 +26,10 @@ unsafe_code = "forbid"
 [workspace.lints.clippy]
 allow_attributes = "warn"
 
+[profile.release]
+codegen-units = 1
+lto = true
+
 # for use with perf-analysis tools like `samply`
 [profile.profiling]
 inherits = "release"
