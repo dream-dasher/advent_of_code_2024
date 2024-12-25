@@ -43,14 +43,15 @@ fn main() -> Result<()> {
         let cli_user_args = Args::try_parse()?;
         // #[cfg(debug_assertions)]
 
-        // skip setting up subscriber if both are off
-        let _mb_writer_guard = match (cli_user_args.log, cli_user_args.error_log) {
-                (Some(LevelFilter::OFF), Some(LevelFilter::OFF)) => None,
-                (_, _) => Some(activate_global_default_tracing_subscriber()
-                        .maybe_env_default_level(cli_user_args.log)
-                        .maybe_trace_error_level(cli_user_args.error_log)
-                        .call()?),
-        };
+        // skip setting up subscriber if both passed log values are `OFF`
+        let _mb_writer_guard: Option<tracing_appender::non_blocking::WorkerGuard> =
+                match (cli_user_args.log, cli_user_args.error_log) {
+                        (Some(LevelFilter::OFF), Some(LevelFilter::OFF)) => None,
+                        (_, _) => Some(activate_global_default_tracing_subscriber()
+                                .maybe_env_default_level(cli_user_args.log)
+                                .maybe_trace_error_level(cli_user_args.error_log)
+                                .call()?),
+                };
 
         let _enter = tea::debug_span!("main()").entered();
         tea::trace!("tracing subscriber set");
