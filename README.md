@@ -104,6 +104,8 @@ c -- x
 ## Day 6: [Guard Gallivant](https://adventofcode.com/2024/day/6) : [----]()
 - P1: agent simulation (optional tensor multiplication)
   - range and segment calculations as simple start
+- P2: create loops; we already have past paths -- any intersection of paths with directions that complete a 4-rightway loop will have a loop opportunity.  : So look for all intersections where intersectee is one right turn from intersected
+  - (if we had a broader data set we'd need to check that a loop didn't already exist (obstacle isn't already one off in intersectee direction)
 ```
 Simulation while checking for location + direction repetition (3D statespace)
 For speed (if dealing with many positions) one could pre-calculate "trap regions"
