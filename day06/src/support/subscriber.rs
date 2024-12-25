@@ -36,10 +36,10 @@ use crate::Result;
 /// ```
 pub fn activate_global_default_tracing_subscriber() -> Result<WorkerGuard> {
         let envfilter_layer = tracing_subscriber::EnvFilter::builder()
-                .with_default_directive(LevelFilter::INFO.into())
+                .with_default_directive(LevelFilter::TRACE.into())
                 .from_env()?;
 
-        let error_layer = ErrorLayer::default().with_filter(LevelFilter::TRACE);
+        let error_layer = ErrorLayer::default().with_filter(LevelFilter::WARN);
 
         let (non_blocking_writer, trace_writer_guard) = tracing_appender::non_blocking(std::io::stderr());
         let fmt_layer = tracing_subscriber::fmt::Layer::default()

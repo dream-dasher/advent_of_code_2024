@@ -1,7 +1,7 @@
 # Justfile (Convenience Command Runner)
 
 # rust vars
-RUST_LOG:= 'debug'
+# RUST_LOG:= 'debug'
 RUST_BACKTRACE:= '1'
 RUSTFLAGS:='--cfg tokio_unstable'
 TOML_VERSION:=`rg '^version = ".*"' Cargo.toml | sd '.*"(.*)".*' '$1'`
@@ -89,7 +89,13 @@ perf package *args:
     hyperfine --export-markdown=.output/profiling/{{package}}_hyperfine_profile.md './target/profiling/{{package}} {{args}}' --warmup=3 --shell=none;
     samply record --output=.output/profiling/{{package}}_samply_profile.json --iteration-count=3 ./target/profiling/{{package}} {{args}};
 
+# Run hyperfine performance analysis on a package.
+perf-hyper package *args:
+    cargo build --profile profiling --bin {{package}};
+    hyperfine --export-markdown=.output/profiling/{{package}}_hyperfine_profile.md './target/profiling/{{package}} {{args}}' --warmup=1 --shell=none;
+
 # Possible future perf compare command.
+#
 perf-compare-info:
     @echo "Use hyperfine directly:\n{{GRN}}hyperfine{{NC}} {{BRN}}'cmd args'{{NC}} {{BRN}}'cmd2 args'{{NC}} {{PRP}}...{{NC}} --warmup=3 --shell=none"
 

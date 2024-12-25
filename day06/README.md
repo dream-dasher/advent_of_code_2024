@@ -13,6 +13,14 @@
 - Lots of pausing over how to deal with 2 hard and soft bounds on top of newtype ~indirection.
   - simply defining the math/interaction traits from the outset would be the simplest
   - trying to lean too much on auto-derives and then work around what they could give ultimately used time
+- Tracing resulted in a 1_000x increase in runtime for Part1_full (3.3sec to 3.2ms)
+  - I had two settings (1 for TracingErrors & one for general Tracing)
+  - Tracing Errors had been set to `TRACE` by default and was not controlled by EnvFilter
+  - *both* Error-Subscriber and general-Subscriber needed to be >= `WARN`
+    - presumably because `INFO` is the default `#[instrument]` span level
+  - Never calling a subscriber results in similar gains to scrubing all tracing code by feature flag
+  - Setting to `WARN` results in about 0.7ms more time. (Unsure if that scales much or is mostly fixed.)
+    - Scrubing tracing code, but still starting subscriber results in similar time increase, suggesting its mostly a fixed setup cost (though it could also be tracing/log info from other crates)
 
 ### Logistics
 - The more time efficient methods (e.g. just working on paths with obstacles) would have been faster, but, intentioanlly, I chose direct, step-by-step simulation as I wanted to look some visualization approaches.
