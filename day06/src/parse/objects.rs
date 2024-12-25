@@ -99,7 +99,7 @@ pub enum PositionState {
         Obstacle,
         #[display(".")]
         Empty,
-        OutOfBounds,
+        // OutOfBounds,
 }
 
 #[derive(Clone, Copy, Debug, derive_more::Display, PartialEq, Eq, Constructor, Hash)]

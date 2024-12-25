@@ -41,8 +41,8 @@ pub enum Input {
 
 fn main() -> Result<()> {
         let cli_user_args = Args::try_parse()?;
-        // #[cfg(debug_assertions)]
 
+        // #[cfg(debug_assertions)]
         // skip setting up subscriber if both passed log values are `OFF`
         let _mb_writer_guard: Option<tracing_appender::non_blocking::WorkerGuard> =
                 match (cli_user_args.log, cli_user_args.error_log) {

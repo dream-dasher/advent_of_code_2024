@@ -22,6 +22,15 @@ use tracing_subscriber::{fmt::format::FmtSpan, prelude::*};
 
 use crate::Result;
 
+#[cfg(debug_assertions)]
+const DEFAULT_LOGGING_LEVEL: LevelFilter = LevelFilter::INFO;
+#[cfg(debug_assertions)]
+const DEFAULT_ERROR_LOGGING_LEVEL: LevelFilter = LevelFilter::TRACE;
+#[cfg(not(debug_assertions))]
+const DEFAULT_LOGGING_LEVEL: LevelFilter = LevelFilter::WARN;
+#[cfg(not(debug_assertions))]
+const DEFAULT_ERROR_LOGGING_LEVEL: LevelFilter = LevelFilter::WARN;
+
 /// (Convenience function.) Generates a tracing_subcsriber and sets it as global default, while returning a writer guard.
 ///
 /// # Caveat
@@ -35,14 +44,13 @@ use crate::Result;
 ///    Ok(())
 /// }
 /// ```
-
 #[builder]
 pub fn activate_global_default_tracing_subscriber(
         env_default_level: Option<LevelFilter>,
         trace_error_level: Option<LevelFilter>,
 ) -> Result<WorkerGuard> {
-        let env_default_level = env_default_level.unwrap_or(LevelFilter::WARN);
-        let trace_error_level = trace_error_level.unwrap_or(LevelFilter::DEBUG);
+        let env_default_level = env_default_level.unwrap_or(DEFAULT_LOGGING_LEVEL);
+        let trace_error_level = trace_error_level.unwrap_or(DEFAULT_ERROR_LOGGING_LEVEL);
 
         let envfilter_layer = tracing_subscriber::EnvFilter::builder()
                 .with_default_directive(env_default_level.into())
