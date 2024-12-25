@@ -29,6 +29,9 @@ pub fn process_part1(input: &str) -> Result<usize> {
                 // }
 
                 if let Some(guard_update) = opt_guard_update {
+                        // Logic Error: this was meant to check for loops, but it's non-exhaustive
+                        // It only checks that the whole path is a loop
+                        // It doesn't include moving into a loop from a path that's not included
                         if guard_update != guard_initial {
                                 continue;
                         }
