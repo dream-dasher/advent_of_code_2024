@@ -16,6 +16,7 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
+#
 ## --Diagnostics--
 tracing.workspace = true
 tracing-appender.workspace = true
@@ -24,33 +25,40 @@ tracing-error.workspace = true
 tracing-subscriber.workspace = true
 # tracing-timing.workspace = true
 # tracing-tree.workspace = true
+#
 ## --General--
 bon.workspace = true
 derive_more.workspace = true
 indoc.workspace = true
 itertools.workspace = true
+#
 ## --Interface--
 ### - CLI -
 clap.workspace = true
 # dialoguer.workspace = true
 owo-colors.workspace = true
 # indicatif.workspace = true
-### - egui -
-egui.workspace = true
-eframe.workspace = true
-egui_commonmark = {version = "0.19", features=["macros", "nightly", "document-features", "better_syntax_highlighting"] }
 ## --Math--
 chrono.workspace = true
 rand.workspace = true
+#
 ## --Parsing--
 regex.workspace = true
 # serde.workspace = true
 # serde_json.workspace = true
 
 [dev-dependencies]
+#
+# |--TESTS--|
 pretty_assertions.workspace = true
 ## --Property Sample Testing--
 quickcheck.workspace = true
 quickcheck_macros.workspace = true
 ## --Test Trace-Logging--
 test-log.workspace = true
+#
+# |--EXAMPLES--|
+## - egui -
+egui.workspace = true
+eframe.workspace = true
+egui_commonmark = {version = "0.19", features=["macros", "nightly", "document-features", "better_syntax_highlighting"] }

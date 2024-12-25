@@ -1,5 +1,15 @@
 //! Error & Result type for Day06 of Advent of Code 2024.
 //!
+//! ## Common Error Types
+//! #[from(ignore)]
+//! #[display("error parsing char: {}", uninterpretable_char)]
+//! CharParse { uninterpretable_char: char },
+//! #[display("parse error: {}", source)]
+//! ParseInt { source: num::ParseIntError },
+//! #[display("eframe (egui) error: {}", source)]
+//! EFrame { source: eframe::Error },
+//! #[display("env variable error: {}", source)]
+//! Env { source: env::VarError },
 //!
 //! ## Utility reference
 //! For adding backtrace to errors:
@@ -64,8 +74,6 @@ pub enum ErrKindDay06 {
         EnvError {
                 source: tracing_subscriber::filter::FromEnvError,
         },
-        #[display("eframe (egui) error: {}", source)]
-        EFrame { source: eframe::Error },
         #[display("CLI parsing library error: {}", source)]
         Clap { source: clap::Error },
         #[display("io error: {}", source)]
@@ -83,15 +91,6 @@ pub enum ErrKindDay06 {
         },
         #[display(r#"Uncategorized string err: "{}""#, source_string)]
         OtherErrorString { source_string: String },
-        //
-        // // common error types
-        // #[from(ignore)]
-        // #[display("error parsing char: {}", uninterpretable_char)]
-        // CharParse { uninterpretable_char: char },
-        // #[display("parse error: {}", source)]
-        // ParseInt { source: num::ParseIntError },
-        // #[display("env variable error: {}", source)]
-        // Env { source: env::VarError },
 }
 impl ErrKindDay06 {
         #[instrument(skip_all)]

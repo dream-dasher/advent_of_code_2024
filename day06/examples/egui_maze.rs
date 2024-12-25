@@ -1,5 +1,4 @@
-use day06::{PopulatedMaze, Result, activate_global_default_tracing_subscriber, parse_input,
-            support::error::ErrKindDay06};
+use day06::{PopulatedMaze, activate_global_default_tracing_subscriber, parse_input, support::error::ErrKindDay06};
 use eframe::run_simple_native;
 use egui::{Key, Label, SidePanel, TopBottomPanel, Ui};
 use egui_commonmark::{CommonMarkCache, CommonMarkViewer};
@@ -18,7 +17,7 @@ const INPUT: &str = indoc!["
         #.........
         ......#..."];
 
-fn main() -> Result<()> {
+fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
         let _write_guard = activate_global_default_tracing_subscriber().call();
         let (maze, mb_guard) = parse_input(INPUT)?;
         let guard = mb_guard.ok_or(ErrKindDay06::NoGuardFound {
