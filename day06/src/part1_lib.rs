@@ -130,36 +130,32 @@ impl std::fmt::Display for PopulatedMaze {
         }
 }
 
-// #[cfg(test)]
-// mod tests {
-//         use indoc::indoc;
-//         use quickcheck::TestResult;
-//         use quickcheck_macros::quickcheck;
-//         use rand::Rng;
-//         use test_log::test;
-//         use tracing::{self as tea, instrument};
+#[cfg(test)]
+mod tests {
+        use pretty_assertions::assert_eq;
+        use test_log::test;
+        use tracing::instrument;
 
-//         use super::*;
-//         use crate::{EXAMPLE_INPUT, FINAL_INPUT};
+        use super::*;
+        use crate::{EXAMPLE_INPUT, FINAL_INPUT};
 
-//         #[test]
-//         #[instrument]
-//         fn test_process_example() -> Result<()> {
-//                 let input = EXAMPLE_INPUT;
-//                 let expected = todo!();
-//                 assert_eq!(process_part1(input)?, expected);
-//                 Ok(())
-//         }
+        #[test]
+        #[instrument]
+        fn test_process_example() -> Result<()> {
+                let input = EXAMPLE_INPUT;
+                let expected = 41;
+                assert_eq!(process_part1(input)?, expected);
+                Ok(())
+        }
 
-//         // /// Test's expected value to be populated after solution verification.
-//         // /// NOTE: `#[ignore]` is set for this test by default.
-//         // #[ignore]
-//         // #[test]
-//         // #[instrument]
-//         // fn test_process_problem_input() -> Result<()> {
-//         //         let input = FINAL_INPUT;
-//         //         let expected = todo!();
-//         //         assert_eq!(process_part1(input)?, expected);
-//         //         Ok(())
-//         // }
-// }
+        /// Test's expected value to be populated after solution verification.
+        /// NOTE: `#[ignore]` is set for this test by default.
+        #[test]
+        #[instrument]
+        fn test_process_problem_input() -> Result<()> {
+                let input = FINAL_INPUT;
+                let expected = 4_711;
+                assert_eq!(process_part1(input)?, expected);
+                Ok(())
+        }
+}
