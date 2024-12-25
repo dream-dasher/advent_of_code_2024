@@ -108,6 +108,7 @@ c -- x
   - (if we had a broader data set we'd need to check that a loop didn't already exist (obstacle isn't already one off in intersectee direction)
   - actually, we'll still need to check position of object as multiple intersections could still yield the same object, both intersections at the same and different positions
   - Correction: there can also be loops that cross 'gaps' or blaze almost entirely new paths.
+  - lol, **1_055**x speedup from turning off logging. (from ~3sec to ~3ms; more deets in day06 readme)
   
 ```
 Simulation while checking for location + direction repetition (3D statespace)
