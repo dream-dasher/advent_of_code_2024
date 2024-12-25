@@ -84,5 +84,5 @@ pub fn main_part2(input: Input) -> Result<usize> {
         };
         let val = process_part2(input)?;
         tea::info!(?val, "Part 2 Process result.");
-        todo!()
+        Ok(val)
 }

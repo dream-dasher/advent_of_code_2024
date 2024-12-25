@@ -156,7 +156,17 @@ pub enum Direction {
         #[display(">")]
         Right,
 }
-
+impl Direction {
+        /// Returns the direcition 90deg from the given one.
+        pub fn rightward(&self) -> Direction {
+                match self {
+                        Direction::Up => Direction::Right,
+                        Direction::Right => Direction::Down,
+                        Direction::Down => Direction::Left,
+                        Direction::Left => Direction::Up,
+                }
+        }
+}
 // impls
 impl TryFrom<char> for PositionState {
         type Error = ErrWrapperDay06;

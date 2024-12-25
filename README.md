@@ -106,6 +106,8 @@ c -- x
   - range and segment calculations as simple start
 - P2: create loops; we already have past paths -- any intersection of paths with directions that complete a 4-rightway loop will have a loop opportunity.  : So look for all intersections where intersectee is one right turn from intersected
   - (if we had a broader data set we'd need to check that a loop didn't already exist (obstacle isn't already one off in intersectee direction)
+  - actually, we'll still need to check position of object as multiple intersections could still yield the same object, both intersections at the same and different positions
+  
 ```
 Simulation while checking for location + direction repetition (3D statespace)
 For speed (if dealing with many positions) one could pre-calculate "trap regions"
