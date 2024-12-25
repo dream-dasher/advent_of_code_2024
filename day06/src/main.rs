@@ -63,10 +63,11 @@ fn main() -> Result<()> {
         });
         tea::trace!(?part, ?inp);
 
-        match (part, inp) {
+        let solution = match (part, inp) {
                 (Part::Part1, inp) => main_part1(inp),
                 (Part::Part2, inp) => main_part2(inp),
         }?;
+        println!("Calculated solution: {}", solution);
         tea::trace!("finishing main()");
         Ok(())
 }

@@ -12,28 +12,41 @@ use crate::{Result,
 
 #[instrument(skip_all, ret(level = Level::INFO))]
 pub fn process_part1(input: &str) -> Result<usize> {
+        #[cfg(not(feature = "loop-checking"))]
+        {
+                tracing::event!(
+                        Level::WARN,
+                        "Loop checking disabled.  Loops total loops (those including initial position) are checked.  Use `--features loop_checking` to enable general loop checking."
+                );
+        }
         let (maze, mb_guard) = parse_input(input)?;
         let guard_initial = mb_guard.ok_or(ErrKindDay06::NoGuardFound {
                 source_input: Some(input.to_string()),
         })?;
         let mut pop_maze = PopulatedMaze::new(maze, guard_initial)?;
-        for _i in 0.. {
+        for _ in 0.. {
                 let opt_guard_update = pop_maze.update();
-                // {
-                //         use crate::support::dirty_terminal;
-                //         dirty_terminal::dirty_pause()?;
-                //         dirty_terminal::clear_screen_ansi();
-                //         println!("update {}: {:?}", i, opt_guard_update);
-                //         println!("{}", pop_maze);
-                //         println!("guard_time_path: {:?}", pop_maze.guard_time_path);
-                // }
+                #[cfg(feature = "manual-walkthrough")]
+                {
+                        use crate::support::dirty_terminal;
+                        dirty_terminal::dirty_pause()?;
+                        dirty_terminal::clear_screen_ansi();
+                        println!("update: {:?}", opt_guard_update);
+                        println!("{}", pop_maze);
+                        println!("guard_time_path: {:?}", pop_maze.guard_time_path);
+                }
 
                 if let Some(guard_update) = opt_guard_update {
-                        // Logic Error: this was meant to check for loops, but it's non-exhaustive
-                        // It only checks that the whole path is a loop
-                        // It doesn't include moving into a loop from a path that's not included
+                        #[cfg(not(feature = "loop-checking"))]
                         if guard_update != guard_initial {
                                 continue;
+                        }
+                        #[cfg(feature = "loop-checking")]
+                        {
+                                // skip last element, as what we're checking was already pushed on vec
+                                if !pop_maze.guard_time_path.iter().rev().skip(1).contains(&guard_update) {
+                                        continue;
+                                }
                         }
                 }
                 // repeat or None

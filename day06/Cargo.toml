@@ -12,6 +12,11 @@ repository.workspace = true
 # license.workspace = true
 # license-file.workspace = true
 
+[features]
+default = []  # Enable by default
+loop-checking = []  # No dependencies needed for this feature
+manual-walkthrough = []  # No dependencies needed for this feature
+
 [lints]
 workspace = true
 
