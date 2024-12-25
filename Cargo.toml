@@ -28,7 +28,7 @@ allow_attributes = "warn"
 
 [profile.release]
 codegen-units = 1
-lto = true
+lto = true # "fat"
 
 # for use with perf-analysis tools like `samply`
 [profile.profiling]
@@ -38,6 +38,7 @@ debug = true
 [workspace.dependencies]
 ## --Diagnostics--
 tracing = { version = "0.1.41", features = [] }
+# tracing = { version = "0.1.41", features = ["release_max_level_warn"] }
 # tracing = { version = "0.1.41", features = ["release_max_level_off"] }
 tracing-appender = "0.2.3"
 tracing-error = "0.2.1"
