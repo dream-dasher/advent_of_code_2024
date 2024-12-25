@@ -25,31 +25,33 @@
   - Setting to `WARN` results in about 0.7ms more time. (Unsure if that scales much or is mostly fixed.)
     - Scrubing tracing code, but still starting subscriber results in similar time increase, suggesting its mostly a fixed setup cost (though it could also be tracing/log info from other crates)
   - Refactored code so I could pass trace info via clap, and skip setting up subscriber if both levels set to off:
-    - double `OFF`: 2.7ms avg.
-    - double `WARN || ERROR`: 3.2ms avg.
+    - double `OFF`          :     1.5ms avg.
+    - double `WARN || ERROR`:     1.9ms avg.
+    - double `INFO`         : 2_600.0ms avg.
 
 ```zsh
-cargo build --profile=profiling --bin day06
-hyperfine --warmup=1 --shell=none --parameter-list log trace,debug,info,warn,error,off './target/profiling/day06 1 full --log={log} --error-log={log}' --export-markdown=.output/profiling/day06_hyperfine_logparameterscan.md
+argo clean
+time cargo build --release --bin day06
+hyperfine --warmup=1 --shell=none --parameter-list log trace,debug,info,warn,error,off './target/release/day06 1 full --log={log} --error-log={log}' --export-markdown=.output/profiling/day06_hyperfine_logparameterscan.md
 ```
 
-| Command                                       |      Mean [s] | Min [s] | Max [s] |        Relative |
-| :-------------------------------------------- | ------------: | ------: | ------: | --------------: |
-| `day06 1 full (--log && error-log =   trace)` | 2.807 ± 0.014 |   2.795 |   2.838 | 1055.23 ± 52.78 |
-| `day06 1 full (--log && error-log =   debug)` | 2.814 ± 0.028 |   2.788 |   2.868 | 1058.07 ± 53.71 |
-| `day06 1 full (--log && error-log =   info)`  | 2.702 ± 0.008 |   2.690 |   2.716 | 1015.89 ± 50.64 |
-| `day06 1 full (--log && error-log =   warn)`  | 0.003 ± 0.000 |   0.003 |   0.004 |     1.17 ± 0.09 |
-| `day06 1 full (--log && error-log =   error)` | 0.003 ± 0.000 |   0.003 |   0.004 |     1.17 ± 0.08 |
-| `day06 1 full (--log && error-log =   off)`   | 0.003 ± 0.000 |   0.002 |   0.003 |            1.00 |
+| Command                                    |      Mean [s] | Min [s] | Max [s] |         Relative |
+| :----------------------------------------- | ------------: | ------: | ------: | ---------------: |
+| `day06 1 full (--log && error-log= trace)` | 2.628 ± 0.023 |   2.597 |   2.675 | 1700.35 ± 130.29 |
+| `day06 1 full (--log && error-log= debug)` | 2.629 ± 0.018 |   2.601 |   2.664 | 1701.45 ± 130.05 |
+| `day06 1 full (--log && error-log= info)`  | 2.527 ± 0.022 |   2.498 |   2.561 | 1635.51 ± 125.26 |
+| `day06 1 full (--log && error-log= warn)`  | 0.002 ± 0.000 |   0.002 |   0.003 |      1.24 ± 0.12 |
+| `day06 1 full (--log && error-log= error)` | 0.002 ± 0.000 |   0.002 |   0.003 |      1.23 ± 0.11 |
+| `day06 1 full (--log && error-log= off)`   | 0.002 ± 0.000 |   0.001 |   0.004 |             1.00 |
 
 ```zsh
 Summary
-  ./target/profiling/day06 1 full --log=off --error-log=off ran
-    1.17 ± 0.08 times faster than ./target/profiling/day06 1 full --log=error --error-log=error
-    1.17 ± 0.09 times faster than ./target/profiling/day06 1 full --log=warn --error-log=warn
- 1015.89 ± 50.64 times faster than ./target/profiling/day06 1 full --log=info --error-log=info
- 1055.23 ± 52.78 times faster than ./target/profiling/day06 1 full --log=trace --error-log=trace
- 1058.07 ± 53.71 times faster than ./target/profiling/day06 1 full --log=debug --error-log=debug
+  ./target/release/day06 1 full --log=off --error-log=off ran
+    1.23 ± 0.11 times faster than ./target/release/day06 1 full --log=error --error-log=error
+    1.24 ± 0.12 times faster than ./target/release/day06 1 full --log=warn --error-log=warn
+ 1635.51 ± 125.26 times faster than ./target/release/day06 1 full --log=info --error-log=info
+ 1700.35 ± 130.29 times faster than ./target/release/day06 1 full --log=trace --error-log=trace
+ 1701.45 ± 130.05 times faster than ./target/release/day06 1 full --log=debug --error-log=debug
 ```
 
 ### Logistics

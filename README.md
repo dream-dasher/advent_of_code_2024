@@ -108,7 +108,15 @@ c -- x
   - (if we had a broader data set we'd need to check that a loop didn't already exist (obstacle isn't already one off in intersectee direction)
   - actually, we'll still need to check position of object as multiple intersections could still yield the same object, both intersections at the same and different positions
   - Correction: there can also be loops that cross 'gaps' or blaze almost entirely new paths.
-  - lol, **1_055**x speedup from turning off logging. (from ~3sec to ~3ms; more deets in day06 readme)
+  > [!NOTE]
+  > **> 1 thousand** x speedup from turning off logging. (from ~**2.6sec** to ~**1.5ms**; more in day06 readme)
+  >
+  > with mods to allow manual (non-env based) log levels and conditional subscriber setting:
+  >  ```zsh
+  >  ./target/release/day06 1 full --log=off --error-log=off ran
+  >   1.24 ± 0.12 times faster than ./target/release/day06 1 full --log=warn --error-log=warn
+  > 1635.51 ± 125.26 times faster than ./target/release/day06 1 full --log=info --error-log=info
+  > ```
   
 ```
 Simulation while checking for location + direction repetition (3D statespace)
