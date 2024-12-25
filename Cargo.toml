@@ -42,12 +42,9 @@ tracing = { version = "0.1.41", features = [] }
 # tracing = { version = "0.1.41", features = ["release_max_level_off"] }
 tracing-appender = "0.2.3"
 tracing-error = "0.2.1"
-tracing-flame = "0.2.0"
 tracing-subscriber = { version = "0.3.19", features = [
-    "chrono",
     "env-filter",
     "tracing-log",
-    "json",
 ] }
 tracing-timing = "0.6.0"
 tracing-tree = { version = "0.4.0", features = ["time"] }
@@ -65,9 +62,8 @@ clap = { version = "4", features = [
     "unicode",
     "wrap_help",
 ] }
-dialoguer = "0.11"
+# dialoguer = "0.11"
 owo-colors = "4"
-indicatif = "0.17"
 ### - egui -
 egui = "0.30"
 eframe = { version = "0.30", default-features = false, features = [
