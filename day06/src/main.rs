@@ -39,6 +39,7 @@ pub enum Input {
 }
 
 fn main() -> Result<()> {
+        // #[cfg(debug_assertions)]
         let _writer_guard = activate_global_default_tracing_subscriber()?;
         let _enter = tea::debug_span!("main()").entered();
         tea::trace!("tracing subscriber set");
