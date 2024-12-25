@@ -18,9 +18,9 @@ workspace = true
 [dependencies]
 ## --CLI--
 clap.workspace = true
-dialoguer.workspace = true
+# dialoguer.workspace = true
 owo-colors.workspace = true
-indicatif.workspace = true
+# indicatif.workspace = true
 ## --Diagnostics--
 tracing.workspace = true
 tracing-tree.workspace = true
@@ -31,14 +31,15 @@ bon.workspace = true
 derive_more.workspace = true
 indoc.workspace = true
 itertools.workspace = true
-## --Math--
-chrono.workspace = true
-rand.workspace = true
+# ## --Math--
+# chrono.workspace = true
+# rand.workspace = true
 ## --Parsing--
 regex.workspace = true
-serde.workspace = true
-serde_json.workspace = true
-# Dev-Dependencies
+# serde.workspace = true
+# serde_json.workspace = true
+
+[dev-dependencies]
 ## --Property Sample Testing--
 quickcheck.workspace = true
 quickcheck_macros.workspace = true

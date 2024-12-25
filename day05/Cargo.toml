@@ -18,16 +18,16 @@ workspace = true
 [dependencies]
 ## --CLI--
 clap.workspace = true
-dialoguer.workspace = true
+# dialoguer.workspace = true
 owo-colors.workspace = true
-indicatif.workspace = true
+# indicatif.workspace = true
 ## --Diagnostics--
 tracing.workspace = true
 tracing-appender.workspace = true
 tracing-error.workspace = true
-tracing-flame.workspace = true
+# tracing-flame.workspace = true
 tracing-subscriber.workspace = true
-tracing-timing.workspace = true
+# tracing-timing.workspace = true
 tracing-tree.workspace = true
 ## --General--
 bon.workspace = true
@@ -39,9 +39,10 @@ chrono.workspace = true
 rand.workspace = true
 ## --Parsing--
 regex.workspace = true
-serde.workspace = true
-serde_json.workspace = true
-# Dev-Dependencies
+# serde.workspace = true
+# serde_json.workspace = true
+
+[dev-dependencies]
 ## --Property Sample Testing--
 quickcheck.workspace = true
 quickcheck_macros.workspace = true
