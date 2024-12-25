@@ -14,6 +14,7 @@
 //! - Tracing is poorly documented and methods poorly named.  One can easily use, e.g., `::fmt()` instead of `::fmt` and be greeted with cryptic or even misdirecting errors.
 //!   - I have no solution for this.  *Just be careful!*  It is very easy to lose a lot of time chain one's tail, on seemingly trivial configuration.
 
+use bon::builder;
 use tracing::level_filters::LevelFilter;
 use tracing_appender::non_blocking::WorkerGuard;
 use tracing_error::ErrorLayer;
@@ -34,12 +35,20 @@ use crate::Result;
 ///    Ok(())
 /// }
 /// ```
-pub fn activate_global_default_tracing_subscriber() -> Result<WorkerGuard> {
+
+#[builder]
+pub fn activate_global_default_tracing_subscriber(
+        env_default_level: Option<LevelFilter>,
+        trace_error_level: Option<LevelFilter>,
+) -> Result<WorkerGuard> {
+        let env_default_level = env_default_level.unwrap_or(LevelFilter::WARN);
+        let trace_error_level = trace_error_level.unwrap_or(LevelFilter::DEBUG);
+
         let envfilter_layer = tracing_subscriber::EnvFilter::builder()
-                .with_default_directive(LevelFilter::TRACE.into())
+                .with_default_directive(env_default_level.into())
                 .from_env()?;
 
-        let error_layer = ErrorLayer::default().with_filter(LevelFilter::WARN);
+        let error_layer = ErrorLayer::default().with_filter(trace_error_level);
 
         let (non_blocking_writer, trace_writer_guard) = tracing_appender::non_blocking(std::io::stderr());
         let fmt_layer = tracing_subscriber::fmt::Layer::default()

@@ -97,7 +97,8 @@ perf-hyper package *args:
 # Possible future perf compare command.
 #
 perf-compare-info:
-    @echo "Use hyperfine directly:\n{{GRN}}hyperfine{{NC}} {{BRN}}'cmd args'{{NC}} {{BRN}}'cmd2 args'{{NC}} {{PRP}}...{{NC}} --warmup=3 --shell=none"
+    @echo "Use hyperfine directly:\n{{GRN}}hyperfine{{NC}} {{BRN}}'cmd args'{{NC}} {{BRN}}'cmd2 args'{{NC}} {{PRP}}...{{NC}} --warmup=3 --shell=none --export-markdown=.output/profiling/..."
+    @echo "Preceded by {{GRN}}cargo build --profile profiling --bin <package>;{{NC}}"
 
 # List dependencies. (This command has dependencies.)
 list-external-deps:

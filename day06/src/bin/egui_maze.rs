@@ -19,7 +19,7 @@ const INPUT: &str = indoc!["
         ......#..."];
 
 fn main() -> Result<()> {
-        let _write_guard = activate_global_default_tracing_subscriber()?;
+        let _write_guard = activate_global_default_tracing_subscriber().call();
         let (maze, mb_guard) = parse_input(INPUT)?;
         let guard = mb_guard.ok_or(ErrKindDay06::NoGuardFound {
                 source_input: Some(INPUT.to_string()),

@@ -19,7 +19,7 @@ use rand::Rng;
 use tracing::{info, instrument, trace};
 
 fn main() -> Result<()> {
-        let _writer_guard = activate_global_default_tracing_subscriber()?;
+        let _writer_guard = activate_global_default_tracing_subscriber().call()?;
         let args = Args::try_parse()?;
 
         let maze_str = match args.action {
