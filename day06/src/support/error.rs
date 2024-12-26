@@ -44,6 +44,17 @@ pub enum ErrKindDay06 {
         // #[from(ignore)] // manually generate; would conflict with `OtherStringError` auto-derive
         #[display(
                 // note: raw Point2D instead of (usize, usize)  -- best practices?
+                "Requested point is outside of Maze bounds. guard_pos {:?} vs maze_max {:?}",
+                point,
+                maze_max
+        )]
+        PointOutOfBounds {
+                // note: down cast of Point2D to (usize, usize)  -- best practices?
+                point:    Point2D,
+                maze_max: Point2D,
+        },
+        #[display(
+                // note: raw Point2D instead of (usize, usize)  -- best practices?
                 "Requested Guard position is out of Maze bounds. guard_pos {:?} vs maze_max {:?}",
                 guard_pos,
                 maze_max

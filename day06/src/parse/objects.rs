@@ -332,7 +332,6 @@ mod test {
                                 ..
                         })
                 ));
-
                 assert!(matches!(
                         maze.set(Point2D::new(0, 2), PositionState::Obstacle),
                         Err(ErrWrapperDay06 {

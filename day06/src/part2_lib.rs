@@ -9,38 +9,56 @@ use owo_colors::OwoColorize as _;
 use tracing::{Level, instrument};
 
 use crate::{Result,
-            parse::{Direction, Guard, Maze, PositionState, parse_input},
+            parse::{Direction, Guard, Maze, Point2D, PositionState, parse_input},
             support::error::ErrKindDay06};
 
 #[instrument(skip_all, ret(level = Level::INFO))]
 pub fn process_part2(input: &str) -> Result<usize> {
-        let (maze, mb_guard) = parse_input(input)?;
-        let guard_initial = mb_guard.ok_or(ErrKindDay06::NoGuardFound {
-                source_input: Some(input.to_string()),
-        })?;
-        let mut pop_maze = PopulatedMazeWHSet::new(maze, guard_initial)?;
-        for _ in 0.. {
-                match pop_maze.update() {
-                        Ok(_) => {
-                                continue;
-                        }
-                        Err(UpdateError::LoopDetected) => {
-                                tracing::event![Level::INFO, "Loop detected."];
-                                break;
-                        }
-                        Err(UpdateError::GuardOutOfBounds) => {
-                                tracing::event![Level::INFO, "Guard Exited Maze."];
-                                break;
-                        }
-                        Err(UpdateError::NoMoveAvailable) => {
-                                tracing::event![Level::WARN, "Guard trapped on a single tile."];
-                                break;
+        let (pop_maze_base, starting_position) = {
+                let (maze, mb_guard) = parse_input(input)?;
+                let guard_initial = mb_guard.ok_or(ErrKindDay06::NoGuardFound {
+                        source_input: Some(input.to_string()),
+                })?;
+                (PopulatedMazeWHSet::new(maze, guard_initial)?, guard_initial.pos)
+        };
+        let mut original_path_positions: HashSet<Point2D> = {
+                let mut pop_maze = pop_maze_base.clone();
+                loop {
+                        match pop_maze.update() {
+                                Ok(_) => {
+                                        continue;
+                                }
+                                Err(UpdateError::LoopDetected) => {
+                                        tracing::event![Level::INFO, "Loop detected."];
+                                        break;
+                                }
+                                Err(UpdateError::GuardOutOfBounds) => {
+                                        tracing::event![Level::INFO, "Guard Exited Maze."];
+                                        break;
+                                }
+                                Err(UpdateError::NoMoveAvailable) => {
+                                        tracing::event![Level::WARN, "Guard trapped on a single tile."];
+                                        break;
+                                }
                         }
                 }
+                pop_maze.guard_states
+                        .into_iter()
+                        .map(|guard| guard.pos)
+                        .unique()
+                        .collect()
+        };
+        // remove starting position from set
+        original_path_positions.remove(&starting_position);
+        let mut pos_to_loop_sum = 0;
+        for pos in original_path_positions.iter() {
+                let mut pop_maze_mutant = pop_maze_base.clone();
+                pop_maze_mutant.maze.set(*pos, PositionState::Empty)?;
+                if pop_maze_mutant.will_loop() {
+                        pos_to_loop_sum += 1;
+                }
         }
-
-        let distinct_positions = pop_maze.guard_states.iter().map(|guard| guard.pos).unique().count();
-        Ok(distinct_positions)
+        Ok(pos_to_loop_sum)
 }
 
 #[derive(Index, Debug, Clone, PartialEq, Eq)]
@@ -122,6 +140,33 @@ impl PopulatedMazeWHSet {
                 // This should only occur if all four adjacent tiles are obstacles.  Unexpected, hence warn flag.
                 tracing::event![Level::WARN, ?guard_now, "Guard trapped on single tile."];
                 Err(UpdateError::NoMoveAvailable)
+        }
+
+        // pub fn maze_mutate(&mut self, pos: Point2D, state: PositionState) {
+        //         self.maze.set(pos, state);
+        // }
+
+        /// Whether the guard will eventually loop for the given maze.
+        pub fn will_loop(mut self) -> bool {
+                loop {
+                        match self.update() {
+                                Ok(_) => {
+                                        continue;
+                                }
+                                Err(UpdateError::LoopDetected) => {
+                                        tracing::event![Level::INFO, "Loop detected."];
+                                        return true;
+                                }
+                                Err(UpdateError::GuardOutOfBounds) => {
+                                        tracing::event![Level::INFO, "Guard Exited Maze."];
+                                        return false;
+                                }
+                                Err(UpdateError::NoMoveAvailable) => {
+                                        tracing::event![Level::WARN, "Guard trapped on a single tile."];
+                                        return true;
+                                }
+                        }
+                }
         }
 }
 impl std::fmt::Display for PopulatedMazeWHSet {
