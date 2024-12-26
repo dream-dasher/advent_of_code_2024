@@ -1,0 +1,60 @@
+[package]
+name = "day07"
+version = "0.1.0"
+edition.workspace = true
+authors.workspace = true
+description.workspace = true
+homepage.workspace = true
+documentation.workspace = true
+keywords.workspace = true
+repository.workspace = true
+# publish.workspace = true
+# license.workspace = true
+# license-file.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+#
+## --Diagnostics--
+tracing.workspace = true
+tracing-appender.workspace = true
+tracing-error.workspace = true
+# tracing-flame.workspace = true
+tracing-subscriber.workspace = true
+# tracing-timing.workspace = true
+# tracing-tree.workspace = true
+#
+## --General--
+bon.workspace = true
+derive_more.workspace = true
+indoc.workspace = true
+itertools.workspace = true
+#
+## --Interface--
+### - CLI -
+clap.workspace = true
+# dialoguer.workspace = true
+owo-colors.workspace = true
+# indicatif.workspace = true
+## --Math--
+chrono.workspace = true
+rand.workspace = true
+#
+## --Parsing--
+regex.workspace = true
+# serde.workspace = true
+# serde_json.workspace = true
+## --Performance--
+rayon.workspace = true
+
+[dev-dependencies]
+#
+# |--TESTS--|
+pretty_assertions.workspace = true
+## --Property Sample Testing--
+quickcheck.workspace = true
+quickcheck_macros.workspace = true
+## --Test Trace-Logging--
+test-log.workspace = true

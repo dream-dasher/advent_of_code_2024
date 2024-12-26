@@ -785,6 +785,30 @@ dependencies = [
 ]
 
 [[package]]
+name = "day07"
+version = "0.1.0"
+dependencies = [
+ "bon",
+ "chrono",
+ "clap",
+ "derive_more",
+ "indoc",
+ "itertools",
+ "owo-colors",
+ "pretty_assertions",
+ "quickcheck",
+ "quickcheck_macros",
+ "rand",
+ "rayon",
+ "regex",
+ "test-log",
+ "tracing",
+ "tracing-appender",
+ "tracing-error",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "deranged"
 version = "0.3.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
