@@ -63,16 +63,6 @@ pub fn process_part2(input: &str) -> Result<usize> {
                         pop_maze_mutant.will_loop()
                 })
                 .count();
-
-        // let mut pos_to_loop_sum = 0;
-        // for pos in original_path_positions.iter() {
-        //         let mut pop_maze_mutant = pop_maze_base.clone();
-        //         pop_maze_mutant.maze.set(*pos, PositionState::Obstacle)?;
-
-        //         if pop_maze_mutant.will_loop() {
-        //                 pos_to_loop_sum += 1;
-        //         }
-        // }
         tracing::event![target:"illustrate",Level::TRACE, %pop_maze_base];
         Ok(pos_to_loop_sum)
 }
