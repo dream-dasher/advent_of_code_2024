@@ -30,7 +30,7 @@
     - double `INFO`         : 2_600.0ms avg.
 
 ```zsh
-argo clean
+cargo clean
 time cargo build --release --bin day06
 hyperfine --warmup=1 --shell=none --parameter-list log trace,debug,info,warn,error,off './target/release/day06 1 full --log={log} --error-log={log}' --export-markdown=.output/profiling/day06_hyperfine_logparameterscan.md
 ```
