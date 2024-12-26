@@ -10,9 +10,10 @@ use crate::{Result,
             parse::{Direction, Guard, Maze, PositionState, parse_input},
             support::error::ErrKindDay06};
 
+#[cfg(not(feature = "hashset_p1"))]
 #[instrument(skip_all, ret(level = Level::INFO))]
 pub fn process_part1(input: &str) -> Result<usize> {
-        #[cfg(not(feature = "loop-checking"))]
+        #[cfg(not(feature = "loop-checking_p1"))]
         {
                 tracing::event!(
                         Level::WARN,
@@ -26,7 +27,7 @@ pub fn process_part1(input: &str) -> Result<usize> {
         let mut pop_maze = PopulatedMaze::new(maze, guard_initial)?;
         for _ in 0.. {
                 let opt_guard_update = pop_maze.update();
-                #[cfg(feature = "manual-walkthrough")]
+                #[cfg(feature = "manual-walkthrough_p1")]
                 {
                         use crate::support::dirty_terminal;
                         dirty_terminal::dirty_pause()?;
@@ -37,11 +38,11 @@ pub fn process_part1(input: &str) -> Result<usize> {
                 }
 
                 if let Some(guard_update) = opt_guard_update {
-                        #[cfg(not(feature = "loop-checking"))]
+                        #[cfg(not(feature = "loop-checking_p1"))]
                         if guard_update != guard_initial {
                                 continue;
                         }
-                        #[cfg(feature = "loop-checking")]
+                        #[cfg(feature = "loop-checking_p1")]
                         {
                                 // skip last element, as what we're checking was already pushed on vec
                                 if !pop_maze.guard_time_path.iter().rev().skip(1).contains(&guard_update) {
@@ -54,6 +55,42 @@ pub fn process_part1(input: &str) -> Result<usize> {
         }
 
         let distinct_positions = pop_maze.guard_time_path.iter().map(|guard| guard.pos).unique().count();
+        Ok(distinct_positions)
+}
+
+/// Slightly slower (about 33% increase in runtime for full input) than non-exhaustive loop checked version.
+/// But much quicker than exhaustive loop checking over vector save of guard states (which is about 100% increase).
+/// (This is notable, as the max length of the vector is under 5_000 items.)
+#[cfg(feature = "hashset_p1")]
+#[instrument(skip_all, ret(level = Level::INFO))]
+pub fn process_part1(input: &str) -> Result<usize> {
+        use crate::{PopulatedMazeWHSet, UpdateError};
+        let (maze, mb_guard) = parse_input(input)?;
+        let guard_initial = mb_guard.ok_or(ErrKindDay06::NoGuardFound {
+                source_input: Some(input.to_string()),
+        })?;
+        let mut pop_maze = PopulatedMazeWHSet::new(maze, guard_initial)?;
+        for _ in 0.. {
+                match pop_maze.update() {
+                        Ok(_) => {
+                                continue;
+                        }
+                        Err(UpdateError::LoopDetected) => {
+                                tracing::event![Level::INFO, "Loop detected."];
+                                break;
+                        }
+                        Err(UpdateError::GuardOutOfBounds) => {
+                                tracing::event![Level::INFO, "Guard Exited Maze."];
+                                break;
+                        }
+                        Err(UpdateError::NoMoveAvailable) => {
+                                tracing::event![Level::WARN, "Guard trapped on a single tile."];
+                                break;
+                        }
+                }
+        }
+
+        let distinct_positions = pop_maze.guard_states.iter().map(|guard| guard.pos).unique().count();
         Ok(distinct_positions)
 }
 

@@ -51,7 +51,7 @@ pub struct PopulatedMazeWHSet {
         pub guard_current_state: Guard,
 }
 #[derive(Debug, Clone, Copy, PartialEq, Eq, derive_more::Error, derive_more::Display)]
-enum UpdateError {
+pub enum UpdateError {
         GuardOutOfBounds,
         LoopDetected,
         NoMoveAvailable,
