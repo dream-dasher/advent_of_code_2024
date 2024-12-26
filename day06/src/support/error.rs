@@ -1,15 +1,39 @@
 //! Error & Result type for Day06 of Advent of Code 2024.
 //!
-//! ## Common Error Types
-//! #[from(ignore)]
-//! #[display("error parsing char: {}", uninterpretable_char)]
-//! CharParse { uninterpretable_char: char },
-//! #[display("parse error: {}", source)]
-//! ParseInt { source: num::ParseIntError },
-//! #[display("eframe (egui) error: {}", source)]
-//! EFrame { source: eframe::Error },
-//! #[display("env variable error: {}", source)]
-//! Env { source: env::VarError },
+//
+//! ## Common ErrorKinds
+//! // //
+//! // // `custom` errors
+//! // #[from(ignore)]
+//! // #[display("Error extracting lines from input: {}", source_input)]
+//! // InputNoLines { source_input: String },
+//! // #[from(ignore)]
+//! // #[display("error parsing char: {}", uninterpretable_char)]
+//! // ParseChar { uninterpretable_char: char },
+//! // #[from(ignore)]
+//! // #[display("parse error: {}", source)]
+//! // ParseInt { source: num::ParseIntError },
+//! // #[display("Unparsable character: {}", source_char)]
+//! // ParseOther { source_char: char },
+//! // //
+//! // // `packed` errors
+//! // #[display("CLI parsing library error: {}", source)]
+//! // Clap { source: clap::Error },
+//! // #[display("Error with tracing_subscriber::EnvFilter parsing env directive: {}", source)]
+//! // EnvError { source: tracing_subscriber::filter::FromEnvError },
+//! // #[display("eframe (egui) error: {}", source)]
+//! // EFrame { source: eframe::Error },
+//! // #[display("io error: {}", source)]
+//! // Io { source: io::Error },
+//! // #[display("Error setting tracing subscriber default: {}", source)]
+//! // TracingSubscriber { source: SetGlobalDefaultError },
+//! // //
+//! // // `other` errors
+//! // #[from(ignore)] // use `make_dyn_error` instead; would conflict with auto-derives
+//! // #[display("Uncategorized Error (dyn error object): {}", source)]
+//! // OtherDynError { source: Box<dyn std::error::Error + Send + Sync> },
+//! // #[display(r#"Uncategorized string err: "{}""#, source_string)]
+//! // OtherStringError { source_string: String },
 //!
 //! ## Utility reference
 //! For adding backtrace to errors:
@@ -81,12 +105,12 @@ pub enum ErrKindDay06 {
         InputNoLines { source_input: String },
         //
         // `packed` errors
+        #[display("CLI parsing library error: {}", source)]
+        Clap { source: clap::Error },
         #[display("Error with tracing_subscriber::EnvFilter parsing env directive: {}", source)]
         EnvError {
                 source: tracing_subscriber::filter::FromEnvError,
         },
-        #[display("CLI parsing library error: {}", source)]
-        Clap { source: clap::Error },
         #[display("io error: {}", source)]
         Io { source: io::Error },
         #[display("Error setting tracing subscriber default: {}", source)]

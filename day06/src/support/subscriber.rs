@@ -51,6 +51,7 @@ pub fn activate_global_default_tracing_subscriber(
 ) -> Result<WorkerGuard> {
         let env_default_level = env_default_level.unwrap_or(DEFAULT_LOGGING_LEVEL);
         let trace_error_level = trace_error_level.unwrap_or(DEFAULT_ERROR_LOGGING_LEVEL);
+        let log_writer = std::io::stderr(); // can't set as constant or static
 
         let envfilter_layer = tracing_subscriber::EnvFilter::builder()
                 .with_default_directive(env_default_level.into())
@@ -58,7 +59,7 @@ pub fn activate_global_default_tracing_subscriber(
 
         let error_layer = ErrorLayer::default().with_filter(trace_error_level);
 
-        let (non_blocking_writer, trace_writer_guard) = tracing_appender::non_blocking(std::io::stderr());
+        let (non_blocking_writer, trace_writer_guard) = tracing_appender::non_blocking(log_writer);
         let fmt_layer = tracing_subscriber::fmt::Layer::default()
                 // .compact()
                 // .pretty()

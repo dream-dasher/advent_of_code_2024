@@ -1,5 +1,4 @@
 //! Library code for Part 2 of Day06 of Advent of Code 2024.
-//! `bin > part2_bin.rs` will run this code along with content of `input2.txt`
 
 use std::collections::HashSet;
 

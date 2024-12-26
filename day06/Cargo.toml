@@ -14,9 +14,9 @@ repository.workspace = true
 
 [features]
 default = []  # Enable by default
-loop-checking_p1 = []  # No dependencies needed for this feature
+loop-checking-vec_p1 = []  # No dependencies needed for this feature
 manual-walkthrough_p1 = []  # No dependencies needed for this feature
-hashset_p1 = []  # No dependencies needed for this feature
+loop-checking-hashset_p1 = []  # No dependencies needed for this feature
 
 [lints]
 workspace = true

@@ -1,5 +1,4 @@
 //! Library code for Part 1 of Day06 of Advent of Code 2024.
-//! `bin > part1_bin.rs` will run this code along with content of `input1.txt`
 
 use derive_more::derive::Index;
 use itertools::Itertools as _;
@@ -10,14 +9,14 @@ use crate::{Result,
             parse::{Direction, Guard, Maze, PositionState, parse_input},
             support::error::ErrKindDay06};
 
-#[cfg(not(feature = "hashset_p1"))]
+#[cfg(not(feature = "loop-checking-hashset_p1"))]
 #[instrument(skip_all, ret(level = Level::INFO))]
 pub fn process_part1(input: &str) -> Result<usize> {
-        #[cfg(not(feature = "loop-checking_p1"))]
+        #[cfg(not(feature = "loop-checking-vec_p1"))]
         {
                 tracing::event!(
                         Level::WARN,
-                        "Loop checking disabled.  Loops total loops (those including initial position) are checked.  Use `--features loop_checking` to enable general loop checking."
+                        "Loop checking disabled.  Loops total loops (those including initial position) are checked.  Use `--features ...` to enable general loop checking (may be multiple methods)."
                 );
         }
         let (maze, mb_guard) = parse_input(input)?;
@@ -38,11 +37,11 @@ pub fn process_part1(input: &str) -> Result<usize> {
                 }
 
                 if let Some(guard_update) = opt_guard_update {
-                        #[cfg(not(feature = "loop-checking_p1"))]
+                        #[cfg(not(feature = "loop-checking-vec_p1"))]
                         if guard_update != guard_initial {
                                 continue;
                         }
-                        #[cfg(feature = "loop-checking_p1")]
+                        #[cfg(feature = "loop-checking-vec_p1")]
                         {
                                 // skip last element, as what we're checking was already pushed on vec
                                 if !pop_maze.guard_time_path.iter().rev().skip(1).contains(&guard_update) {
@@ -61,7 +60,7 @@ pub fn process_part1(input: &str) -> Result<usize> {
 /// Slightly slower (about 33% increase in runtime for full input) than non-exhaustive loop checked version.
 /// But much quicker than exhaustive loop checking over vector save of guard states (which is about 100% increase).
 /// (This is notable, as the max length of the vector is under 5_000 items.)
-#[cfg(feature = "hashset_p1")]
+#[cfg(feature = "loop-checking-hashset_p1")]
 #[instrument(skip_all, ret(level = Level::INFO))]
 pub fn process_part1(input: &str) -> Result<usize> {
         use crate::{PopulatedMazeWHSet, UpdateError};
@@ -203,7 +202,6 @@ mod tests {
         }
 
         /// Test's expected value to be populated after solution verification.
-        /// NOTE: `#[ignore]` is set for this test by default.
         #[test]
         #[cfg_attr(feature = "manual-walkthrough_p1", ignore = "Manual interaction required")]
         #[instrument]

@@ -7,7 +7,7 @@ use tracing::{self as tea, Level, instrument, level_filters::LevelFilter};
 
 /// Choose to run Part 1 or 2 of Day06 of Advent of Code 2024.
 #[derive(Parser, Debug)]
-#[command(version, about, long_about, disable_help_subcommand = true, subcommand_help_heading = "input source")]
+#[command(version, about, long_about)]
 pub struct Args {
         /// Which Part to Run
         part:      Part,
@@ -20,7 +20,7 @@ pub struct Args {
         #[arg(long, short, value_enum)]
         error_log: Option<LevelFilter>,
 }
-#[derive(Debug, Clone, ValueEnum)]
+#[derive(Debug, Clone, Copy, ValueEnum)]
 pub enum Part {
         /// Part 1, of day Day06
         #[value(alias = "1", alias = "i", alias = "I", alias = "one")]
@@ -29,7 +29,7 @@ pub enum Part {
         #[value(alias = "2", alias = "ii", alias = "II", alias = "two")]
         Part2,
 }
-#[derive(Debug, Clone, ValueEnum)]
+#[derive(Debug, Clone, Copy, ValueEnum)]
 pub enum Input {
         /// Use the example input.
         Example,
