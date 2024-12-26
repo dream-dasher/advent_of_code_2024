@@ -6,6 +6,7 @@ use std::collections::HashSet;
 use derive_more::derive::Index;
 use itertools::Itertools as _;
 use owo_colors::OwoColorize as _;
+use rayon::prelude::*;
 use tracing::{Level, instrument};
 
 use crate::{Result,
@@ -50,17 +51,28 @@ pub fn process_part2(input: &str) -> Result<usize> {
         };
         // remove starting position from set
         original_path_positions.remove(&starting_position);
-        let mut pos_to_loop_sum = 0;
-        for pos in original_path_positions.iter() {
-                let mut pop_maze_mutant = pop_maze_base.clone();
-                pop_maze_mutant.maze.set(*pos, PositionState::Obstacle)?;
-                tracing::event![Level::TRACE, %pop_maze_mutant];
+        let pos_to_loop_sum = original_path_positions
+                .into_par_iter()
+                .filter(|&pos| {
+                        let mut pop_maze_mutant = pop_maze_base.clone();
+                        pop_maze_mutant
+                                .maze
+                                .set(pos, PositionState::Obstacle)
+                                .expect("already verified positions are valid in maze");
+                        pop_maze_mutant.will_loop()
+                })
+                .count();
 
-                if pop_maze_mutant.will_loop() {
-                        pos_to_loop_sum += 1;
-                }
-        }
-        tracing::event![Level::TRACE, %pop_maze_base];
+        // let mut pos_to_loop_sum = 0;
+        // for pos in original_path_positions.iter() {
+        //         let mut pop_maze_mutant = pop_maze_base.clone();
+        //         pop_maze_mutant.maze.set(*pos, PositionState::Obstacle)?;
+
+        //         if pop_maze_mutant.will_loop() {
+        //                 pos_to_loop_sum += 1;
+        //         }
+        // }
+        // tracing::event![Level::TRACE, %pop_maze_base];
         Ok(pos_to_loop_sum)
 }
 
@@ -198,6 +210,7 @@ mod tests {
         // use quickcheck::TestResult;
         // use quickcheck_macros::quickcheck;
         // use rand::Rng;
+        use pretty_assertions::assert_eq;
         use test_log::test;
         use tracing::instrument;
 
