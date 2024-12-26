@@ -80,6 +80,18 @@ impl Maze {
                 self.pt_to_ln_index(point).map(|index| self.positions[index])
         }
 
+        #[instrument(skip(self),ret(level = tracing::Level::DEBUG))]
+        pub fn set(&mut self, point: Point2D, state: PositionState) -> Result<()> {
+                match self.pt_to_ln_index(point) {
+                        None => Err(ErrKindDay06::PointOutOfBounds {
+                                point,
+                                maze_max: self.max_dims,
+                        })?,
+                        Some(index) => self.positions[index] = state,
+                }
+                Ok(())
+        }
+
         #[instrument]
         fn pt_to_ln_index(&self, point: Point2D) -> Option<usize> {
                 if point.x >= self.max_dims.x || point.y >= self.max_dims.y {
@@ -295,6 +307,45 @@ mod test {
         #[instrument]
         fn test_point2d_try_from() {
                 assert_eq!(Point2D::from((1_usize, 2_usize)), Point2D { x: 1, y: 2 });
+        }
+
+        #[test]
+        #[instrument]
+        fn test_maze_set() -> Result<()> {
+                let mut maze = Maze::new(
+                        vec![PositionState::Empty; 4], // 2x2 maze of empty spaces
+                        Point2D::new(2, 2),
+                )?;
+
+                // Test valid sets
+                maze.set(Point2D::new(0, 0), PositionState::Obstacle)?;
+                assert_eq!(maze.get(Point2D::new(0, 0)), Some(PositionState::Obstacle));
+
+                maze.set(Point2D::new(1, 1), PositionState::Obstacle)?;
+                assert_eq!(maze.get(Point2D::new(1, 1)), Some(PositionState::Obstacle));
+
+                // Test out of bounds - negative coordinates handled by usize
+                assert!(matches!(
+                        maze.set(Point2D::new(2, 0), PositionState::Obstacle),
+                        Err(ErrWrapperDay06 {
+                                source: ErrKindDay06::PointOutOfBounds { .. },
+                                ..
+                        })
+                ));
+
+                assert!(matches!(
+                        maze.set(Point2D::new(0, 2), PositionState::Obstacle),
+                        Err(ErrWrapperDay06 {
+                                source: ErrKindDay06::PointOutOfBounds { .. },
+                                ..
+                        })
+                ));
+
+                // Verify original positions weren't affected by failed sets
+                assert_eq!(maze.get(Point2D::new(0, 1)), Some(PositionState::Empty));
+                assert_eq!(maze.get(Point2D::new(1, 0)), Some(PositionState::Empty));
+
+                Ok(())
         }
 
         // #[test]
