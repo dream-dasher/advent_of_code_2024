@@ -202,6 +202,7 @@ So:
 
 ## Day 7: [Bridge Repair](https://adventofcode.com/2024/day/7) : [----]()
 - P1: combinatorial
+  - EDIT(!): equations are evaluated Left-to-Right, not in standard precedence order.(!)
 
 ```
 operators: * +
