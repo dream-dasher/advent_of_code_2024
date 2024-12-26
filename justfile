@@ -64,9 +64,9 @@ test:
     cargo nextest run --cargo-quiet --cargo-quiet
 
 # Runtests for a specific package.
-testp package="":
+testp package *nextest_args:
     cargo test --doc --quiet --package {{package}}
-    cargo nextest run --cargo-quiet --cargo-quiet --package {{package}}
+    cargo nextest run --cargo-quiet --cargo-quiet {{nextest_args}} --package {{package}}
 
 # Run a specific test with output visible. (Use '' for test_name to see all tests and set log_level)
 test-view test_name="" log_level="error":

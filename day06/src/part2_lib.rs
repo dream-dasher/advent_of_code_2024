@@ -202,8 +202,7 @@ mod tests {
         use tracing::instrument;
 
         use super::*;
-        use crate::EXAMPLE_INPUT;
-        // use crate::{EXAMPLE_INPUT, FINAL_INPUT};
+        use crate::{EXAMPLE_INPUT, FINAL_INPUT};
 
         #[test]
         #[instrument]
@@ -214,15 +213,19 @@ mod tests {
                 Ok(())
         }
 
-        // /// Test's expected value to be populated after solution verification.
-        // /// NOTE: `#[ignore]` is set for this test by default.
-        // #[ignore]
-        // #[test]
-        // #[instrument]
-        // fn test_process_problem_input() -> Result<()> {
-        //         let input = FINAL_INPUT;
-        //         let expected = todo!();
-        //         assert_eq!(process_part2(input)?, expected);
-        //         Ok(())
-        // }
+        #[test]
+        // #[cfg_attr(test, optimize(speed))] // optimize for speed <-- experimental feature
+        #[cfg_attr(debug_assertions, ignore = "Too slow in debug mode")]
+        #[instrument]
+        fn test_process_problem_input() -> Result<()> {
+                tracing::event![
+                        Level::WARN,
+                        "Warn: This test's code is about 1_000x *slower* in debug mode. (largely due to tracing)"
+                ];
+
+                let input = FINAL_INPUT;
+                let expected = 1_562;
+                assert_eq!(process_part2(input)?, expected);
+                Ok(())
+        }
 }
