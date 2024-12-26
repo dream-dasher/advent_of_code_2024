@@ -3,7 +3,7 @@
 // use derive_more::derive::{Constructor, Deref, DerefMut, From, Into};
 use indoc::indoc;
 use regex::Regex;
-use tracing::{self as tea, Level, instrument};
+use tracing::{Level, instrument};
 
 use crate::Result;
 
@@ -23,7 +23,7 @@ pub fn parse_input(raw_input: &str) -> Result<()> {
 pub fn example_parse() -> Result<Vec<[String; 3]>> {
         const EXAMPLE_PATH_SPLIT_REGEX: &str = r"^(?m)^([^:]+):([0-9]+):(.+)$";
         let re = Regex::new(EXAMPLE_PATH_SPLIT_REGEX).expect("string should be valid regex");
-        tea::info!(?re);
+        tracing::event!(Level::INFO, ?re);
 
         const HAY: &str = indoc!("\
                 path/to/foo:54:Blue Harvest
@@ -31,14 +31,14 @@ pub fn example_parse() -> Result<Vec<[String; 3]>> {
                 path/to/baz:3:It's a Trap!
                 path/topos/babos:36:ZZzzaZZZaaaZalooong!
                 ");
-        tea::info!(?HAY);
+        tracing::event!(Level::INFO, ?HAY);
 
         let mut out = Vec::new();
         {
-                let _enter = tea::info_span!("Parsing").entered();
+                let _enter = tracing::span!(Level::INFO, "Parsing").entered();
                 for (i, line) in HAY.lines().enumerate() {
                         let (raw, [path, lineno, line]) = re.captures(line).unwrap().extract();
-                        tea::info!(path, lineno, line, raw, i);
+                        tracing::event!(Level::INFO, path, lineno, line, raw, i);
                         out.push([path.to_string(), lineno.to_string(), line.to_string()]);
                 }
         }
@@ -48,18 +48,19 @@ pub fn example_parse() -> Result<Vec<[String; 3]>> {
 #[cfg(test)]
 mod tests {
         use indoc::indoc;
+        use pretty_assertions::assert_eq;
         use quickcheck::TestResult;
         use quickcheck_macros::quickcheck;
         use rand::Rng;
         use test_log::test;
-        use tracing::{self as tea, instrument};
+        use tracing::instrument;
 
         use super::*;
 
         #[test]
         #[instrument]
         fn test_example() -> Result<()> {
-                tea::warn!("--------------Running test_example---------------");
+                tracing::event!(Level::WARN, "--------------Running test_example---------------");
                 let input = indoc!("
                         0 6 4 2 1
                         1 2 7 8 9
@@ -80,7 +81,7 @@ mod tests {
                 let mut sum = sum as i64;
 
                 if low_step >= high_step {
-                        tea::trace!(?low_step, ?high_step);
+                        tracing::event!(Level::TRACE, ?low_step, ?high_step);
                         return None;
                 }
                 let mut rng = rand::thread_rng();
@@ -89,7 +90,7 @@ mod tests {
                         let step = rng.gen_range(low_step..=high_step).min(sum);
                         out.push(step);
                         sum -= step;
-                        tea::debug!(?step, ?sum);
+                        tracing::event!(Level::DEBUG, ?step, ?sum);
                 }
                 Some(out)
         }

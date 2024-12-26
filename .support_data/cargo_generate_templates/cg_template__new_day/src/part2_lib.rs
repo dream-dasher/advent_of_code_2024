@@ -1,14 +1,13 @@
 //! Library code for Part 2 of {{ project-name | upper_camel_case }} of Advent of Code 2024.
-//! `bin > part2_bin.rs` will run this code along with content of `input2.txt`
 
-use tracing::{self as tea, Level, instrument};
+use tracing::{Level, instrument};
 
 #[expect(unused)]
 use crate::{Result, parse::parse_input};
 
 #[instrument(skip_all, ret(level = Level::DEBUG))]
 pub fn process_part2(input: &str) -> Result<u64> {
-        tea::trace!(%input);
+        tracing::event!(Level::TRACE, %input);
         // let _parsed_input = parse_input(input)?;
         todo!();
 }
@@ -20,10 +19,11 @@ pub fn process_part2(input: &str) -> Result<u64> {
 //         use quickcheck_macros::quickcheck;
 //         use rand::Rng;
 //         use test_log::test;
-//         use tracing::{self as tea, instrument};
+//         use tracing::{instrument};
 
 //         use super::*;
-//         use crate::{EXAMPLE_INPUT, FINAL_INPUT};
+//         use crate::EXAMPLE_INPUT;
+// //         use crate::FINAL_INPUT;
 
 //         #[test]
 //         #[instrument]
@@ -35,8 +35,6 @@ pub fn process_part2(input: &str) -> Result<u64> {
 //         }
 
 //         // /// Test's expected value to be populated after solution verification.
-//         // /// NOTE: `#[ignore]` is set for this test by default.
-//         // #[ignore]
 //         // #[test]
 //         // #[instrument]
 //         // fn test_process_problem_input() -> Result<()> {
