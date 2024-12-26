@@ -53,11 +53,14 @@ pub fn process_part2(input: &str) -> Result<usize> {
         let mut pos_to_loop_sum = 0;
         for pos in original_path_positions.iter() {
                 let mut pop_maze_mutant = pop_maze_base.clone();
-                pop_maze_mutant.maze.set(*pos, PositionState::Empty)?;
+                pop_maze_mutant.maze.set(*pos, PositionState::Obstacle)?;
+                tracing::event![Level::TRACE, %pop_maze_mutant];
+
                 if pop_maze_mutant.will_loop() {
                         pos_to_loop_sum += 1;
                 }
         }
+        tracing::event![Level::TRACE, %pop_maze_base];
         Ok(pos_to_loop_sum)
 }
 
@@ -189,36 +192,37 @@ impl std::fmt::Display for PopulatedMazeWHSet {
         }
 }
 
-// #[cfg(test)]
-// mod tests {
-//         use indoc::indoc;
-//         use quickcheck::TestResult;
-//         use quickcheck_macros::quickcheck;
-//         use rand::Rng;
-//         use test_log::test;
-//         use tracing::{self as tea, instrument};
+#[cfg(test)]
+mod tests {
+        // use indoc::indoc;
+        // use quickcheck::TestResult;
+        // use quickcheck_macros::quickcheck;
+        // use rand::Rng;
+        use test_log::test;
+        use tracing::instrument;
 
-//         use super::*;
-//         use crate::{EXAMPLE_INPUT, FINAL_INPUT};
+        use super::*;
+        use crate::EXAMPLE_INPUT;
+        // use crate::{EXAMPLE_INPUT, FINAL_INPUT};
 
-//         #[test]
-//         #[instrument]
-//         fn test_process_example() -> Result<()> {
-//                 let input = EXAMPLE_INPUT;
-//                 let expected = todo!();
-//                 assert_eq!(process_part2(input)?, expected);
-//                 Ok(())
-//         }
+        #[test]
+        #[instrument]
+        fn test_process_example() -> Result<()> {
+                let input = EXAMPLE_INPUT;
+                let expected = 6;
+                assert_eq!(process_part2(input)?, expected);
+                Ok(())
+        }
 
-//         // /// Test's expected value to be populated after solution verification.
-//         // /// NOTE: `#[ignore]` is set for this test by default.
-//         // #[ignore]
-//         // #[test]
-//         // #[instrument]
-//         // fn test_process_problem_input() -> Result<()> {
-//         //         let input = FINAL_INPUT;
-//         //         let expected = todo!();
-//         //         assert_eq!(process_part2(input)?, expected);
-//         //         Ok(())
-//         // }
-// }
+        // /// Test's expected value to be populated after solution verification.
+        // /// NOTE: `#[ignore]` is set for this test by default.
+        // #[ignore]
+        // #[test]
+        // #[instrument]
+        // fn test_process_problem_input() -> Result<()> {
+        //         let input = FINAL_INPUT;
+        //         let expected = todo!();
+        //         assert_eq!(process_part2(input)?, expected);
+        //         Ok(())
+        // }
+}
