@@ -3,13 +3,14 @@
 ## Solutions
 
 - Part1: 4711 (`4_711`)
-- Part2:
+- Part2: 1562 (`1_562`)
 
 ### Methods, General
 
 - New types, checked math, some validity checks only on instantiation (burntsushi unwrap style),
 - Direct simulation (more work and less efficient, but worked nicely touched some visualization library work I wanted to do; mostly done outside of this project)
 - Traits to simplify type-specific 'algebras' (operations)
+- `HashSet` (and previous no-log perf discovery) made brute for mutation enumeration a simple solution made brute for mutation enumeration a simple solution.
 
 ### Errors Made
 
