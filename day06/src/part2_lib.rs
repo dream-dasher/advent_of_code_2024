@@ -59,6 +59,7 @@ pub fn process_part2(input: &str) -> Result<usize> {
                                 .maze
                                 .set(pos, PositionState::Obstacle)
                                 .expect("already verified positions are valid in maze");
+                        tracing::event![target:"illustrate",Level::TRACE, %pop_maze_mutant];
                         pop_maze_mutant.will_loop()
                 })
                 .count();
@@ -72,7 +73,7 @@ pub fn process_part2(input: &str) -> Result<usize> {
         //                 pos_to_loop_sum += 1;
         //         }
         // }
-        // tracing::event![Level::TRACE, %pop_maze_base];
+        tracing::event![target:"illustrate",Level::TRACE, %pop_maze_base];
         Ok(pos_to_loop_sum)
 }
 
@@ -118,7 +119,7 @@ impl PopulatedMazeWHSet {
                 })
         }
 
-        #[instrument()]
+        #[instrument(skip_all)]
         pub fn update(&mut self) -> core::result::Result<Guard, UpdateError> {
                 // circularly ordered by right-turns
                 const DIR_ARRAY: [Direction; 4] = [Direction::Up, Direction::Right, Direction::Down, Direction::Left];
