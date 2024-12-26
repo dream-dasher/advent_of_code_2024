@@ -1,8 +1,8 @@
 //! CLI interface to run Parts 1 & 2 of {{ project-name | upper_camel_case }} of Advent of Code 2024.
 
-use clap::{Parser, Subcommand, ValueEnum};
-use tracing::{Level, instrument};
+use clap::{Parser, ValueEnum};
 use {{ project-name | snake_case }}::{CUSTOM_INPUT, EXAMPLE_INPUT, FINAL_INPUT, Result, activate_global_default_tracing_subscriber, process_part1, process_part2};
+use tracing::{Level, instrument, level_filters::LevelFilter};
 
 /// Choose to run Part 1 or 2 of {{ project-name | upper_camel_case }} of Advent of Code 2024.
 #[derive(Parser, Debug)]
@@ -64,7 +64,7 @@ fn main() -> Result<()> {
         });
         tracing::event!(Level::TRACE, ?part, ?inp);
 
-        match (part, inp) {
+        let solution = match (part, inp) {
                 (Part::Part1, inp) => main_part1(inp),
                 (Part::Part2, inp) => main_part2(inp),
         }?;

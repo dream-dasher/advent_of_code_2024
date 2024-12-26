@@ -118,6 +118,7 @@ where
 }
 
 pub trait ToOther {
+        #[expect(dead_code)]
         fn to_other(self) -> ErrWrapper{{ project-name | upper_camel_case }};
 }
 impl<E> ToOther for E
