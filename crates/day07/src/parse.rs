@@ -1,4 +1,16 @@
 //! Raw-input parsing code for Day07 of Advent of Code 2024.
+//!
+//! ## Data Observations:
+//!
+//! ```zsh
+//! bat data/final_input.txt | choose 0 | sd : '' | sort -n
+//! ```
+//! largest solution in `final_input.tx`:          `84_474_639_541_600`
+//!                             u32::MAX:               `4_294_967_295`
+//!        u128::MAX.isqrt() == u64::MAX:  `18_446_744_073_709_551_615`
+//!                                                 
+//! So about 20k x *larger* than `u32` and about 200k x *smaller* than `u64`
+//! (it is also significantly greater than the isqrt() of `u64`)
 
 // use derive_more::derive::{Constructor, Deref, DerefMut, From, Into};
 use indoc::indoc;
