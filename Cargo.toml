@@ -2,7 +2,7 @@
 # [Cargo Manifest Configuration Reference](https://doc.rust-lang.org/stable/cargo/reference/manifest.html#the-lints-section)
 
 [workspace]
-members = ["day*"]
+members = ["crates/day*"]
 resolver = "3"
 
 [workspace.package]
