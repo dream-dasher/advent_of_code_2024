@@ -28,7 +28,7 @@ allow_attributes = "warn"
 
 [profile.release]
 codegen-units = 1
-lto = true # "fat"
+lto = true        # "fat"
 
 # for use with perf-analysis tools like `samply`
 [profile.profiling]
@@ -38,43 +38,54 @@ debug = true
 [workspace.dependencies]
 ## --Diagnostics--
 tracing = { version = "0.1.41", features = [] }
-# tracing = { version = "0.1.41", features = ["release_max_level_warn"] }
-# tracing = { version = "0.1.41", features = ["release_max_level_off"] }
+#                  "release_max_level_warn"^"release_max_level_off"
 tracing-appender = "0.2.3"
 tracing-error = "0.2.1"
-tracing-subscriber = { version = "0.3.19", features = [
-    "env-filter",
-    "tracing-log",
-] }
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
 tracing-timing = "0.6.0"
-tracing-tree = { version = "0.4.0", features = ["time"] }
-## --General--
+tracing-tree = "0.4.0"
+
+
+## --Env & Files--
+include_dir = "0.7.4"
+
+## --Ergonomics--
 bon = "3.2.0"
 derive_more = { version = "1.0.0", features = ["full"] }
 indoc = "2.0.5"
 itertools = "0.13.0"
+# nestify = "0.3.3"
+# strum = { version = "0.26.3", features = ["derive", "phf"] }
+
 ## --Interface--
 ### - CLI -
 clap = { version = "4", features = [
     "env",
+    "cargo",
     "derive",
     "string",
     "unicode",
     "wrap_help",
 ] }
+clap-verbosity-flag = "3.0.1"
 # dialoguer = "0.11"
 owo-colors = "4"
 ### - egui -
-egui = "0.30"
 eframe = { version = "0.30", default-features = false, features = [
     "default_fonts", # Embed the default egui fonts.
     "glow",          # Use the glow rendering backend. Alternative: "wgpu".
     "persistence",   # Enable restoring app state when restarting the app.
     "wayland",       # To support Linux (and CI)
 ] }
+egui = "0.30"
+
 ## --Math--
-chrono = { version = "0.4.38", features = ["serde"] }
 rand = "0.8.5"
+
+## --Other--
+jiff = { version = "0.1.16", features = ["js", "logging", "serde"] }
+#                                           "tzdb-bundle-always" ^
+
 ## --Parsing--
 regex = { version = "1.11.1", features = ["logging"] }
 serde = { version = "1.0.215", features = ["derive"] }
@@ -83,9 +94,7 @@ serde_json = "1.0.133"
 # dashmap = { version = "6.1.0", features = ["serde", "rayon", "arbitrary"] }
 # regex-automata = "0.4.9"
 rayon = "1.10.0"
-# tinyvec = { version = "1.8.0", features = [
-#     "serde",
-# ] } # safe array/small vec, but requires Default for elements
+# tinyvec = { version = "1.8.0", features = ["serde"] }
 
 
 # Dev-Dependencies

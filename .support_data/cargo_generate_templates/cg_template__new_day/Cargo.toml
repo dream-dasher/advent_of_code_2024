@@ -39,7 +39,6 @@ clap.workspace = true
 owo-colors.workspace = true
 # indicatif.workspace = true
 ## --Math--
-chrono.workspace = true
 rand.workspace = true
 #
 ## --Parsing--
