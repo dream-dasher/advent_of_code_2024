@@ -1,7 +1,7 @@
 # Justfile (Convenience Command Runner)
 
 # rust vars
-# RUST_LOG:= 'debug'
+RUST_LOG:= 'debug'
 RUST_BACKTRACE:= '1'
 RUSTFLAGS:='--cfg tokio_unstable'
 TOML_VERSION:=`rg '^version = ".*"' Cargo.toml | sd '.*"(.*)".*' '$1'`
@@ -18,6 +18,8 @@ CYN := '\033[0;36m' # Cyan
 BLU := '\033[0;34m' # Blue
 GRN := '\033[0;32m' # Green
 PRP := '\033[0;35m' # Purple
+RED := '\033[0;31m' # Red
+YLW := '\033[0;33m' # Yellow
 BRN := '\033[0;33m' # Brown
 
 # Default, lists commands.
@@ -25,23 +27,23 @@ _default:
         @just --list --unsorted
 
 # Initialize repository.
-[confirm]
+[confirm("This will:\n(1) perform standard cargo commands\n    (e.g. clean, build)\n(2) generate some files if not present\n    (e.g. git pre-commit hook, .env)\n(3) install external files\n    specifically: `trunk` via cargo and a wasm32 target via rustup.\n\nCommands can be inspected in the currently invoked `justfile`.\n\n-- Confirm initialization?")]
 init: && list-external-deps _gen-env _gen-git-hooks
     cargo clean
     cargo build
-    cargo doc --all-features --document-private-items --open
+    cargo doc --all-features --document-private-items
 
 # Add a package to workspace // update-comment: the heck am I doing adding, removing, then using cargo-generate?
 newday day_digits:
     cargo generate --path ./.support_data/cargo_generate_templates/cg_template__new_day --name day{{day_digits}}
 
-
 # Linting, formatting, typo checking, etc.
-check:
-    cargo clippy
+check: && test
+    cargo check --workspace --all-targets --all-features
+    cargo clippy --workspace --all-targets --all-features
     cargo fmt
-    typos
     committed
+    typos
 
 # Show docs.
 docs:
@@ -54,7 +56,7 @@ update-soft:
     cargo update --verbose
 
 # Update Rust-crates, first minor, then breaking changes.
-[confirm]
+[confirm("This will attempt to update dependencies past minor versions.  Confirm?")]
 update-hard: update-soft
     cargo update --verbose --breaking -Z unstable-options
 
