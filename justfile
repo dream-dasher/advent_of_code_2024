@@ -51,63 +51,63 @@ docs:
     rustup doc --std
     cargo doc --all-features --document-private-items --open
 
-# Update Rust-crates, non-breaking updates only.
-update-soft:
-    cargo update --verbose
-
-# Update Rust-crates, first minor, then breaking changes.
-[confirm("This will attempt to update dependencies past minor versions.  Confirm?")]
-update-hard: update-soft
-    cargo update --verbose --breaking -Z unstable-options
-
 # All tests, little feedback unless issues are detected.
+[group('test')]
 test:
     cargo test --doc
     cargo nextest run --cargo-quiet --cargo-quiet
 
 # Runtests for a specific package.
+[group('test')]
 testp package *nextest_args:
     cargo test --doc --quiet --package {{package}}
     cargo nextest run --cargo-quiet --cargo-quiet {{nextest_args}} --package {{package}}
 
 # Run a specific test with output visible. (Use '' for test_name to see all tests and set log_level)
+[group('test')]
 test-view test_name="" log_level="error":
     @echo "'Fun' Fact; the '--test' flag only allows integration test selection and will just fail on unit tests."
     RUST_LOG={{log_level}} cargo test {{test_name}} -- --nocapture
 
 # Run a specific test with NEXTEST with output visible. (Use '' for test_name to see all tests and set log_level)
+[group('test')]
 testnx-view test_name="" log_level="error":
     @echo "'Fun' Fact; the '--test' flag only allows integration test selection and will just fail on unit tests."
     RUST_LOG={{log_level}} cargo nextest run {{test_name}} --no-capture
 
 # All tests, little feedback unless issues are detected.
+[group('test')]
 test-whisper:
     cargo test --doc --quiet
     cargo nextest run --cargo-quiet --cargo-quiet --status-level=leak
 
 # Run performance analysis on a package.
+[group('perf')]
 perf package *args:
     cargo build --profile profiling --bin {{package}};
     hyperfine --export-markdown=.output/profiling/{{package}}_hyperfine_profile.md './target/profiling/{{package}} {{args}}' --warmup=3 --shell=none;
     samply record --output=.output/profiling/{{package}}_samply_profile.json --iteration-count=3 ./target/profiling/{{package}} {{args}};
 
 # Run hyperfine performance analysis on a package.
+[group('perf')]
 perf-hyper package *args:
     cargo build --profile profiling --bin {{package}};
     hyperfine --export-markdown=.output/profiling/{{package}}_hyperfine_profile.md './target/profiling/{{package}} {{args}}' --warmup=1 --shell=none;
 
 # Possible future perf compare command.
-#
+[group('perf')]
 perf-compare-info:
     @echo "Use hyperfine directly:\n{{GRN}}hyperfine{{NC}} {{BRN}}'cmd args'{{NC}} {{BRN}}'cmd2 args'{{NC}} {{PRP}}...{{NC}} --warmup=3 --shell=none --export-markdown=.output/profiling/..."
     @echo "Preceded by {{GRN}}cargo build --profile profiling --bin <package>;{{NC}}"
 
 # List dependencies. (This command has dependencies.)
+[group('meta')]
 list-external-deps:
     @echo "{{CYN}}List of external dependencies for this command runner and repo:"
     xsv table ad_deps.csv
 
 # Info about Rust-Compiler, Rust-Analyzer, Cargo-Clippy, and Rust-Updater.
+[group('meta')]
 rust-meta-info:
     rustc --version
     rust-analyzer --version
