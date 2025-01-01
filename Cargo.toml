@@ -58,7 +58,7 @@ rexpect = { version = "0.6.0", features = ["which"] }
 bon = "3.2.0"
 derive_more = { version = "1.0.0", features = ["full"] }
 indoc = "2.0.5"
-itertools = "0.13.0"
+itertools = "0.14.0"
 
 ## --Interface--
 ### - CLI -
