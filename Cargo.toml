@@ -2,7 +2,7 @@
 # [Cargo Manifest Configuration Reference](https://doc.rust-lang.org/stable/cargo/reference/manifest.html#the-lints-section)
 
 [workspace]
-members = ["crates/day*"]
+members = ["crates/day*", "xtask"]
 resolver = "3"
 
 [workspace.package]
@@ -20,22 +20,23 @@ keywords = ["puzzle", "fun", "advent_of_code"]
 
 [workspace.lints.rust]
 unsafe_code = "forbid"
-# unused = { level = "allow", priority = -1 } # (early) ¡DEVELOPMENT-ONLY!
-# dead_code = "allow"                         # (early) ¡DEVELOPMENT-ONLY!
-
 [workspace.lints.clippy]
 allow_attributes = "warn"
 
 [profile.release]
 codegen-units = 1
-lto = true        # "fat"
-
-# for use with perf-analysis tools like `samply`
-[profile.profiling]
+lto = true        # true:= "fat"
+[profile.profiling] # for perf-analysis, e.g. `samply`
 inherits = "release"
 debug = true
 
 [workspace.dependencies]
+## --Async--
+futures = "0.3.31"
+tokio = { version = "1.42.0", features = ["full"] }
+### - Networking -
+reqwest = { version = "0.12.9", features = ["blocking", "json"] }
+
 ## --Diagnostics--
 tracing = { version = "0.1.41", features = [] }
 #                  "release_max_level_warn"^"release_max_level_off"
@@ -45,62 +46,77 @@ tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
 tracing-timing = "0.6.0"
 tracing-tree = "0.4.0"
 
-
 ## --Env & Files--
+rstest = "0.23.0"
 include_dir = "0.7.4"
+toml = "0.8.19"
+### System & Processes
+rexpect = { version = "0.6.0", features = ["which"] }
+
 
 ## --Ergonomics--
 bon = "3.2.0"
 derive_more = { version = "1.0.0", features = ["full"] }
 indoc = "2.0.5"
 itertools = "0.13.0"
-# nestify = "0.3.3"
-# strum = { version = "0.26.3", features = ["derive", "phf"] }
 
 ## --Interface--
 ### - CLI -
-clap = { version = "4", features = [
-    "env",
-    "cargo",
-    "derive",
-    "string",
-    "unicode",
-    "wrap_help",
+clap = { version = "4.5.22", features = [
+  "env",
+  "cargo",
+  "derive",
+  "string",
+  "unicode",
+  "wrap_help",
 ] }
 clap-verbosity-flag = "3.0.1"
-# dialoguer = "0.11"
 owo-colors = "4"
 ### - egui -
 eframe = { version = "0.30", default-features = false, features = [
-    "default_fonts", # Embed the default egui fonts.
-    "glow",          # Use the glow rendering backend. Alternative: "wgpu".
-    "persistence",   # Enable restoring app state when restarting the app.
-    "wayland",       # To support Linux (and CI)
+  "default_fonts", # Embed the default egui fonts.
+  "glow",          # Use the glow rendering backend. Alternative: "wgpu".
+  "persistence",   # Enable restoring app state when restarting the app.
+  "wayland",       # To support Linux (and CI)
 ] }
 egui = "0.30"
 
-## --Math--
+# ## --Math & Science--
+# ### - Data -
+# hifitime = { version = "4.0.1", features = ["reqwest", "tabled"] }
+# jiff = { version = "0.1.16", features = ["js", "logging", "serde"] }
+# polars = "0.45.1"
+# ### - Math -
+# faer = { version = "0.20.1" }
 rand = "0.8.5"
-
-## --Other--
-jiff = { version = "0.1.16", features = ["js", "logging", "serde"] }
-#                                           "tzdb-bundle-always" ^
 
 ## --Parsing--
 regex = { version = "1.11.1", features = ["logging"] }
-serde = { version = "1.0.215", features = ["derive"] }
-serde_json = "1.0.133"
+# serde = { version = "1.0.215", features = ["derive"] }
+# serde_json = "1.0.133"
+
 ## --Performance--
 # dashmap = { version = "6.1.0", features = ["serde", "rayon", "arbitrary"] }
 # regex-automata = "0.4.9"
 rayon = "1.10.0"
 # tinyvec = { version = "1.8.0", features = ["serde"] }
 
-
 # Dev-Dependencies
+##__Benchmarking__
+divan = "0.1.17"
+## __Test_Ergonomics__
 pretty_assertions = "1.4.1"
-## --Property Sample Testing--
+test-log = { version = "0.2.16", features = ["trace"] }
+## __Property Sample Testing__
 quickcheck = "1.0.3"
 quickcheck_macros = "1.0.0"
-## --Test Trace-Logging--
-test-log = { version = "0.2.16", features = ["trace"] }
+## __Snapshot Testing__
+insta = { version = "1.41.1", ff = [
+  "clap",
+  "csv",
+  "json",
+  "redactions",
+  "serde",
+  "toml",
+  "walkdir",
+] }
