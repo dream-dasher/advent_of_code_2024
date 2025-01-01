@@ -5,7 +5,7 @@
 - Part2: 381 (`381`)
 
 ## Solution Notes
-See: [root README](../README.md)
+See: root README
 
 ### Methods, General
 - newtype pattern (e.g. to differentiate between origin values and diff-values)

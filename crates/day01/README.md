@@ -5,7 +5,7 @@
 - Part2: 20373490 (`20_373_490`)
 
 ## Solution Notes
-See: [root README](../README.md)
+See: root README
 
 ### Methods, General
 - Regex parsing
