@@ -26,7 +26,8 @@ fn main() -> Result<()> {
         let args = Args::parse();
         tracing_subscriber::fmt::init();
         let b_arr = [Symbol::A; LEN];
-        let mut all = vec![b_arr];
+        let mut all = Vec::with_capacity(2_usize.pow(LEN as u32));
+        all.extend(vec![b_arr]);
         all.extend(boop_array(b_arr, 0, args.manual_mode));
         let solution_len = all.len();
         for i in all {
