@@ -62,6 +62,8 @@ pub enum ErrKindDay07 {
         },
         #[display("io error: {}", source)]
         Io { source: io::Error },
+        #[display("parse error: {}", source)]
+        ParseInt { source: std::num::ParseIntError },
         #[display("Error setting tracing subscriber default: {}", source)]
         TracingSubscriber { source: SetGlobalDefaultError },
         //
