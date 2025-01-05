@@ -1,6 +1,5 @@
 //! Library code for Part 1 of Day07 of Advent of Code 2024.
 
-use regex::Regex;
 use tracing::{Level, instrument};
 
 #[expect(unused)]
@@ -12,15 +11,15 @@ pub fn process_part1(input: &str) -> Result<u64> {
 
         for line in input.lines() {
                 // <solution>:
-                let before_colon_trimmed = line.split(':').next()?.trim();
+                // let before_colon_trimmed = line.split(':').next()?.trim();
                 // Split on whitespace
                 // todo: sep first num from rest
-                let numbers: Result<Vec<u128>> = line.split_whitespace().map(|s| s.parse::<u128>()).collect().into();
+                // let numbers: Result<Vec<u128>> = line.split_whitespace().map(|s| s.parse::<u128>()).collect().into();
                 // let _parsed_input = parse_input(input)?;
                 todo!();
         }
         // : <n1> <n2> <n3> <n4> ...
-        let numbers: Result<Vec<u128>> = line.split_whitespace().map(|s| s.parse::<u128>()).collect();
+        // let numbers: Result<Vec<u128>> = line.split_whitespace().map(|s| s.parse::<u128>()).collect();
         // let _parsed_input = parse_input(input)?;
         todo!();
 }
