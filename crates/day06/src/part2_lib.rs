@@ -16,9 +16,8 @@ use crate::{Result,
 pub fn process_part2(input: &str) -> Result<usize> {
         let (pop_maze_base, starting_position) = {
                 let (maze, mb_guard) = parse_input(input)?;
-                let guard_initial = mb_guard.ok_or(ErrKindDay06::NoGuardFound {
-                        source_input: Some(input.to_string()),
-                })?;
+                let guard_initial =
+                        mb_guard.ok_or(ErrKindDay06::NoGuardFound { source_input: Some(input.to_string()) })?;
                 (PopulatedMazeWHSet::new(maze, guard_initial)?, guard_initial.pos)
         };
         let mut original_path_positions: HashSet<Point2D> = {
@@ -101,11 +100,7 @@ impl PopulatedMazeWHSet {
                 let mut guard_states = HashSet::new();
                 guard_states.insert(guard);
 
-                Ok(Self {
-                        maze,
-                        guard_states,
-                        guard_current_state: guard,
-                })
+                Ok(Self { maze, guard_states, guard_current_state: guard })
         }
 
         #[instrument(skip_all)]

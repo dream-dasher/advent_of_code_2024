@@ -20,9 +20,7 @@ const INPUT: &str = indoc!["
 fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
         let _write_guard = activate_global_default_tracing_subscriber().call();
         let (maze, mb_guard) = parse_input(INPUT)?;
-        let guard = mb_guard.ok_or(ErrKindDay06::NoGuardFound {
-                source_input: Some(INPUT.to_string()),
-        })?;
+        let guard = mb_guard.ok_or(ErrKindDay06::NoGuardFound { source_input: Some(INPUT.to_string()) })?;
         let pop_maze = PopulatedMaze::new(maze.clone(), guard)?;
         let mut maze_state = MazeState::new(INPUT);
 
@@ -185,12 +183,7 @@ impl MazeState {
         fn new(maze: &str) -> Self {
                 let rows = maze.lines().count();
                 let cols = maze.lines().next().unwrap_or("").len();
-                Self {
-                        maze_string: maze.to_string(),
-                        cursor_pos: (0, 0),
-                        rows,
-                        cols,
-                }
+                Self { maze_string: maze.to_string(), cursor_pos: (0, 0), rows, cols }
         }
 
         fn move_cursor(&mut self, key: Key) {

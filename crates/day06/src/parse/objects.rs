@@ -83,10 +83,7 @@ impl Maze {
         #[instrument(skip(self),ret(level = tracing::Level::DEBUG))]
         pub fn set(&mut self, point: Point2D, state: PositionState) -> Result<()> {
                 match self.pt_to_ln_index(point) {
-                        None => Err(ErrKindDay06::PointOutOfBounds {
-                                point,
-                                maze_max: self.max_dims,
-                        })?,
+                        None => Err(ErrKindDay06::PointOutOfBounds { point, maze_max: self.max_dims })?,
                         Some(index) => self.positions[index] = state,
                 }
                 Ok(())
@@ -327,17 +324,11 @@ mod test {
                 // Test out of bounds - negative coordinates handled by usize
                 assert!(matches!(
                         maze.set(Point2D::new(2, 0), PositionState::Obstacle),
-                        Err(ErrWrapperDay06 {
-                                source: ErrKindDay06::PointOutOfBounds { .. },
-                                ..
-                        })
+                        Err(ErrWrapperDay06 { source: ErrKindDay06::PointOutOfBounds { .. }, .. })
                 ));
                 assert!(matches!(
                         maze.set(Point2D::new(0, 2), PositionState::Obstacle),
-                        Err(ErrWrapperDay06 {
-                                source: ErrKindDay06::PointOutOfBounds { .. },
-                                ..
-                        })
+                        Err(ErrWrapperDay06 { source: ErrKindDay06::PointOutOfBounds { .. }, .. })
                 ));
 
                 // Verify original positions weren't affected by failed sets

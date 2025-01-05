@@ -124,12 +124,7 @@ impl CWordPuzzle {
                                 brtl_diagonal_view.push(dview_line);
                         }
                 }
-                Ok(CWordPuzzle {
-                        horizontal_view,
-                        vertical_view,
-                        bltr_diagonal_view,
-                        brtl_diagonal_view,
-                })
+                Ok(CWordPuzzle { horizontal_view, vertical_view, bltr_diagonal_view, brtl_diagonal_view })
         }
 
         /// Provides a reference to the horizontal view
@@ -192,9 +187,7 @@ impl CWordLine {
                                 'A' => CWordChar::A,
                                 'S' => CWordChar::S,
                                 no_parse => {
-                                        return Err(ErrKindDay04::CWCharParse {
-                                                uninterpretable_char: no_parse,
-                                        })?;
+                                        return Err(ErrKindDay04::CWCharParse { uninterpretable_char: no_parse })?;
                                 }
                         };
                         cw_chars.push(cw_char);
@@ -207,9 +200,7 @@ impl CWordLine {
         #[instrument(level = Level::TRACE)]
         fn new_empty(length: Option<usize>) -> Self {
                 match length {
-                        Some(len) => CWordLine {
-                                chars: Vec::with_capacity(len),
-                        },
+                        Some(len) => CWordLine { chars: Vec::with_capacity(len) },
                         None => CWordLine { chars: Vec::new() },
                 }
         }

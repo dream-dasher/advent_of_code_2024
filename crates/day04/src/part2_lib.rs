@@ -22,9 +22,7 @@ pub fn process_part2(input: &str) -> Result<u64> {
         let row_length = input
                 .lines()
                 .next()
-                .ok_or(ErrKindDay04::NoInputLines {
-                        source_input: (input.to_string()),
-                })?
+                .ok_or(ErrKindDay04::NoInputLines { source_input: (input.to_string()) })?
                 .len();
         cross_mas_regex_count(input, row_length)
 }

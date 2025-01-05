@@ -24,11 +24,7 @@ fn main() -> Result<()> {
 
         let maze_str = match args.action {
                 SubCom::Default => input_maze_generator(None),
-                SubCom::Manual {
-                        sq_side_len,
-                        start_pos,
-                        direction,
-                } => {
+                SubCom::Manual { sq_side_len, start_pos, direction } => {
                         info!(%start_pos, %direction);
                         input_maze_generator(Some(sq_side_len))
                 }
@@ -76,11 +72,7 @@ mod cli_input {
                 /// Default Options
                 Default,
                 /// Set side length of the maze square, and direction & start position of 'character'
-                Manual {
-                        sq_side_len: usize,
-                        start_pos:   Position,
-                        direction:   DirectionReImplement,
-                },
+                Manual { sq_side_len: usize, start_pos: Position, direction: DirectionReImplement },
         }
         #[derive(
                 Constructor,
@@ -153,9 +145,7 @@ mod cli_input {
                 fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
                         let coords: Vec<&str> = s.trim_matches(['(', ')']).split(',').collect();
                         if coords.len() != 2 {
-                                return Err(PositionParseError::Format {
-                                        source_string: s.to_string(),
-                                });
+                                return Err(PositionParseError::Format { source_string: s.to_string() });
                         }
                         Ok(Self {
                                 x: coords[0].parse().map_err(|_| PositionParseError::Parse {

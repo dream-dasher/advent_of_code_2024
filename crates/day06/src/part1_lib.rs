@@ -20,9 +20,7 @@ pub fn process_part1(input: &str) -> Result<usize> {
                 );
         }
         let (maze, mb_guard) = parse_input(input)?;
-        let guard_initial = mb_guard.ok_or(ErrKindDay06::NoGuardFound {
-                source_input: Some(input.to_string()),
-        })?;
+        let guard_initial = mb_guard.ok_or(ErrKindDay06::NoGuardFound { source_input: Some(input.to_string()) })?;
         let mut pop_maze = PopulatedMaze::new(maze, guard_initial)?;
         for _ in 0.. {
                 let opt_guard_update = pop_maze.update();
@@ -65,9 +63,7 @@ pub fn process_part1(input: &str) -> Result<usize> {
 pub fn process_part1(input: &str) -> Result<usize> {
         use crate::{PopulatedMazeWHSet, UpdateError};
         let (maze, mb_guard) = parse_input(input)?;
-        let guard_initial = mb_guard.ok_or(ErrKindDay06::NoGuardFound {
-                source_input: Some(input.to_string()),
-        })?;
+        let guard_initial = mb_guard.ok_or(ErrKindDay06::NoGuardFound { source_input: Some(input.to_string()) })?;
         let mut pop_maze = PopulatedMazeWHSet::new(maze, guard_initial)?;
         for _ in 0.. {
                 match pop_maze.update() {
@@ -117,10 +113,7 @@ impl PopulatedMaze {
                                 position_state: maze.get(guard.pos).expect("some maze position state checked already"),
                         })?
                 }
-                Ok(Self {
-                        maze,
-                        guard_time_path: vec![guard],
-                })
+                Ok(Self { maze, guard_time_path: vec![guard] })
         }
 
         #[instrument()]

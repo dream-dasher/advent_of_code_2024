@@ -119,9 +119,9 @@ pub fn parse_input(raw_input: &str) -> Result<(PageRelations, Vec<PageSequence>)
 
         let (order_relations, sequences) = raw_input.split_once("\n\n").expect("blank line to split input on");
         for line in order_relations.lines() {
-                let (less, more) = line.split_once('|').ok_or_else(|| ErrKindDay05::OrderPatternError {
-                        source_input: line.to_string(),
-                })?;
+                let (less, more) = line
+                        .split_once('|')
+                        .ok_or_else(|| ErrKindDay05::OrderPatternError { source_input: line.to_string() })?;
                 let rule = PageRelation::new(less.parse::<Page>()?, more.parse::<Page>()?);
                 tea::trace!(%rule);
                 {

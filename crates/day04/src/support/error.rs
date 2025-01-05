@@ -22,9 +22,7 @@ pub enum ErrKindDay04 {
         TracingSubscriber { source: SetGlobalDefaultError },
         #[from(ignore)]
         #[display("Unlabelled error (dyn error object): {}", source)]
-        OtherDynError {
-                source: Box<dyn std::error::Error + Send + Sync>,
-        },
+        OtherDynError { source: Box<dyn std::error::Error + Send + Sync> },
         // #[display("parse error: {}", source)]
         // ParseInt { source: num::ParseIntError },
         // #[display("env variable error: {}", source)]

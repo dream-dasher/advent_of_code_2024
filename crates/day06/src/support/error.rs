@@ -61,10 +61,7 @@ pub enum ErrKindDay06 {
                 guard_pos,
                 position_state
         )]
-        GuardOnNonEmptySpace {
-                guard_pos:      Point2D,
-                position_state: PositionState,
-        },
+        GuardOnNonEmptySpace { guard_pos: Point2D, position_state: PositionState },
         // #[from(ignore)] // manually generate; would conflict with `OtherStringError` auto-derive
         #[display(
                 // note: raw Point2D instead of (usize, usize)  -- best practices?
@@ -108,22 +105,16 @@ pub enum ErrKindDay06 {
         #[display("CLI parsing library error: {}", source)]
         Clap { source: clap::Error },
         #[display("Error with tracing_subscriber::EnvFilter parsing env directive: {}", source)]
-        EnvError {
-                source: tracing_subscriber::filter::FromEnvError,
-        },
+        EnvError { source: tracing_subscriber::filter::FromEnvError },
         #[display("io error: {}", source)]
         Io { source: io::Error },
         #[display("Error setting tracing subscriber default: {}", source)]
-        TracingSubscriber {
-                source: tracing::subscriber::SetGlobalDefaultError,
-        },
+        TracingSubscriber { source: tracing::subscriber::SetGlobalDefaultError },
         //
         // `other` errors
         #[from(ignore)] // use `make_dyn_error` instead; would conflict with auto-derives
         #[display("Uncategorized Error (dyn error object): {}", source)]
-        OtherErrorDyn {
-                source: Box<dyn std::error::Error + Send + Sync>,
-        },
+        OtherErrorDyn { source: Box<dyn std::error::Error + Send + Sync> },
         #[display(r#"Uncategorized string err: "{}""#, source_string)]
         OtherErrorString { source_string: String },
 }

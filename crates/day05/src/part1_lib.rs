@@ -54,10 +54,7 @@ mod tests {
                         3,2,1");
                 assert!(matches!(
                         process_part1(input),
-                        Err(ErrWrapperDay05 {
-                                source: ErrKindDay05::NonTotalOrderingShape,
-                                ..
-                        })
+                        Err(ErrWrapperDay05 { source: ErrKindDay05::NonTotalOrderingShape, .. })
                 ));
                 Ok(())
         }

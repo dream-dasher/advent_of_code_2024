@@ -76,9 +76,7 @@ impl SearchStateMachine {
         /// Start a new `XMAS|SMAX` search state machine from a null value.
         #[instrument(level = Level::TRACE)]
         fn new() -> Self {
-                SearchStateMachine {
-                        state: SearchState::Null,
-                }
+                SearchStateMachine { state: SearchState::Null }
         }
 
         /// Advance the SearchStaateMachine by one char. Return the new state of the machine.

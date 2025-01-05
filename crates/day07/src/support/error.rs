@@ -57,9 +57,7 @@ pub enum ErrKindDay07 {
         #[display("CLI parsing library error: {}", source)]
         Clap { source: clap::Error },
         #[display("Error with tracing_subscriber::EnvFilter parsing env directive: {}", source)]
-        EnvError {
-                source: tracing_subscriber::filter::FromEnvError,
-        },
+        EnvError { source: tracing_subscriber::filter::FromEnvError },
         #[display("io error: {}", source)]
         Io { source: io::Error },
         #[display("parse error: {}", source)]
@@ -70,9 +68,7 @@ pub enum ErrKindDay07 {
         // `other` errors
         #[from(ignore)] // use `make_dyn_error` instead; would conflict with auto-derives
         #[display("Uncategorized Error (dyn error object): {}", source)]
-        OtherDynError {
-                source: Box<dyn std::error::Error + Send + Sync>,
-        },
+        OtherDynError { source: Box<dyn std::error::Error + Send + Sync> },
         #[display(r#"Uncategorized string err: "{}""#, source_string)]
         OtherStringError { source_string: String },
 }
