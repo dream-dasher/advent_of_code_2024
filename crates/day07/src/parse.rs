@@ -19,7 +19,7 @@ use tracing::{Level, instrument};
 use crate::{Result, support::error::ErrKindDay07};
 
 /// Parse txt input ...
-#[instrument(skip_all, ret(level = Level::TRACE))]
+#[instrument(skip_all)]
 pub fn parse_input(raw_input: &str) -> Result<Vec<EquationUncertain>> {
         let mut eqs = Vec::new();
         for line in raw_input.lines() {
