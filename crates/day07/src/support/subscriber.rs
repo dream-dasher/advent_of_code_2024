@@ -18,7 +18,7 @@ use bon::builder;
 use tracing::level_filters::LevelFilter;
 use tracing_appender::non_blocking::WorkerGuard;
 use tracing_error::ErrorLayer;
-use tracing_subscriber::{fmt::format::FmtSpan, prelude::*};
+use tracing_subscriber::prelude::*;
 
 use crate::Result;
 
@@ -69,7 +69,7 @@ pub fn activate_global_default_tracing_subscriber(
                 .with_thread_names(true)
                 .with_file(true)
                 .with_line_number(true)
-                .with_span_events(FmtSpan::FULL)
+                // .with_span_events(FmtSpan::FULL)
                 .with_writer(non_blocking_writer);
 
         let subscriber = tracing_subscriber::Registry::default()

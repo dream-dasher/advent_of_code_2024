@@ -47,28 +47,36 @@ use tracing::{instrument, subscriber::SetGlobalDefaultError};
 // use derive_more::{Display, Error, derive::From};
 #[derive(Debug, Display, From, Error)]
 pub enum ErrKindDay07 {
-        //
-        // `custom` errors
+        // `custom` errors //
+        #[from(ignore)] // manually generate; would conflict with `OtherStringError` auto-derive
+        #[display("Error splitting on ':' : {}", source_input)]
+        InputNoColon { source_input: String },
+
         #[from(ignore)] // manually generate; would conflict with `OtherStringError` auto-derive
         #[display("Error extracting lines from input: {}", source_input)]
         InputNoLines { source_input: String },
-        //
-        // `packed` errors
+
+        // `packed` errors //
         #[display("CLI parsing library error: {}", source)]
         Clap { source: clap::Error },
+
         #[display("Error with tracing_subscriber::EnvFilter parsing env directive: {}", source)]
         EnvError { source: tracing_subscriber::filter::FromEnvError },
+
         #[display("io error: {}", source)]
         Io { source: io::Error },
+
         #[display("parse error: {}", source)]
         ParseInt { source: std::num::ParseIntError },
+
         #[display("Error setting tracing subscriber default: {}", source)]
         TracingSubscriber { source: SetGlobalDefaultError },
-        //
-        // `other` errors
+
+        // `other` errors //
         #[from(ignore)] // use `make_dyn_error` instead; would conflict with auto-derives
         #[display("Uncategorized Error (dyn error object): {}", source)]
         OtherDynError { source: Box<dyn std::error::Error + Send + Sync> },
+
         #[display(r#"Uncategorized string err: "{}""#, source_string)]
         OtherStringError { source_string: String },
 }
