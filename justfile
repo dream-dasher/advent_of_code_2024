@@ -1,7 +1,6 @@
 # Justfile (Convenience Command Runner)
 
 # rust vars
-J_CARGO_CRATE_NAME:='advent_of_code_2024'
 J_CARGO_NO_WARN := '-Awarnings'
 J_RUST_LOG:= 'debug'
 J_RUST_BACKTRACE:= '1'
@@ -30,7 +29,7 @@ _default:
         @just --list --unsorted
 
 # Initialize repository.
-[confirm(    
+[confirm(
 'This will:
 (1) perform standard cargo commands
     (e.g. clean, build)
@@ -41,22 +40,19 @@ Commands can be inspected in the currently invoked `justfile`.
 
 -- Confirm initialization?'
 )]
+[group('init')]
 init: && list-external-deps _gen-env _gen-git-hooks
     cargo clean
     cargo build
     cargo doc --all-features --document-private-items
 
-# Add a package to workspace // update-comment: the heck am I doing adding, removing, then using cargo-generate?
-newday day_digits:
-    cargo generate --path ./.support_data/cargo_generate_templates/_template__new_day --name day{{day_digits}}
-
 # Linting, formatting, typo checking, etc.
-check: && test
+check:
     cargo check --workspace --all-targets --all-features
     cargo clippy --workspace --all-targets --all-features
     cargo fmt
-    committed
     typos
+    committed
 
 # Show docs.
 docs:
@@ -64,17 +60,24 @@ docs:
     rustup doc --std
     cargo doc --all-features --document-private-items --open
 
+# Add a package to workspace // adds and removes a bin to update workspace package register
+packadd name:
+    cargo new --bin {{name}}
+    rm -rf {{name}}
+    cargo generate --path ./.support/cargo_generate_templates/_template__new_package --name {{name}}
+
+
 # All tests, little feedback unless issues are detected.
 [group('test')]
 test:
     cargo test --doc
-    cargo nextest run --cargo-quiet --cargo-quiet
+    cargo nextest run --cargo-quiet --cargo-quiet --no-fail-fast
 
 # Runtests for a specific package.
 [group('test')]
-testp package *nextest_args:
+testp package="":
     cargo test --doc --quiet --package {{package}}
-    cargo nextest run --cargo-quiet --cargo-quiet {{nextest_args}} --package {{package}}
+    cargo nextest run --cargo-quiet --cargo-quiet --package {{package}} --no-fail-fast
 
 # Run a specific test with output visible. (Use '' for test_name to see all tests and set log_level)
 [group('test')]
@@ -86,7 +89,7 @@ test-view test_name="" log_level="error":
 [group('test')]
 testnx-view test_name="" log_level="error":
     @echo "'Fun' Fact; the '--test' flag only allows integration test selection and will just fail on unit tests."
-    RUST_LOG={{log_level}} cargo nextest run {{test_name}} --no-capture
+    RUST_LOG={{log_level}} cargo nextest run {{test_name}} --no-capture --no-fail-fast
 
 # All tests, little feedback unless issues are detected.
 [group('test')]
@@ -101,17 +104,11 @@ perf package *args:
     hyperfine --export-markdown=.output/profiling/{{package}}_hyperfine_profile.md './target/profiling/{{package}} {{args}}' --warmup=3 --shell=none;
     samply record --output=.output/profiling/{{package}}_samply_profile.json --iteration-count=3 ./target/profiling/{{package}} {{args}};
 
-# Run hyperfine performance analysis on a package.
-[group('perf')]
-perf-hyper package *args:
-    cargo build --profile profiling --bin {{package}};
-    hyperfine --export-markdown=.output/profiling/{{package}}_hyperfine_profile.md './target/profiling/{{package}} {{args}}' --warmup=1 --shell=none;
-
 # Possible future perf compare command.
 [group('perf')]
 perf-compare-info:
-    @echo "Use hyperfine directly:\n{{GRN}}hyperfine{{NC}} {{BRN}}'cmd args'{{NC}} {{BRN}}'cmd2 args'{{NC}} {{PRP}}...{{NC}} --warmup=3 --shell=none --export-markdown=.output/profiling/..."
-    @echo "Preceded by {{GRN}}cargo build --profile profiling --bin <package>;{{NC}}"
+    @echo "Use hyperfine directly:\n{{GRN}}hyperfine{{NC}} {{BRN}}'cmd args'{{NC}} {{BRN}}'cmd2 args'{{NC}} {{PRP}}...{{NC}} --warmup=3 --shell=none"
+
 
 # List dependencies. (This command has dependencies.)
 [group('meta')]
@@ -141,7 +138,6 @@ _gen-env:
         echo '`{{BRN}}.env{{NC}}` exists, {{PRP}}skipping creation{{NC}}...' && exit 0; \
         else \
         cp -n .support/_template.env .env; \
-        sd '\{\{replace_me:.*\}\}' '{{J_CARGO_CRATE_NAME}}' .env; \
         echo "{{BLU}}.env{{NC}} created from template with {{GRN}}example{{NC}} values."; \
         fi
 
@@ -183,7 +179,6 @@ _thaw file:
 # Search local files through ice.
 _arctic-recon iceless_name:
 	fd --max-depth 1 '{{J_FROZE_SHA_REGEX}}{{iceless_name}}' | rg {{iceless_name}}
-
 
 # ######################################################################## #
 

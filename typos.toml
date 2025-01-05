@@ -5,9 +5,12 @@
 #        `*`    : match any file in a single level
 #        `**`   : recursively match
 #        `**/*` : specifies any _files_ at any level (subtly & potentially different)
+#
+# files -> "identifiers" -> words
+# (I *believe* 'identifiers' are some sort of pre-word chunk that will later tbe split into words for checking.)
 
 [default.extend-words]
-lib_blocking = "lib_blocking"
+egui = "egui"
 
 [files]
-extend-exclude = ["**/data/**", "*.log", "*.csv"]
+extend-exclude = ["**/data/**", ".output/**", "*.log", "*.csv"]
