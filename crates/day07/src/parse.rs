@@ -38,7 +38,6 @@ pub fn parse_input(raw_input: &str) -> Result<Vec<EquationUncertain>> {
                         .collect::<std::result::Result<_, _>>()?;
 
                 let eq = EquationUncertain::new(solution, components);
-                tracing::event!(Level::INFO, %eq);
                 eqs.push(eq);
         }
         Ok(eqs)
