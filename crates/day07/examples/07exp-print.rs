@@ -39,10 +39,9 @@ fn main() -> Result<()> {
         let args = Args::parse();
         tracing_subscriber::fmt::init();
         let b_arr = [Symbol::A; LEN];
-        // let mut all = Vec::with_capacity(2_usize.pow(LEN as u32));
         let mut durations_recursive = Vec::new();
         let mut durations_loop = Vec::new();
-        for _ in 0..(args.num_runs - 1) {
+        for _ in 0..args.num_runs {
                 {
                         // recursive
                         let mut all = Vec::with_capacity(2_usize.pow(LEN as u32));
